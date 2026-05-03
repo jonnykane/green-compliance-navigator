@@ -63,7 +63,10 @@ class QueryEngine:
             )
 
         # "clear" or "needs_clarification" with context provided — retrieve and generate.
-        chunks = self._retriever.retrieve(question)
+        retrieval_query = (
+            f"{question} {company_context}".strip() if company_context else question
+        )
+        chunks = self._retriever.retrieve(retrieval_query)
         answer = self._generator.generate(
             query=question,
             chunks=chunks,
