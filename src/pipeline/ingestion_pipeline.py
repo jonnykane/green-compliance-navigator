@@ -51,6 +51,11 @@ class IngestionPipeline:
         self._embedder = embedder
         self._store = store
 
+    @staticmethod
+    def _enrich_for_embedding(chunk: Chunk) -> str:
+        context = chunk.metadata.get("doc_context", "")
+        return f"{context}\n\n{chunk.text}" if context else chunk.text
+
     def run(self, directories: list[tuple[Path, str]]) -> IngestionResult:
         all_docs: list[Document] = []
         for directory, file_type in directories:
@@ -68,7 +73,8 @@ class IngestionPipeline:
             )
 
         texts = [c.text for c in all_chunks]
-        embedding_results = self._embedder.embed_texts(texts)
+        texts_for_embedding = [self._enrich_for_embedding(c) for c in all_chunks]
+        embedding_results = self._embedder.embed_texts(texts_for_embedding)
         vectors = [er.vector for er in embedding_results]
         metadatas = [
             {

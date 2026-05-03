@@ -174,6 +174,185 @@ def test_pdf_chunk_indices_sequential():
 
 
 # ---------------------------------------------------------------------------
+# PDF heading-aware chunking (fix for retrieval dilution)
+# ---------------------------------------------------------------------------
+
+# Realistic SECR-like content: numbered heading + threshold definition + noise
+PDF_WITH_NUMBERED_HEADING = """\
+Introductory text about the reporting framework.
+This text continues on the same page as the section below.
+
+2. Who needs to report under SECR?
+
+The definition of large is based on sections 465 and 466 of the Companies Act.
+The qualifying conditions are met by a company in a year in which it satisfies
+two or more of the following requirements:
+• Turnover £36 million or more
+• Balance sheet total £18 million or more
+• Number of employees 250 or more
+"""
+
+PDF_WITH_CHAPTER_HEADING = """\
+Chapter 2: Guidance on Streamlined Energy and Carbon Reporting
+
+This chapter explains SECR requirements and obligations for UK businesses.
+"""
+
+PDF_WITH_SHORT_TITLE_HEADING = """\
+Background text about the scheme.
+
+Group Reporting
+
+If you are reporting at group level you must include all subsidiaries.
+"""
+
+PDF_NO_DETECTABLE_HEADINGS = """\
+This paragraph contains regular body text with full sentences that end normally.
+The text wraps across lines and continues in normal prose style.
+
+Another paragraph here that also has no headings.
+Just body content that should be merged by the paragraph strategy.
+"""
+
+# SECR-like fixture replicating the actual retrieval failure.
+# Uses numbered heading directly above threshold to test the core regression.
+# (In the real PDF "Quoted companies" is a sub-heading — tested separately via
+# test_pdf_detects_short_title_heading; here we isolate the numbered-heading case.)
+PDF_SECR_THRESHOLD_LIKE = """\
+Some preamble about the 2018 Regulations and disclosure requirements.
+Early identification will enable the necessary changes to be made in time.
+
+2. Who needs to report under SECR?
+
+Organisations must comply if they qualify as a large company under the
+Companies Act 2006. The definition of large is based on sections 465 and 466.
+The qualifying conditions are met by a company or LLP in a year in which
+it satisfies two or more of the following requirements:
+• Turnover £36 million or more
+• Balance sheet total £18 million or more
+• Number of employees 250 or more
+
+Group Reporting
+If reporting at group level you must include subsidiaries in the consolidation.
+This applies both to quoted companies and large unquoted companies.
+"""
+
+
+def test_pdf_detects_numbered_section_heading():
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_WITH_NUMBERED_HEADING)
+    chunks = chunker.chunk(doc)
+    sections = [c.section for c in chunks]
+    assert any("Who needs to report" in s for s in sections)
+
+
+def test_pdf_detects_chapter_heading():
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_WITH_CHAPTER_HEADING)
+    chunks = chunker.chunk(doc)
+    sections = [c.section for c in chunks]
+    assert any("Chapter 2" in s for s in sections)
+
+
+def test_pdf_detects_short_title_heading():
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_WITH_SHORT_TITLE_HEADING)
+    chunks = chunker.chunk(doc)
+    sections = [c.section for c in chunks]
+    assert "Group Reporting" in sections
+
+
+def test_pdf_heading_prepended_to_chunk_text():
+    """The section heading must appear in the chunk text so the embedding captures it."""
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_WITH_NUMBERED_HEADING)
+    chunks = chunker.chunk(doc)
+    threshold_chunk = next((c for c in chunks if "250 or more" in c.text), None)
+    assert threshold_chunk is not None, "No chunk contains the threshold text"
+    # Heading must be in the embedded text, not only in metadata
+    assert "SECR" in threshold_chunk.text or "Who needs to report" in threshold_chunk.text
+
+
+def test_pdf_threshold_chunk_contains_secr_context():
+    """Core regression: threshold numbers must land in a chunk that also carries SECR context."""
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_SECR_THRESHOLD_LIKE)
+    chunks = chunker.chunk(doc)
+    threshold_chunk = next((c for c in chunks if "250 or more" in c.text), None)
+    assert threshold_chunk is not None, "Threshold content not found in any chunk"
+    combined = threshold_chunk.text + " " + threshold_chunk.section
+    assert "SECR" in combined, (
+        f"SECR context absent from threshold chunk.\n"
+        f"section={threshold_chunk.section!r}\n"
+        f"text[:200]={threshold_chunk.text[:200]!r}"
+    )
+
+
+def test_pdf_no_false_heading_detection_on_body_text():
+    """Regular body text paragraphs must not be mistaken for headings."""
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_NO_DETECTABLE_HEADINGS)
+    chunks = chunker.chunk(doc)
+    assert all(c.section == "" for c in chunks)
+
+
+def test_pdf_heading_section_stored_in_metadata_field():
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_WITH_NUMBERED_HEADING)
+    chunks = chunker.chunk(doc)
+    headed_chunks = [c for c in chunks if c.section != ""]
+    assert len(headed_chunks) > 0
+
+
+def test_pdf_footnote_numbers_not_detected_as_headings():
+    """PDF footnotes like '22 The CRC scheme...' must not be mistaken for section headings."""
+    content = (
+        "2. Who needs to report under SECR?\n\n"
+        "22 The CRC Energy Efficiency Scheme will be closed following compliance year.\n"
+        "Footnote text continues here.\n"
+        "• Turnover £36 million or more\n"
+        "• Number of employees 250 or more"
+    )
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(content)
+    chunks = chunker.chunk(doc)
+    sections = [c.section for c in chunks]
+    # The footnote "22 The CRC..." must NOT create its own section
+    assert not any(s.startswith("22 ") for s in sections)
+    # The threshold must still be in the numbered section's chunk
+    threshold_chunk = next((c for c in chunks if "250 or more" in c.text), None)
+    assert threshold_chunk is not None
+    assert "SECR" in threshold_chunk.text
+
+
+def test_pdf_body_text_before_first_heading_still_chunked():
+    """Content that precedes the first heading should still appear in a chunk."""
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_WITH_NUMBERED_HEADING)
+    chunks = chunker.chunk(doc)
+    full_text = " ".join(c.text for c in chunks)
+    assert "Introductory text" in full_text
+
+
+def test_pdf_long_section_under_heading_splits_correctly():
+    long_body = " ".join([f"word{i}" for i in range(600)])
+    content = f"2. Big Section\n\n{long_body}"
+    chunker = Chunker(max_tokens=200)
+    doc = _pdf_doc(content)
+    chunks = chunker.chunk(doc)
+    assert len(chunks) > 1
+    assert all("Big Section" in c.text or "Big Section" in c.section for c in chunks)
+
+
+def test_pdf_heading_aware_indices_sequential():
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(PDF_SECR_THRESHOLD_LIKE)
+    chunks = chunker.chunk(doc)
+    for i, c in enumerate(chunks):
+        assert c.chunk_index == i
+
+
+# ---------------------------------------------------------------------------
 # Metadata pass-through
 # ---------------------------------------------------------------------------
 
