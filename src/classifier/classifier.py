@@ -50,11 +50,16 @@ CLARIFICATION_OPTIONS = [
 ]
 
 CONTEXT_FROM_OPTION = {
-    0: "The user has confirmed they are a large UK company.",
-    1: "The user has confirmed they are listed or FCA-regulated.",
-    2: "The user has confirmed they are a UK SME.",
-    3: "The user has confirmed they are bidding for UK public sector contracts.",
-    4: "The user has confirmed they have significant EU operations.",
+    0: "The user has confirmed they are a large UK company with "
+       "250+ employees or £36m+ turnover or £18m+ balance sheet.",
+    1: "The user has confirmed they are listed or FCA-regulated — "
+       "a listed company, asset manager, insurer, or pension provider.",
+    2: "The user has confirmed they are a UK SME with under 250 "
+       "employees and below large-company thresholds.",
+    3: "The user has confirmed they are bidding for UK public sector "
+       "contracts above £5 million per year.",
+    4: "The user has confirmed they have significant EU operations — "
+       "an EU subsidiary, branch, or major EU turnover above €150m.",
     5: "The user is unsure which organisation category applies.",
 }
 

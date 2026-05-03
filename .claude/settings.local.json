@@ -17,7 +17,10 @@
       "Bash(python -m pytest tests/test_classifier.py -q)",
       "Bash(python -m pytest tests/test_query.py -q)",
       "Bash(python ask.py \"What sustainability reporting do we need to do?\")",
-      "Bash(python -m pytest -q --tb=no)"
+      "Bash(python -m pytest -q --tb=no)",
+      "Bash(python -m pytest tests/test_query.py::test_ask_retriever_receives_augmented_query_when_company_context_provided tests/test_query.py::test_ask_retriever_receives_bare_question_when_no_company_context -v)",
+      "Bash(git checkout *)",
+      "Bash(git add *)"
     ]
   }
 }

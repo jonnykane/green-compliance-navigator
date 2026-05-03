@@ -199,7 +199,7 @@ def test_ask_needs_clarification_with_company_context_returns_answer():
     )
     result = engine.ask(
         "What sustainability reporting do we need to do?",
-        company_context="The user has confirmed they are a large UK company.",
+        company_context="The user has confirmed they are a large UK company with 250+ employees or £36m+ turnover or £18m+ balance sheet.",
     )
     assert result.kind == "answer"
 
@@ -276,10 +276,10 @@ def test_ask_retriever_receives_augmented_query_when_company_context_provided():
     )
     engine.ask(
         "What sustainability reporting do we need to do?",
-        company_context="The user has confirmed they are a large UK company.",
+        company_context="The user has confirmed they are a large UK company with 250+ employees or £36m+ turnover or £18m+ balance sheet.",
     )
     assert "What sustainability reporting do we need to do?" in retriever.last_query
-    assert "The user has confirmed they are a large UK company." in retriever.last_query
+    assert "The user has confirmed they are a large UK company with 250+ employees or £36m+ turnover or £18m+ balance sheet." in retriever.last_query
 
 
 def test_ask_retriever_receives_bare_question_when_no_company_context():
