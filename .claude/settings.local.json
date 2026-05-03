@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(python ingest.py)",
+      "Bash(python -m pytest tests/ -q)",
+      "Bash(python ask.py \"Who must comply with ESOS and what are the employee thresholds?\")"
+    ]
+  }
+}
