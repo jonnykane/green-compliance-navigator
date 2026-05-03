@@ -31,7 +31,7 @@ def build_ingestion_pipeline() -> IngestionPipeline:
         collection_name=settings.CHROMA_COLLECTION_NAME,
     )
     return IngestionPipeline(
-        loader=DocumentLoader(),
+        loader=DocumentLoader(manifest_path=settings.CORPUS_METADATA_DIR / "real_corpus_manifest.json"),
         chunker=Chunker(
             max_tokens=settings.CHUNK_MAX_TOKENS,
             overlap_tokens=settings.CHUNK_OVERLAP_TOKENS,

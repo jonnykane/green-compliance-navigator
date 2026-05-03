@@ -157,3 +157,49 @@ def test_load_directory_empty_dir_returns_empty(tmp_path):
     loader = DocumentLoader()
     docs = loader.load_directory(tmp_path, file_type="md")
     assert docs == []
+
+
+# ---------------------------------------------------------------------------
+# Manifest-based doc_context enrichment
+# ---------------------------------------------------------------------------
+
+def test_load_pdf_with_manifest_attaches_doc_context(tmp_path, tmp_pdf):
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        '[{"filename": "test_doc.pdf", "embed_context": "SECR sustainability reporting context"}]'
+    )
+    mock_cm = _make_mock_pdf(["Page content."])
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader(manifest_path=manifest)
+        doc = loader.load_pdf(tmp_pdf)
+    assert doc.metadata.get("doc_context") == "SECR sustainability reporting context"
+
+
+def test_load_pdf_without_manifest_has_no_doc_context(tmp_pdf):
+    mock_cm = _make_mock_pdf(["Page content."])
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader()
+        doc = loader.load_pdf(tmp_pdf)
+    assert "doc_context" not in doc.metadata
+
+
+def test_load_pdf_filename_not_in_manifest_has_no_doc_context(tmp_path, tmp_pdf):
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text('[{"filename": "other_doc.pdf", "embed_context": "other context"}]')
+    mock_cm = _make_mock_pdf(["Page content."])
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader(manifest_path=manifest)
+        doc = loader.load_pdf(tmp_pdf)
+    assert "doc_context" not in doc.metadata
+
+
+def test_load_directory_propagates_doc_context(tmp_path):
+    (tmp_path / "secr.pdf").write_bytes(b"%PDF fake")
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text('[{"filename": "secr.pdf", "embed_context": "SECR context"}]')
+    mock_cm = _make_mock_pdf(["SECR content."])
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader(manifest_path=manifest)
+        docs = loader.load_directory(tmp_path, file_type="pdf")
+    assert len(docs) == 1
+    assert docs[0].metadata.get("doc_context") == "SECR context"

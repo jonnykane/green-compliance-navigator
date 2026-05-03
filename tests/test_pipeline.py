@@ -195,6 +195,79 @@ def test_pipeline_empty_corpus_returns_zero_counts(tmp_path):
     assert result.vectors_stored == 0
 
 
+# ---------------------------------------------------------------------------
+# Contextual enrichment: embed enriched text, store original
+# ---------------------------------------------------------------------------
+
+class CapturingEmbedder:
+    """Records the exact texts passed to embed_texts for assertion."""
+    DIM = 4
+
+    def __init__(self):
+        self.embedded_texts: list[str] = []
+
+    def embed_texts(self, texts: list[str]) -> list[EmbeddingResult]:
+        self.embedded_texts.extend(texts)
+        return [EmbeddingResult(text=t, vector=[0.1] * self.DIM) for t in texts]
+
+
+def _doc_with_context(context: str) -> Document:
+    return Document(
+        content="# Section\n\nContent.",
+        source="secr.pdf",
+        doc_type="real",
+        metadata={"doc_context": context},
+    )
+
+
+def test_pipeline_embeds_enriched_text_when_doc_context_present(tmp_path):
+    context = "SECR mandatory UK sustainability reporting for large companies"
+    loader = FakeLoader([_doc_with_context(context)])
+    embedder = CapturingEmbedder()
+    store = FakeVectorStore()
+    pipeline = IngestionPipeline(
+        loader=loader,
+        chunker=FakeChunker(chunks_per_doc=1),
+        embedder=embedder,
+        store=store,
+    )
+    pipeline.run(directories=[(tmp_path, "pdf")])
+    # Every embedded text must start with the context prefix
+    assert all(t.startswith(context) for t in embedder.embedded_texts)
+
+
+def test_pipeline_stores_original_chunk_text_not_enriched(tmp_path):
+    context = "SECR mandatory UK sustainability reporting"
+    loader = FakeLoader([_doc_with_context(context)])
+    embedder = CapturingEmbedder()
+    store = FakeVectorStore()
+    pipeline = IngestionPipeline(
+        loader=loader,
+        chunker=FakeChunker(chunks_per_doc=1),
+        embedder=embedder,
+        store=store,
+    )
+    pipeline.run(directories=[(tmp_path, "pdf")])
+    # Stored texts must NOT contain the context prefix
+    assert all(not t.startswith(context) for t in store.added_texts)
+
+
+def test_pipeline_embeds_original_text_when_no_doc_context(tmp_path):
+    docs = _make_docs(1)  # no doc_context in metadata
+    loader = FakeLoader(docs)
+    embedder = CapturingEmbedder()
+    store = FakeVectorStore()
+    pipeline = IngestionPipeline(
+        loader=loader,
+        chunker=FakeChunker(chunks_per_doc=1),
+        embedder=embedder,
+        store=store,
+    )
+    pipeline.run(directories=[(tmp_path, "md")])
+    # Without context, embedded text equals stored text
+    assert embedder.embedded_texts == store.added_texts
+
+
 def test_pipeline_doc_with_no_chunks_is_skipped(tmp_path):
     """Documents that produce zero chunks don't cause errors."""
     docs = [Document(content="", source="empty.md", doc_type="mock")]
