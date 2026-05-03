@@ -7,6 +7,7 @@ import chromadb
 import voyageai
 
 from src.chunker.chunker import Chunker
+from src.classifier.classifier import Classifier, CLASSIFIER_SYSTEM_PROMPT
 from src.config import settings
 from src.embedder.embedding_client import EmbeddingClient
 from src.generator.generator import Generator
@@ -15,6 +16,23 @@ from src.pipeline.ingestion_pipeline import IngestionPipeline
 from src.query import QueryEngine
 from src.retriever.retriever import Retriever
 from src.vector_store.vector_store_client import VectorStoreClient
+
+
+class _AnthropicClassifierClient:
+    """Adapts anthropic.Anthropic to ClassifierClientProtocol for the Classifier."""
+
+    def __init__(self, client: anthropic.Anthropic, model: str) -> None:
+        self._client = client
+        self._model = model
+
+    def complete(self, prompt: str) -> str:
+        response = self._client.messages.create(
+            model=self._model,
+            max_tokens=256,
+            system=CLASSIFIER_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.content[0].text
 
 
 def build_ingestion_pipeline() -> IngestionPipeline:
@@ -54,8 +72,15 @@ def build_query_engine() -> QueryEngine:
         collection_name=settings.CHROMA_COLLECTION_NAME,
     )
     retriever = Retriever(embedder=embedder, store=store, top_k=5)
+    anthropic_client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
     generator = Generator(
-        anthropic_client=anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY),
+        anthropic_client=anthropic_client,
         model=settings.ANTHROPIC_MODEL,
     )
-    return QueryEngine(retriever=retriever, generator=generator)
+    classifier = Classifier(
+        client=_AnthropicClassifierClient(
+            client=anthropic_client,
+            model=settings.ANTHROPIC_MODEL,
+        )
+    )
+    return QueryEngine(retriever=retriever, generator=generator, classifier=classifier)
