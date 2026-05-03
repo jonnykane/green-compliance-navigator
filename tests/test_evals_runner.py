@@ -473,3 +473,113 @@ def test_passed_false_when_state_mismatch_even_if_no_hallucination():
     result = _runner(_answer_result()).run_eval(case)
     assert result.state_match is False
     assert result.passed is False
+
+
+# ---------------------------------------------------------------------------
+# Bug 1 — Source normalisation (path prefix, casing, whitespace)
+# ---------------------------------------------------------------------------
+
+def test_citation_accuracy_true_with_path_prefixed_source():
+    """Path-prefixed actual source must match bare expected citation."""
+    case = _eval_case(expected_citations=["fca_tcfd_ps21_24_summary.md"])
+    result = _runner(
+        _answer_result(sources=["corpus/mock/fca_tcfd_ps21_24_summary.md"])
+    ).run_eval(case)
+    assert result.citation_accuracy is True
+
+
+def test_citation_accuracy_true_with_casing_difference():
+    """Case difference between expected and actual citation must not prevent match."""
+    case = _eval_case(expected_citations=["FCA_TCFD_PS21_24_summary.md"])
+    result = _runner(
+        _answer_result(sources=["fca_tcfd_ps21_24_summary.md"])
+    ).run_eval(case)
+    assert result.citation_accuracy is True
+
+
+def test_citation_accuracy_true_with_leading_whitespace_in_source():
+    """Leading/trailing whitespace in source must not prevent match."""
+    case = _eval_case(expected_citations=["secr_guidance.md"])
+    result = _runner(
+        _answer_result(sources=["  secr_guidance.md  "])
+    ).run_eval(case)
+    assert result.citation_accuracy is True
+
+
+def test_retrieval_recall_normalises_path_prefix():
+    """Path-prefixed actual source must count toward retrieval recall."""
+    case = _eval_case(expected_retrieved_documents=["fca_tcfd_ps21_24_summary.md"])
+    result = _runner(
+        _answer_result(sources=["corpus/mock/fca_tcfd_ps21_24_summary.md"])
+    ).run_eval(case)
+    assert result.retrieval_recall == 1.0
+
+
+def test_retrieval_recall_normalises_casing():
+    """Upper-cased actual source must count toward retrieval recall."""
+    case = _eval_case(expected_retrieved_documents=["esos_guidance.md"])
+    result = _runner(
+        _answer_result(sources=["ESOS_GUIDANCE.md"])
+    ).run_eval(case)
+    assert result.retrieval_recall == 1.0
+
+
+def test_retrieval_recall_normalises_windows_path_prefix():
+    """Windows-style backslash path must be stripped correctly."""
+    case = _eval_case(expected_retrieved_documents=["secr_summary.md"])
+    result = _runner(
+        _answer_result(sources=["corpus\\mock\\secr_summary.md"])
+    ).run_eval(case)
+    assert result.retrieval_recall == 1.0
+
+
+# ---------------------------------------------------------------------------
+# Bug 2 — Fact presence key-term matching (paraphrase tolerance)
+# ---------------------------------------------------------------------------
+
+def test_fact_presence_scores_paraphrase_as_present():
+    """Paraphrased equivalent of a fact must score as present."""
+    case = _eval_case(
+        expected_facts=["260 employees exceeds the SECR employee criterion of 250"]
+    )
+    result = _runner(
+        _answer_result(
+            text="Your 260 staff exceeds the 250-employee threshold under SECR reporting rules."
+        )
+    ).run_eval(case)
+    assert result.facts_present != []
+    assert result.facts_missing == []
+
+
+def test_fact_presence_exact_match_still_works():
+    """Exact substring match must still score as present after the change."""
+    case = _eval_case(expected_facts=["250 employees"])
+    result = _runner(
+        _answer_result(text="SECR applies to companies with 250 employees or more.")
+    ).run_eval(case)
+    assert "250 employees" in result.facts_present
+
+
+def test_fact_presence_numeric_values_anchor_match():
+    """Shared numeric values are key terms that anchor fact matching."""
+    case = _eval_case(expected_facts=["annual turnover exceeds £36m threshold"])
+    result = _runner(
+        _answer_result(
+            text="Your annual turnover of £36m puts you above the reporting threshold."
+        )
+    ).run_eval(case)
+    assert result.facts_present != []
+    assert result.facts_missing == []
+
+
+def test_fact_presence_completely_different_statement_is_absent():
+    """A statement sharing no key terms with the fact must score as absent."""
+    case = _eval_case(
+        expected_facts=["260 employees exceeds the SECR employee criterion of 250"]
+    )
+    result = _runner(
+        _answer_result(
+            text="The plastic packaging tax applies to producers of 10 tonnes or more per year."
+        )
+    ).run_eval(case)
+    assert result.facts_missing != []

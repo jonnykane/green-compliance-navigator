@@ -233,7 +233,9 @@ CONTEXT_FROM_OPTION = {
     0: "The user has confirmed they are a large UK company with "
        "250+ employees or £36m+ turnover or £18m+ balance sheet.",
     1: "The user has confirmed they are listed or FCA-regulated — "
-       "a listed company, asset manager, insurer, or pension provider.",
+       "a listed company, asset manager, insurer, or pension provider. "
+       "UK SDS sustainability disclosure standards are incoming for "
+       "listed companies from 2026.",
     2: "The user has confirmed they are a UK SME with under 250 "
        "employees and below large-company thresholds.",
     3: "The user has confirmed they are bidding for UK public sector "
