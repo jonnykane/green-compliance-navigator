@@ -80,8 +80,8 @@ def _split_tokens(text: str, max_tokens: int, overlap_tokens: int) -> list[str]:
 
 class Chunker:
     def __init__(self, max_tokens: int = 512, overlap_tokens: int = 64):
-        self.max_tokens = max_tokens
-        self.overlap_tokens = overlap_tokens
+        self._max_tokens = max_tokens
+        self._overlap_tokens = overlap_tokens
 
     def chunk(self, doc: Document) -> list[Chunk]:
         if not doc.content.strip():
@@ -101,10 +101,10 @@ class Chunker:
             body = body.strip()
             if not body:
                 continue
-            if _approx_tokens(body) <= self.max_tokens:
+            if _approx_tokens(body) <= self._max_tokens:
                 chunks.append(self._make_chunk(body, section_name, len(chunks), doc))
             else:
-                for part in _split_tokens(body, self.max_tokens, self.overlap_tokens):
+                for part in _split_tokens(body, self._max_tokens, self._overlap_tokens):
                     chunks.append(self._make_chunk(part, section_name, len(chunks), doc))
         return chunks
 
@@ -136,13 +136,13 @@ class Chunker:
                 continue
             # Prepend heading to chunk text so embeddings carry section context
             chunk_text = f"{heading}\n\n{body}" if heading else body
-            if _approx_tokens(chunk_text) <= self.max_tokens:
+            if _approx_tokens(chunk_text) <= self._max_tokens:
                 chunks.append(self._make_chunk(chunk_text, heading, len(chunks), doc))
             else:
                 # Long section: split the body, re-prepend heading to each piece
                 heading_tokens = (_approx_tokens(heading) + 2) if heading else 0
-                body_max = max(self.max_tokens - heading_tokens, 50)
-                for part in _split_tokens(body, body_max, self.overlap_tokens):
+                body_max = max(self._max_tokens - heading_tokens, 50)
+                for part in _split_tokens(body, body_max, self._overlap_tokens):
                     text = f"{heading}\n\n{part}" if heading else part
                     chunks.append(self._make_chunk(text, heading, len(chunks), doc))
         return chunks

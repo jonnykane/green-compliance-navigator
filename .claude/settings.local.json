@@ -7,7 +7,10 @@
       "Bash(python -m pytest tests/ -q)",
       "Bash(python ask.py \"Who must comply with ESOS and what are the employee thresholds?\")",
       "Bash(python -m pytest tests/test_loader.py::test_load_pdf_with_manifest_attaches_doc_context tests/test_loader.py::test_load_pdf_without_manifest_has_no_doc_context tests/test_pipeline.py::test_pipeline_embeds_enriched_text_when_doc_context_present tests/test_pipeline.py::test_pipeline_stores_original_chunk_text_not_enriched tests/test_pipeline.py::test_pipeline_embeds_original_text_when_no_doc_context -v)",
-      "Bash(python -m pytest --tb=short -q)"
+      "Bash(python -m pytest --tb=short -q)",
+      "Bash(python -m pytest --cov=src --cov-report=term-missing --cov-report=json -q)",
+      "Bash(python -m pytest tests/test_embedder.py -v)",
+      "Bash(python -m pytest tests/test_embedder.py --cov=src/embedder --cov-report=term-missing -q)"
     ]
   }
 }
