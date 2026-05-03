@@ -200,3 +200,17 @@ def test_generate_empty_company_context_leaves_no_extra_blank_lines():
     gen = Generator(anthropic_client=client, model="claude-sonnet-4-5")
     gen.generate(query="q", chunks=_make_chunks(), company_context="")
     assert "\n\n\n" not in client.last_system
+
+
+# ---------------------------------------------------------------------------
+# Generator prompt content
+# ---------------------------------------------------------------------------
+
+def test_default_system_prompt_contains_named_regulation_rule():
+    from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
+    assert "NAMED REGULATION RULE" in _DEFAULT_SYSTEM_PROMPT
+
+
+def test_default_system_prompt_contains_partial_answer_rule():
+    from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
+    assert "PARTIAL ANSWER RULE" in _DEFAULT_SYSTEM_PROMPT

@@ -28,7 +28,8 @@ def _make_response(
     state: str = "clear",
     reason: str = "Has context.",
     company_size: str = "large",
-    listing: str = "not_listed",
+    quoted_or_listed: str = "no",
+    fca_regulated: str = "no",
     procurement: str = "no",
     eu: str = "no",
     missing: list[str] | None = None,
@@ -38,7 +39,8 @@ def _make_response(
         "reason": reason,
         "detected_context": {
             "company_size": company_size,
-            "listing_or_regulated_status": listing,
+            "quoted_or_listed": quoted_or_listed,
+            "fca_regulated": fca_regulated,
             "public_procurement": procurement,
             "eu_operations": eu,
         },
@@ -61,8 +63,8 @@ def test_classify_needs_clarification_state():
         state="needs_clarification",
         reason="Company size unknown.",
         company_size="unknown",
-        listing="unknown",
-        missing=["company_size", "listing_or_regulated_status"],
+        quoted_or_listed="unknown",
+        missing=["company_size", "quoted_or_listed"],
     )
     classifier = Classifier(client=FakeClassifierClient(resp))
     result = classifier.classify("What sustainability reporting do I need?")
@@ -95,12 +97,20 @@ def test_classify_detected_context_company_size_sme():
     assert result.detected_context.company_size == "sme"
 
 
-def test_classify_detected_context_listing_status():
+def test_classify_detected_context_quoted_or_listed():
     classifier = Classifier(client=FakeClassifierClient(
-        _make_response(listing="listed_or_fca_regulated")
+        _make_response(quoted_or_listed="yes")
     ))
     result = classifier.classify("q")
-    assert result.detected_context.listing_or_regulated_status == "listed_or_fca_regulated"
+    assert result.detected_context.quoted_or_listed == "yes"
+
+
+def test_classify_detected_context_fca_regulated():
+    classifier = Classifier(client=FakeClassifierClient(
+        _make_response(fca_regulated="yes")
+    ))
+    result = classifier.classify("q")
+    assert result.detected_context.fca_regulated == "yes"
 
 
 def test_classify_detected_context_procurement():
@@ -119,12 +129,12 @@ def test_classify_missing_fields_populated():
     resp = _make_response(
         state="needs_clarification",
         company_size="unknown",
-        missing=["company_size", "listing_or_regulated_status"],
+        missing=["company_size", "quoted_or_listed"],
     )
     classifier = Classifier(client=FakeClassifierClient(resp))
     result = classifier.classify("q")
     assert "company_size" in result.missing_fields
-    assert "listing_or_regulated_status" in result.missing_fields
+    assert "quoted_or_listed" in result.missing_fields
 
 
 def test_classify_partial_context_some_known_some_unknown():
@@ -162,6 +172,20 @@ def test_classify_strips_markdown_code_fences():
     assert result.state == "clear"
 
 
+def test_classify_partial_answer_needs_clarification_state_is_valid():
+    """partial_answer_needs_clarification must pass validation without raising ValueError."""
+    resp = _make_response(
+        state="partial_answer_needs_clarification",
+        reason="Enough to partially answer; listing status unknown.",
+        company_size="large",
+        missing=["quoted_or_listed"],
+    )
+    classifier = Classifier(client=FakeClassifierClient(resp))
+    result = classifier.classify("We have 300 employees and £45m turnover.")
+    assert result.state == "partial_answer_needs_clarification"
+    assert result.missing_fields == ["quoted_or_listed"]
+
+
 def test_classify_unexpected_state_raises_value_error():
     """Valid JSON with an unrecognised state value must raise ValueError, not silently route."""
     resp = json.dumps({
@@ -169,7 +193,8 @@ def test_classify_unexpected_state_raises_value_error():
         "reason": "something unexpected",
         "detected_context": {
             "company_size": "unknown",
-            "listing_or_regulated_status": "unknown",
+            "quoted_or_listed": "unknown",
+            "fca_regulated": "unknown",
             "public_procurement": "unknown",
             "eu_operations": "unknown",
         },

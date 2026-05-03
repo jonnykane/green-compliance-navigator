@@ -281,3 +281,95 @@ def test_ask_retriever_receives_bare_question_when_no_company_context():
     )
     engine.ask("We have 300 employees — what must we report?")
     assert retriever.last_query == "We have 300 employees — what must we report?"
+
+
+# ---------------------------------------------------------------------------
+# QueryEngine — partial_answer_needs_clarification routing
+# ---------------------------------------------------------------------------
+
+def _partial_classifier(missing_fields: list[str] | None = None) -> FakeClassifier:
+    if missing_fields is None:
+        missing_fields = ["quoted_or_listed"]
+    return FakeClassifier(
+        ClassificationResult(
+            state="partial_answer_needs_clarification",
+            reason="Enough for SECR/ESOS but listing status unknown.",
+            missing_fields=missing_fields,
+        )
+    )
+
+
+def test_partial_state_returns_answer_kind():
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=FakeGenerator(_answer()),
+        classifier=_partial_classifier(),
+    )
+    result = engine.ask("We have 300 employees and £45m turnover.")
+    assert result.kind == "answer"
+
+
+def test_partial_state_reaches_retriever():
+    retriever = FakeRetriever(_chunks())
+    engine = QueryEngine(
+        retriever=retriever,
+        generator=FakeGenerator(_answer()),
+        classifier=_partial_classifier(),
+    )
+    engine.ask("We have 300 employees and £45m turnover.")
+    assert retriever.last_query != ""
+
+
+def test_partial_state_reaches_generator():
+    generator = FakeGenerator(_answer())
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=generator,
+        classifier=_partial_classifier(),
+    )
+    engine.ask("We have 300 employees and £45m turnover.")
+    assert generator.last_query == "We have 300 employees and £45m turnover."
+
+
+def test_partial_state_missing_fields_note_in_generator_context():
+    """When missing_fields is non-empty the generator receives the augmented context note."""
+    generator = FakeGenerator(_answer())
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=generator,
+        classifier=_partial_classifier(missing_fields=["quoted_or_listed", "eu_operations"]),
+    )
+    engine.ask("We have 300 employees and £45m turnover.")
+    assert "Note: the following context is missing" in generator.last_company_context
+    assert "quoted_or_listed" in generator.last_company_context
+    assert "eu_operations" in generator.last_company_context
+
+
+def test_partial_state_missing_fields_note_appended_to_existing_context():
+    """Missing-fields note is appended after any existing company_context string."""
+    generator = FakeGenerator(_answer())
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=generator,
+        classifier=_partial_classifier(missing_fields=["quoted_or_listed"]),
+    )
+    engine.ask(
+        "We have 300 employees and £45m turnover.",
+        company_context="The user has confirmed they are a large UK company.",
+    )
+    ctx = generator.last_company_context
+    assert "The user has confirmed they are a large UK company." in ctx
+    assert "Note: the following context is missing" in ctx
+    assert ctx.index("The user has confirmed") < ctx.index("Note:")
+
+
+def test_partial_state_no_missing_fields_note_when_missing_fields_empty():
+    """When missing_fields is empty no note is appended to company_context."""
+    generator = FakeGenerator(_answer())
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=generator,
+        classifier=_partial_classifier(missing_fields=[]),
+    )
+    engine.ask("We have 300 employees and £45m turnover.")
+    assert "Note: the following context is missing" not in generator.last_company_context

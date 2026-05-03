@@ -54,7 +54,19 @@ class QueryEngine:
                 options=CLARIFICATION_OPTIONS,
             )
 
-        # "clear" or "needs_clarification" with context provided — retrieve and generate.
+        # Augment company_context with missing-fields note for partial answers.
+        if (
+            classification.state == "partial_answer_needs_clarification"
+            and classification.missing_fields
+        ):
+            note = (
+                "Note: the following context is missing and would affect the "
+                f"completeness of this answer: {', '.join(classification.missing_fields)}"
+            )
+            company_context = f"{company_context}\n{note}".strip() if company_context else note
+
+        # "clear", "partial_answer_needs_clarification", or "needs_clarification" with
+        # context provided — retrieve and generate.
         retrieval_query = (
             f"{question} {company_context}".strip() if company_context else question
         )
