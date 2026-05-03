@@ -23,7 +23,9 @@
       "Bash(git add *)",
       "Bash(python -m pytest tests/test_classifier.py::test_classify_unexpected_state_raises_value_error -v)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'{len\\(d\\)} entries'\\); print\\(json.dumps\\(d[:3], indent=2\\)\\)\")",
-      "Bash(python -m pytest tests/test_evals_runner.py -v)"
+      "Bash(python -m pytest tests/test_evals_runner.py -v)",
+      "Bash(python -m pytest --tb=no -q)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

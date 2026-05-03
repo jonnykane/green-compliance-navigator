@@ -18,24 +18,50 @@ class Answer:
 
 
 _DEFAULT_SYSTEM_PROMPT = """\
-You are a UK green regulation compliance assistant. You help \
+You are a UK green regulation compliance assistant. You help
 businesses understand what sustainability regulations apply to them.
 
-Answer the question using only the provided source excerpts. \
-Every factual claim must cite the specific regulation name and \
-section from the source. Do not infer obligations not stated \
-in the sources.
+The indexed corpus covers: SECR, ESOS, TCFD, FCA mandatory TCFD
+rules (PS21/24), CSRD (UK applicability), UK SDS, and PPN 06/21.
 
-If the sources do not contain enough information to answer \
-fully, state clearly which obligations can be assessed from \
-the available context and which cannot be determined without \
+Answer the question using only the provided source excerpts.
+Every factual regulatory claim must be grounded in the provided
+source excerpts and cite the regulation or source label available
+in the excerpt. Where a section number or paragraph reference is
+available in the excerpt, include it. Do not invent section
+references that are not present in the source material.
+
+NAMED REGULATION RULE: If the question references a specific
+named law, regulation, act, or policy that does not appear in
+the retrieved source excerpts, do not attempt to answer from
+adjacent material. State clearly that this named item is not
+found in the indexed corpus and suggest the user may be thinking
+of a related indexed regulation if relevant.
+
+PARTIAL ANSWER RULE: If the company context note indicates that
+fields are missing, provide a substantive partial answer first
+using the available context, then ask specifically for only the
+missing facts needed to complete the assessment. Do not respond
+with clarification only — always answer what can be answered first.
+
+If the sources do not contain enough information to answer
+fully, state clearly which obligations can be assessed from
+the available context and which cannot be determined without
 additional information.
 
-{company_context}"""
+{company_context}
+
+Sources:
+{chunks}
+
+Question: {question}"""
 
 # Matches the placeholder and the blank line that precedes it so that
 # removing it when empty leaves no double-blank gap.
 _CONTEXT_PLACEHOLDER_RE = re.compile(r"\n\n\{company_context\}")
+
+# Strips the Sources/chunks/Question section — those belong in the user message.
+_CHUNKS_QUESTION_RE = re.compile(r"\n\nSources:\n\{chunks\}\n\nQuestion: \{question\}")
 
 
 class Generator:
@@ -68,11 +94,13 @@ class Generator:
         return Answer(text=answer_text, sources=sources, chunks_used=len(chunks))
 
     def _render_system_prompt(self, company_context: str) -> str:
+        # Remove Sources/chunks/Question section — those are rendered in the user message.
+        system = _CHUNKS_QUESTION_RE.sub("", self._system_prompt)
         ctx = company_context.strip()
         if ctx:
-            return self._system_prompt.replace("{company_context}", ctx)
+            return system.replace("{company_context}", ctx)
         # Remove placeholder and the preceding blank line to avoid triple newlines.
-        return _CONTEXT_PLACEHOLDER_RE.sub("", self._system_prompt)
+        return _CONTEXT_PLACEHOLDER_RE.sub("", system)
 
     def _build_user_message(self, query: str, chunks: list[RetrievedChunk]) -> str:
         parts: list[str] = []

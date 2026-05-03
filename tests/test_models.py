@@ -9,7 +9,8 @@ from src.models import DetectedContext, ClassificationResult, QueryResult
 def test_detected_context_defaults_to_unknown():
     dc = DetectedContext()
     assert dc.company_size == "unknown"
-    assert dc.listing_or_regulated_status == "unknown"
+    assert dc.quoted_or_listed == "unknown"
+    assert dc.fca_regulated == "unknown"
     assert dc.public_procurement == "unknown"
     assert dc.eu_operations == "unknown"
 
@@ -17,12 +18,14 @@ def test_detected_context_defaults_to_unknown():
 def test_detected_context_accepts_literal_values():
     dc = DetectedContext(
         company_size="large",
-        listing_or_regulated_status="listed_or_fca_regulated",
+        quoted_or_listed="yes",
+        fca_regulated="no",
         public_procurement="yes",
         eu_operations="no",
     )
     assert dc.company_size == "large"
-    assert dc.listing_or_regulated_status == "listed_or_fca_regulated"
+    assert dc.quoted_or_listed == "yes"
+    assert dc.fca_regulated == "no"
     assert dc.public_procurement == "yes"
     assert dc.eu_operations == "no"
 
@@ -43,7 +46,7 @@ def test_classification_result_needs_clarification():
     cr = ClassificationResult(
         state="needs_clarification",
         reason="Missing company size.",
-        missing_fields=["company_size", "listing_or_regulated_status"],
+        missing_fields=["company_size", "quoted_or_listed"],
     )
     assert cr.state == "needs_clarification"
     assert "company_size" in cr.missing_fields
