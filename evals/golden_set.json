@@ -1,0 +1,1284 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-05-03",
+    "total_questions": 31,
+    "categories": [
+      "threshold",
+      "what_must_be_reported",
+      "deadlines_and_timelines",
+      "cross_framework",
+      "clarification_triggering",
+      "out_of_scope",
+      "hallucination_traps"
+    ],
+    "expected_states": [
+      "clear",
+      "needs_clarification",
+      "partial_answer_needs_clarification",
+      "out_of_scope"
+    ],
+    "metrics": [
+      "citation_accuracy",
+      "hallucination_rate",
+      "retrieval_recall",
+      "answer_conservatism",
+      "behaviour_correctness"
+    ],
+    "state_definitions": {
+      "clear": "Sufficient context to retrieve and generate a complete cited answer without clarification.",
+      "needs_clarification": "About UK green regulation but lacks company context. Return clarification question only — do not retrieve or generate an answer.",
+      "partial_answer_needs_clarification": "Enough context to partially answer and cite sources, but additional context would materially change or complete the answer. Retrieve, partially answer, and ask a clarifying question.",
+      "out_of_scope": "Not related to UK green regulation or sustainability compliance. Decline politely — do not retrieve."
+    },
+    "architecture_note": "partial_answer_needs_clarification exposes a Phase 3 architecture gap. The Phase 3 classifier supports three states (clear, needs_clarification, out_of_scope). Four product behaviours are needed. This is logged in TECHNICAL_DEBT.md as a Phase 5 candidate.",
+    "corpus": {
+      "real_documents": [
+        "tcfd_2017_recommendations.pdf",
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "ppn_0621_technical_standard_crp.pdf"
+      ],
+      "synthetic_documents": [
+        "csrd_uk_applicability_summary.md",
+        "fca_tcfd_ps21_24_summary.md",
+        "esos_overview.md",
+        "uk_sds_status_timeline.md"
+      ]
+    }
+  },
+  "evals": [
+    {
+      "id": "eval_001",
+      "category": "threshold",
+      "question": "What are the size thresholds that determine whether a UK company must comply with SECR?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "250 employees",
+        "£36m turnover",
+        "£18m balance sheet",
+        "two of three criteria must be met",
+        "quoted companies are in scope for SECR reporting requirements"
+      ],
+      "expected_behaviour": [
+        "explain that meeting two of three criteria triggers SECR, not all three",
+        "distinguish quoted companies from the two-of-three test"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "250 employees",
+        "£36 million",
+        "£18 million",
+        "two of the following"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "500 employees",
+        "£50m turnover",
+        "all three criteria must be met"
+      ],
+      "notes": "Core SECR threshold test. Tests the Phase 2 retrieval fix. Real PDF."
+    },
+    {
+      "id": "eval_002",
+      "category": "threshold",
+      "question": "What size thresholds determine whether a UK company must participate in ESOS?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "250 or more employees",
+        "OR annual turnover exceeding £44 million AND balance sheet total exceeding £38 million",
+        "OR condition — employee threshold is independent of financial thresholds",
+        "group structures assessed at highest UK-registered parent level"
+      ],
+      "expected_behaviour": [
+        "clearly explain the OR logic distinguishing ESOS from the SECR two-of-three test",
+        "note that a subsidiary within a qualifying group is in scope regardless of its own size"
+      ],
+      "expected_citations": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "250",
+        "£44m",
+        "£38m",
+        "large undertaking"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "500 employees",
+        "same thresholds as SECR",
+        "£36m"
+      ],
+      "notes": "Tests ESOS synthetic doc retrieval and correct OR logic vs SECR two-of-three."
+    },
+    {
+      "id": "eval_003",
+      "category": "threshold",
+      "question": "Under what circumstances does CSRD apply to a UK-headquartered company?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "net EU turnover exceeding €150 million",
+        "in each of the last two consecutive financial years",
+        "AND at least one qualifying EU subsidiary, listed EU subsidiary, or EU branch with >€40m turnover",
+        "Article 40 third-country undertaking provision",
+        "EU subsidiary or branch files group-level report — UK parent does not file directly",
+        "Wave 4: financial year beginning 1 January 2028, first report 2029"
+      ],
+      "expected_behaviour": [
+        "clarify CSRD does not apply to UK companies by default — only via qualifying EU presence",
+        "explain the conjunctive condition — both €150m EU turnover AND qualifying EU entity required",
+        "note this is based on a synthetic summary not primary EU legislation"
+      ],
+      "expected_citations": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "€150 million",
+        "third-country",
+        "Article 40",
+        "EU subsidiary"
+      ],
+      "required_caveats": [
+        "based on synthetic summary not primary EU legislation",
+        "subject to EU member state implementation"
+      ],
+      "forbidden_certainty": [
+        "CSRD applies to all UK companies",
+        "CSRD is already mandatory for all UK companies"
+      ],
+      "must_not_contain": [
+        "CSRD applies to all UK companies",
+        "automatically applies to UK businesses"
+      ],
+      "notes": "Tests CSRD scope boundary and source-type transparency. Synthetic doc."
+    },
+    {
+      "id": "eval_004",
+      "category": "threshold",
+      "question": "What assets under management thresholds trigger FCA mandatory TCFD disclosures for UK asset managers?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "AUM of £50 billion or more: applies from financial years beginning on or after 1 January 2022",
+        "AUM of £5 billion or more (and below £50bn): applies from financial years beginning on or after 1 January 2023"
+      ],
+      "expected_behaviour": [
+        "distinguish clearly between the two AUM thresholds and their different start dates",
+        "note this is mandatory not comply-or-explain for asset managers above AUM thresholds"
+      ],
+      "expected_citations": [
+        "fca_tcfd_ps21_24_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "fca_tcfd_ps21_24_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "£50 billion",
+        "£5 billion",
+        "2022",
+        "2023",
+        "asset manager"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "£1 billion",
+        "£10 billion",
+        "single threshold applies to all asset managers"
+      ],
+      "notes": "Tests FCA TCFD synthetic doc retrieval with precise AUM figures and phased dates."
+    },
+    {
+      "id": "eval_005",
+      "category": "threshold",
+      "question": "Our finance director says we might be caught by ESOS and SECR. We have 260 staff and about £40m turnover. Are they right?",
+      "company_context": "",
+      "expected_state": "partial_answer_needs_clarification",
+      "expected_facts": [
+        "260 employees exceeds the SECR employee criterion of 250",
+        "£40m turnover exceeds the SECR turnover criterion of £36m",
+        "SECR likely applies because two of three size criteria are already met on employee count and turnover alone",
+        "260 employees exceeds the ESOS 250-employee threshold",
+        "ESOS likely applies on employee count alone"
+      ],
+      "expected_behaviour": [
+        "confirm ESOS likely applies on employee count alone",
+        "confirm SECR likely applies because employee and turnover criteria are both met",
+        "caveat that final applicability can depend on company type, group structure, and exemptions",
+        "ask whether they are quoted or part of a larger group only if needed for completeness",
+        "do not say balance sheet is needed to confirm SECR — two criteria are already met"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "250 employees",
+        "£36 million",
+        "two of",
+        "large undertaking"
+      ],
+      "required_caveats": [
+        "subject to company type and group structure",
+        "subject to professional advice for definitive confirmation"
+      ],
+      "forbidden_certainty": [
+        "definitely caught by SECR",
+        "definitely not caught by SECR"
+      ],
+      "must_not_contain": [
+        "balance sheet needed to confirm SECR",
+        "ESOS definitely does not apply",
+        "SECR does not apply"
+      ],
+      "notes": "Realistic business-language question. 260 employees + £40m turnover = two of three SECR criteria met. Do not require balance sheet. Tests partial answering with honest uncertainty."
+    },
+    {
+      "id": "eval_006",
+      "category": "threshold",
+      "question": "What contract value threshold triggers the Carbon Reduction Plan requirement under PPN 06/21?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "£5 million per year",
+        "applies to UK central government contracts",
+        "requirement falls on suppliers bidding, not the contracting authority"
+      ],
+      "expected_behaviour": [
+        "cite the £5 million threshold clearly",
+        "clarify this applies to suppliers bidding not to the government buyer"
+      ],
+      "expected_citations": [
+        "ppn_0621_carbon_reduction_plans.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "ppn_0621_carbon_reduction_plans.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "£5 million",
+        "contract value",
+        "carbon reduction plan"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "£1 million",
+        "£10 million",
+        "all government contracts regardless of value"
+      ],
+      "notes": "Direct PPN 06/21 threshold test. Real PDF."
+    },
+    {
+      "id": "eval_007",
+      "category": "what_must_be_reported",
+      "question": "What must a large UK company include in its SECR report?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "UK energy use in kWh",
+        "Scope 1 GHG emissions",
+        "Scope 2 GHG emissions",
+        "at least one intensity metric",
+        "energy efficiency actions taken during the year",
+        "disclosures appear in the Directors' Report in annual accounts"
+      ],
+      "expected_behaviour": [
+        "distinguish mandatory from recommended disclosures",
+        "clarify where disclosures must appear"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "energy use",
+        "Scope 1",
+        "Scope 2",
+        "intensity metric",
+        "Directors' Report"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "Scope 3 mandatory under SECR",
+        "standalone sustainability report required under SECR"
+      ],
+      "notes": "Tests SECR disclosure requirements. Real PDF."
+    },
+    {
+      "id": "eval_008",
+      "category": "what_must_be_reported",
+      "question": "What are the four pillars of the TCFD framework and what does each cover?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "Governance: board oversight and management role in climate-related risks and opportunities",
+        "Strategy: climate-related risks and opportunities identified, their impact, and strategy resilience",
+        "Risk Management: processes for identifying, assessing, and managing climate-related risks",
+        "Metrics and Targets: metrics used, GHG emissions including Scope 1 and 2, and targets",
+        "eleven recommended disclosures in total across the four pillars"
+      ],
+      "expected_behaviour": [
+        "describe what each pillar covers, not just name them",
+        "note the eleven recommended disclosures structure"
+      ],
+      "expected_citations": [
+        "tcfd_2017_recommendations.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "tcfd_2017_recommendations.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "Governance",
+        "Strategy",
+        "Risk Management",
+        "Metrics and Targets"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "five pillars",
+        "Reporting as a separate fifth pillar"
+      ],
+      "notes": "Tests real TCFD PDF retrieval. Foundational framework question."
+    },
+    {
+      "id": "eval_009",
+      "category": "what_must_be_reported",
+      "question": "What does TCFD recommend for climate scenario analysis?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "assess resilience of strategy under different climate-related scenarios",
+        "scenarios should include a 2°C or lower scenario",
+        "scenario analysis covers short, medium, and long-term time horizons"
+      ],
+      "expected_behaviour": [
+        "describe scenario analysis as a recommendation not a legal mandate under TCFD 2017",
+        "use 2°C or lower as the stated scenario — do not substitute 1.5°C as the TCFD 2017 requirement"
+      ],
+      "expected_citations": [
+        "tcfd_2017_recommendations.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "tcfd_2017_recommendations.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "scenario",
+        "2°C",
+        "resilience",
+        "strategy"
+      ],
+      "required_caveats": [
+        "TCFD 2017 recommends scenario analysis including a 2°C or lower scenario — do not describe 1.5°C as mandatory under TCFD 2017"
+      ],
+      "forbidden_certainty": [
+        "TCFD mandates 1.5°C scenario",
+        "scenario analysis is legally required under TCFD 2017"
+      ],
+      "must_not_contain": [
+        "1.5°C mandatory under TCFD 2017",
+        "TCFD requires 1.5°C"
+      ],
+      "notes": "Critical phrasing test. TCFD 2017 recommends 2°C or lower. IFRS S2 requires 1.5°C. Do not conflate."
+    },
+    {
+      "id": "eval_010",
+      "category": "what_must_be_reported",
+      "question": "We've just qualified for ESOS. What does the audit actually require us to do?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "measure total energy consumption across buildings, industrial processes, and transport",
+        "audit must cover at least 90% of total energy consumption",
+        "appoint a qualified Lead Assessor",
+        "identify cost-effective energy-saving opportunities",
+        "notify the Environment Agency of compliance by the deadline"
+      ],
+      "expected_behaviour": [
+        "clarify that implementing energy-saving measures is not mandatory — audit and notify is the obligation",
+        "explain the Lead Assessor requirement"
+      ],
+      "expected_citations": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "90%",
+        "Lead Assessor",
+        "Environment Agency",
+        "energy audit"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [
+        "mandatory to implement all identified energy saving measures"
+      ],
+      "must_not_contain": [
+        "must implement all identified measures",
+        "ISO 50001 certification required to comply with ESOS"
+      ],
+      "notes": "Common misconception test — ESOS requires audit and notify, not implementation of measures."
+    },
+    {
+      "id": "eval_011",
+      "category": "what_must_be_reported",
+      "question": "We're bidding for an NHS contract worth £7m a year. Someone told us we need a carbon plan. What actually needs to be in it?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "PPN 06/21 requires a Carbon Reduction Plan for contracts above £5 million per year",
+        "£7m contract exceeds the £5m threshold so the requirement applies",
+        "GHG emissions baseline required",
+        "commitment to net zero by 2050",
+        "emission reduction targets and actions",
+        "signed off at director level or above",
+        "published on the company's website"
+      ],
+      "expected_behaviour": [
+        "confirm the PPN 06/21 trigger applies given the £7m contract value",
+        "describe CRP content requirements specifically from the technical standard"
+      ],
+      "expected_citations": [
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "ppn_0621_technical_standard_crp.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "ppn_0621_technical_standard_crp.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "Carbon Reduction Plan",
+        "net zero",
+        "2050",
+        "director",
+        "baseline"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "SECR mandatory because of the procurement contract",
+        "ISO 50001 required for PPN compliance"
+      ],
+      "notes": "Realistic procurement scenario. Tests both PPN docs retrieved together. Real PDFs."
+    },
+    {
+      "id": "eval_012",
+      "category": "deadlines_and_timelines",
+      "question": "What was the ESOS Phase 3 compliance deadline?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "Phase 3 compliance deadline was 5 June 2024",
+        "Phase 3 qualification date was 31 December 2022",
+        "Phase 4 deadline is 5 December 2027"
+      ],
+      "expected_behaviour": [
+        "give the correct date clearly",
+        "note that the deadline has already passed and late compliance does not extinguish the obligation"
+      ],
+      "expected_citations": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "5 June 2024",
+        "Phase 3",
+        "compliance deadline"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "5 December 2024",
+        "December 2023",
+        "deadline has not yet passed"
+      ],
+      "notes": "Date accuracy test. Phase 3 was June 2024, Phase 4 is December 2027."
+    },
+    {
+      "id": "eval_013",
+      "category": "deadlines_and_timelines",
+      "question": "When do UK parent companies with qualifying EU subsidiaries need to start CSRD reporting?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "Wave 4: financial year beginning 1 January 2028",
+        "first report due in 2029",
+        "applies to third-country undertakings including UK parents",
+        "requires the €150m EU turnover threshold and qualifying EU entity to be met"
+      ],
+      "expected_behaviour": [
+        "distinguish Wave 4 UK parent timeline from Wave 1/2 EU company timelines",
+        "note this is the third-country undertaking provision not the standard EU company obligation"
+      ],
+      "expected_citations": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "2028",
+        "Wave 4",
+        "third-country",
+        "2029"
+      ],
+      "required_caveats": [
+        "based on synthetic summary not primary EU legislation",
+        "subject to EU implementation and any future amendments"
+      ],
+      "forbidden_certainty": [
+        "UK parents must already be reporting",
+        "mandatory from 2025 for UK parent companies"
+      ],
+      "must_not_contain": [
+        "2025 for UK parent companies",
+        "2026 for UK parent companies"
+      ],
+      "notes": "Timeline accuracy for CSRD UK parents. Common confusion with EU Wave 1/2 dates."
+    },
+    {
+      "id": "eval_014",
+      "category": "deadlines_and_timelines",
+      "question": "Is UK SDS already mandatory?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "UK SDS is not yet mandatory as of the corpus date",
+        "indicative mandatory date for large listed companies is financial years beginning on or after 1 January 2026",
+        "subject to government consultation outcomes and FCA rule changes",
+        "UKEB endorsement process was ongoing at time of corpus"
+      ],
+      "expected_behaviour": [
+        "answer clearly that UK SDS is not currently mandatory",
+        "explain the endorsement process and indicative timeline",
+        "avoid stating the indicative 2026 date as confirmed and settled"
+      ],
+      "expected_citations": [
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_documents": [
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_terms": [
+        "not yet mandatory",
+        "indicative",
+        "subject to consultation",
+        "2026"
+      ],
+      "required_caveats": [
+        "indicative timeline only",
+        "subject to government consultation",
+        "monitor FCA and DBT announcements"
+      ],
+      "forbidden_certainty": [
+        "already mandatory",
+        "confirmed mandatory from 2026",
+        "definitely applies from 2026"
+      ],
+      "must_not_contain": [
+        "already mandatory",
+        "confirmed start date of 2026"
+      ],
+      "notes": "Answer posture test. UK SDS is incoming not confirmed. Strong responsible AI signal."
+    },
+    {
+      "id": "eval_015",
+      "category": "deadlines_and_timelines",
+      "question": "When did FCA mandatory TCFD disclosures apply to standard listed UK companies?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "financial years beginning on or after 1 January 2022",
+        "LR 14.3.27R",
+        "comply-or-explain basis",
+        "premium listed companies had an earlier start date of 1 January 2021"
+      ],
+      "expected_behaviour": [
+        "distinguish standard listed start date of 2022 from premium listed start date of 2021",
+        "note the comply-or-explain basis for listed companies"
+      ],
+      "expected_citations": [
+        "fca_tcfd_ps21_24_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "fca_tcfd_ps21_24_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "standard listed",
+        "2022",
+        "LR 14.3.27R"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "2021 for standard listed",
+        "same start date as premium listed"
+      ],
+      "notes": "Tests distinction between premium listed (2021) and standard listed (2022) start dates."
+    },
+    {
+      "id": "eval_016",
+      "category": "cross_framework",
+      "question": "We are a large UK listed company with 400 employees and £80m turnover. What sustainability reporting frameworks apply to us?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "SECR applies — 400 employees and £80m turnover meet two of three criteria",
+        "FCA TCFD mandatory disclosures apply — listed company",
+        "ESOS likely applies — 400 employees exceeds 250-employee threshold",
+        "UK SDS incoming for listed companies — indicative 2026 start",
+        "CSRD applicability depends on EU operations not specified in question"
+      ],
+      "expected_behaviour": [
+        "synthesise across multiple frameworks in a single answer",
+        "flag CSRD as conditional on EU presence not confirmed in the question",
+        "note UK SDS as forthcoming not current"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "fca_tcfd_ps21_24_summary.md",
+        "esos_overview.md",
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "fca_tcfd_ps21_24_summary.md",
+        "esos_overview.md",
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_terms": [
+        "listed",
+        "250 employees",
+        "SECR",
+        "TCFD",
+        "ESOS"
+      ],
+      "required_caveats": [
+        "CSRD depends on EU operations not specified in this question",
+        "UK SDS timeline is indicative not confirmed"
+      ],
+      "forbidden_certainty": [
+        "CSRD automatically applies to listed companies",
+        "UK SDS is already mandatory"
+      ],
+      "must_not_contain": [
+        "CSRD applies automatically to all listed UK companies"
+      ],
+      "notes": "Primary multi-document synthesis test. Most important cross-framework question."
+    },
+    {
+      "id": "eval_017",
+      "category": "cross_framework",
+      "question": "We have 300 employees and £45m turnover. What green reporting applies to us?",
+      "company_context": "",
+      "expected_state": "partial_answer_needs_clarification",
+      "expected_facts": [
+        "300 employees exceeds the SECR employee criterion of 250",
+        "£45m turnover exceeds the SECR turnover criterion of £36m",
+        "SECR likely applies because two of three size criteria are already met",
+        "300 employees exceeds the ESOS 250-employee threshold — ESOS likely applies",
+        "FCA TCFD applicability depends on listing or regulated status not provided",
+        "CSRD applicability depends on EU operations not provided",
+        "PPN 06/21 applicability depends on public procurement context not provided"
+      ],
+      "expected_behaviour": [
+        "partially answer confirming SECR and ESOS likely apply from the given context",
+        "do not require balance sheet to confirm SECR — two criteria already met",
+        "identify what additional context would unlock a more complete answer",
+        "ask a clarifying question to establish listing status, EU operations, or procurement context"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "250 employees",
+        "£36m",
+        "large company",
+        "balance sheet"
+      ],
+      "required_caveats": [
+        "listing status needed for FCA TCFD assessment",
+        "EU operations needed for CSRD assessment",
+        "procurement context needed for PPN 06/21 assessment"
+      ],
+      "forbidden_certainty": [
+        "all frameworks definitely apply",
+        "CSRD definitely does not apply",
+        "FCA TCFD definitely applies"
+      ],
+      "must_not_contain": [
+        "balance sheet needed to confirm SECR applicability",
+        "CSRD definitely applies to your company"
+      ],
+      "notes": "Canonical partial-context case. 300 employees + £45m turnover = SECR/ESOS confirmed, others unknown. Do not require balance sheet."
+    },
+    {
+      "id": "eval_018",
+      "category": "cross_framework",
+      "question": "We sell into the EU but are UK-based with no EU office. Does CSRD affect us?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "selling into the EU without an EU subsidiary or branch does not trigger CSRD",
+        "Article 40 requires BOTH €150m EU net turnover AND a qualifying EU subsidiary, listed EU subsidiary, or EU branch",
+        "the two conditions are conjunctive — both must be met",
+        "no EU entity means Article 40 is unlikely to apply"
+      ],
+      "expected_behaviour": [
+        "answer that EU sales without an EU entity do not trigger CSRD",
+        "explain the conjunctive AND condition clearly",
+        "note that if a UK company later establishes an EU subsidiary the position could change"
+      ],
+      "expected_citations": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "€150 million",
+        "EU subsidiary",
+        "branch",
+        "Article 40"
+      ],
+      "required_caveats": [
+        "based on synthetic summary not primary EU legislation",
+        "seek legal advice if EU structure changes or EU turnover approaches €150m"
+      ],
+      "forbidden_certainty": [
+        "CSRD definitely never applies to any UK company that sells into the EU"
+      ],
+      "must_not_contain": [
+        "EU sales alone trigger CSRD",
+        "CSRD applies to all companies exporting to the EU"
+      ],
+      "notes": "Common misconception — selling into EU without EU entity does not trigger CSRD."
+    },
+    {
+      "id": "eval_019",
+      "category": "cross_framework",
+      "question": "We're not listed, but we are bidding for a £7m government contract. Do we need TCFD or a carbon plan?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "FCA TCFD does not apply to unlisted companies",
+        "PPN 06/21 requires a Carbon Reduction Plan for contracts above £5m per year",
+        "£7m contract exceeds the £5m threshold so CRP is required",
+        "a Carbon Reduction Plan is the relevant obligation here, not TCFD"
+      ],
+      "expected_behaviour": [
+        "clearly distinguish between FCA TCFD obligations and CRP procurement obligations",
+        "confirm CRP is required given the contract value",
+        "confirm TCFD does not apply given unlisted status"
+      ],
+      "expected_citations": [
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "fca_tcfd_ps21_24_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "fca_tcfd_ps21_24_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "£5 million",
+        "Carbon Reduction Plan",
+        "listed",
+        "not listed"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [
+        "TCFD applies to all companies bidding for government contracts"
+      ],
+      "must_not_contain": [
+        "TCFD mandatory for procurement",
+        "FCA rules apply to unlisted companies bidding for contracts"
+      ],
+      "notes": "Important disambiguation — TCFD vs CRP is a common confusion for procurement teams."
+    },
+    {
+      "id": "eval_020",
+      "category": "cross_framework",
+      "question": "What is the difference between the materiality approach in UK SDS and CSRD?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "UK SDS uses single materiality — enterprise value perspective — how sustainability affects the company financially",
+        "CSRD uses double materiality — both financial impact on the company AND the company's impact on society and the environment",
+        "ESRS under CSRD requires both the inward financial perspective and the outward impact perspective"
+      ],
+      "expected_behaviour": [
+        "explain double vs single materiality clearly",
+        "note this creates a different scope of reporting under each framework",
+        "acknowledge both frameworks still evolving in the UK context"
+      ],
+      "expected_citations": [
+        "uk_sds_status_timeline.md",
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "uk_sds_status_timeline.md",
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "double materiality",
+        "single materiality",
+        "enterprise value",
+        "impact materiality"
+      ],
+      "required_caveats": [
+        "both frameworks are still evolving in the UK context"
+      ],
+      "forbidden_certainty": [
+        "they use the same materiality approach"
+      ],
+      "must_not_contain": [
+        "identical materiality approach",
+        "same scope of reporting under both frameworks"
+      ],
+      "notes": "Tests two synthetic docs retrieved together. Conceptual distinction must be explained correctly."
+    },
+    {
+      "id": "eval_021",
+      "category": "cross_framework",
+      "question": "We already comply with FCA TCFD rules. Do we still need to worry about UK SDS?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "TCFD compliance provides a foundation for UK SDS but is not sufficient",
+        "UK SDS will require Scope 3 GHG emissions disclosure",
+        "UK SDS will require a 1.5°C climate scenario under IFRS S2",
+        "UK SDS will require cross-industry metric disclosures including transition plans",
+        "FCA intends to update listing rules to reflect UK SDS once endorsed",
+        "UK SDS is not yet mandatory"
+      ],
+      "expected_behaviour": [
+        "acknowledge TCFD compliance as a useful foundation",
+        "clearly identify the additional requirements UK SDS will introduce beyond TCFD",
+        "flag UK SDS mandatory timeline as indicative not confirmed"
+      ],
+      "expected_citations": [
+        "fca_tcfd_ps21_24_summary.md",
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_documents": [
+        "fca_tcfd_ps21_24_summary.md",
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_terms": [
+        "foundation",
+        "UK SDS",
+        "Scope 3",
+        "1.5°C",
+        "FCA will update"
+      ],
+      "required_caveats": [
+        "UK SDS timeline is indicative",
+        "monitor FCA and DBT announcements for confirmed dates"
+      ],
+      "forbidden_certainty": [
+        "TCFD compliance means full UK SDS compliance",
+        "UK SDS is already mandatory"
+      ],
+      "must_not_contain": [
+        "TCFD compliance is sufficient for UK SDS",
+        "no additional action needed if TCFD compliant"
+      ],
+      "notes": "Forward-looking compliance advice with appropriate caveats. Tests TCFD-to-UK SDS transition."
+    },
+    {
+      "id": "eval_022",
+      "category": "cross_framework",
+      "question": "We have an EU subsidiary with 300 employees and €55m turnover. Our UK group has 800 employees and £200m turnover. Does CSRD apply to us?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "EU subsidiary with 300 employees and €55m turnover meets two of three EU large company thresholds",
+        "EU subsidiary is a large EU company and likely in CSRD scope from Wave 2 financial year 2025",
+        "EU subsidiary must produce group-level sustainability report covering the UK parent",
+        "UK parent must supply data to EU subsidiary for the group report",
+        "Article 40 parent-level obligations require €150m EU net turnover — UK group turnover is not EU turnover"
+      ],
+      "expected_behaviour": [
+        "identify that the EU subsidiary is likely a large EU company in Wave 2 scope",
+        "explain that the UK parent has data obligations to support the EU subsidiary report",
+        "distinguish between EU subsidiary scope and Article 40 parent-level obligations",
+        "note that £200m UK group turnover is not the same as €150m EU net turnover"
+      ],
+      "expected_citations": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_documents": [
+        "csrd_uk_applicability_summary.md"
+      ],
+      "expected_retrieved_terms": [
+        "large EU company",
+        "Wave 2",
+        "€40 million",
+        "250 employees",
+        "group"
+      ],
+      "required_caveats": [
+        "based on synthetic summary not primary EU legislation",
+        "Wave 2 applicability depends on EU subsidiary meeting two of three thresholds on its balance sheet date",
+        "seek legal advice for definitive group-level assessment"
+      ],
+      "forbidden_certainty": [
+        "CSRD definitely does not apply because UK group turnover is below €150m"
+      ],
+      "must_not_contain": [
+        "CSRD does not apply because UK parent turnover is below the threshold",
+        "EU subsidiary is too small for CSRD"
+      ],
+      "notes": "Complex real-world scenario. Tests distinction between EU subsidiary Wave 2 scope and Article 40 UK parent obligations."
+    },
+    {
+      "id": "eval_023",
+      "category": "clarification_triggering",
+      "question": "What green regulations apply to our company?",
+      "company_context": "",
+      "expected_state": "needs_clarification",
+      "expected_facts": [],
+      "expected_behaviour": [
+        "return the clarification question with all six options",
+        "do not generate any regulatory answer before receiving context",
+        "do not assume any company characteristics"
+      ],
+      "expected_citations": [],
+      "expected_retrieved_documents": [],
+      "expected_retrieved_terms": [],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "SECR applies to your company",
+        "ESOS applies to your company",
+        "you are required to"
+      ],
+      "notes": "Most generic possible query. Core clarification trigger test."
+    },
+    {
+      "id": "eval_024",
+      "category": "clarification_triggering",
+      "question": "What sustainability reporting do we have to do?",
+      "company_context": "",
+      "expected_state": "needs_clarification",
+      "expected_facts": [],
+      "expected_behaviour": [
+        "return the clarification question with all six options",
+        "do not generate an answer without company context"
+      ],
+      "expected_citations": [],
+      "expected_retrieved_documents": [],
+      "expected_retrieved_terms": [],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "you are required to",
+        "your company must report"
+      ],
+      "notes": "The canonical Phase 3 smoke test question."
+    },
+    {
+      "id": "eval_025",
+      "category": "clarification_triggering",
+      "question": "What sustainability reporting do we have to do?",
+      "company_context": "The user has confirmed they are a UK SME with under 250 employees, below SECR large-company thresholds, and below ESOS financial thresholds.",
+      "expected_state": "clear",
+      "expected_facts": [
+        "SECR does not apply — below large-company thresholds",
+        "ESOS does not apply — below employee and financial thresholds",
+        "FCA TCFD does not apply — not listed or FCA-regulated",
+        "Carbon Reduction Plan still required if bidding for public sector contracts above £5m per year"
+      ],
+      "expected_behaviour": [
+        "confirm which frameworks do not apply given SME status",
+        "flag PPN 06/21 as a conditional obligation depending on procurement activity",
+        "avoid stating no green obligations apply at all"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf",
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "250 employees",
+        "below",
+        "thresholds"
+      ],
+      "required_caveats": [
+        "PPN 06/21 still relevant if bidding for public sector contracts above £5m"
+      ],
+      "forbidden_certainty": [
+        "no green obligations apply to SMEs at all"
+      ],
+      "must_not_contain": [
+        "SECR mandatory for SMEs",
+        "ESOS mandatory below 250 employees"
+      ],
+      "notes": "Tests SME context routing. Explicit ESOS financial threshold language added to company_context to avoid ambiguity."
+    },
+    {
+      "id": "eval_026",
+      "category": "clarification_triggering",
+      "question": "What sustainability requirements do we need to meet?",
+      "company_context": "The user has confirmed they are bidding for UK public sector contracts above £5 million per year.",
+      "expected_state": "clear",
+      "expected_facts": [
+        "Carbon Reduction Plan required under PPN 06/21",
+        "commitment to net zero by 2050 required",
+        "signed at director level or above",
+        "published on company website",
+        "must cover Scope 1 and 2 emissions at minimum"
+      ],
+      "expected_behaviour": [
+        "focus answer on PPN 06/21 obligations given the procurement context",
+        "note that other frameworks may apply depending on company size and listing status"
+      ],
+      "expected_citations": [
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "ppn_0621_technical_standard_crp.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "ppn_0621_carbon_reduction_plans.pdf",
+        "ppn_0621_technical_standard_crp.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "Carbon Reduction Plan",
+        "£5 million",
+        "net zero",
+        "director"
+      ],
+      "required_caveats": [
+        "other frameworks including SECR and ESOS may also apply depending on company size"
+      ],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "Carbon Reduction Plan is the only obligation regardless of company size"
+      ],
+      "notes": "Tests procurement context routing to PPN corpus."
+    },
+    {
+      "id": "eval_027",
+      "category": "clarification_triggering",
+      "question": "What sustainability reporting do we have to do?",
+      "company_context": "The user has confirmed they are a UK listed company.",
+      "expected_state": "clear",
+      "expected_facts": [
+        "FCA TCFD mandatory disclosures required — listed company",
+        "comply-or-explain basis for listed companies",
+        "SECR likely applies if large-company size thresholds are met",
+        "UK SDS is incoming for listed companies with indicative start of financial years beginning 1 January 2026"
+      ],
+      "expected_behaviour": [
+        "lead with FCA TCFD as the primary obligation established by listed status",
+        "note UK SDS as a forthcoming obligation with indicative timeline",
+        "flag SECR as dependent on size thresholds not confirmed in the context"
+      ],
+      "expected_citations": [
+        "fca_tcfd_ps21_24_summary.md",
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_documents": [
+        "fca_tcfd_ps21_24_summary.md",
+        "uk_sds_status_timeline.md"
+      ],
+      "expected_retrieved_terms": [
+        "listed",
+        "FCA",
+        "TCFD",
+        "comply-or-explain"
+      ],
+      "required_caveats": [
+        "UK SDS timeline is indicative not confirmed",
+        "SECR depends on size thresholds not confirmed in this context"
+      ],
+      "forbidden_certainty": [
+        "UK SDS is already mandatory for listed companies"
+      ],
+      "must_not_contain": [
+        "no TCFD obligation for listed companies",
+        "UK SDS is already mandatory"
+      ],
+      "notes": "Narrowed to UK listed company specifically to avoid broad FCA-regulated ambiguity."
+    },
+    {
+      "id": "eval_028",
+      "category": "out_of_scope",
+      "question": "What are the UK rules on plastic packaging tax?",
+      "company_context": "",
+      "expected_state": "out_of_scope",
+      "expected_facts": [],
+      "expected_behaviour": [
+        "politely decline to answer",
+        "explain the tool covers UK green regulation and sustainability compliance reporting",
+        "do not fabricate plastic packaging tax rules",
+        "offer to answer about regulations that are in the corpus"
+      ],
+      "expected_citations": [],
+      "expected_retrieved_documents": [],
+      "expected_retrieved_terms": [],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "plastic packaging levy requires",
+        "packaging tax applies when"
+      ],
+      "notes": "Hard out-of-scope test. Tool must not answer outside its corpus domain."
+    },
+    {
+      "id": "eval_029",
+      "category": "out_of_scope",
+      "question": "How do I calculate my company's Scope 3 emissions?",
+      "company_context": "",
+      "expected_state": "out_of_scope",
+      "expected_facts": [],
+      "expected_behaviour": [
+        "acknowledge that Scope 3 is mentioned in the corpus as a disclosure requirement under IFRS S2 and FCA TCFD",
+        "clearly state the corpus does not contain Scope 3 calculation methodology",
+        "do not fabricate a calculation method",
+        "recommend GHG Protocol Scope 3 guidance or specialist sustainability advice"
+      ],
+      "expected_citations": [],
+      "expected_retrieved_documents": [],
+      "expected_retrieved_terms": [],
+      "required_caveats": [
+        "corpus covers Scope 3 as a disclosure requirement not a calculation methodology guide"
+      ],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "to calculate Scope 3 you should first",
+        "Scope 3 calculation method is"
+      ],
+      "notes": "Product-safety boundary test. Scope 3 appears in corpus as a disclosure item not a methodology. System must not fabricate calculation guidance."
+    },
+    {
+      "id": "eval_030",
+      "category": "hallucination_traps",
+      "question": "What does the UK Green Finance Act 2023 require from large companies?",
+      "company_context": "",
+      "expected_state": "out_of_scope",
+      "expected_facts": [],
+      "expected_behaviour": [
+        "state clearly this regulation is not in the corpus and cannot be verified",
+        "do not fabricate any obligations",
+        "offer to answer about actual regulations that are in the corpus"
+      ],
+      "expected_citations": [],
+      "expected_retrieved_documents": [],
+      "expected_retrieved_terms": [],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "Green Finance Act 2023 requires large companies to",
+        "companies must comply with the Green Finance Act 2023",
+        "the Act requires disclosure of"
+      ],
+      "notes": "The UK Green Finance Act 2023 does not exist. Hallucination resistance test. must_not_contain targets fabricated obligations not all mention of the phrase."
+    },
+    {
+      "id": "eval_031",
+      "category": "hallucination_traps",
+      "question": "Does SECR apply to companies with more than 500 employees?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "SECR applies at 250 or more employees, not 500",
+        "250 employees is one of three criteria — two of three must be met",
+        "500 employees is not a SECR threshold"
+      ],
+      "expected_behaviour": [
+        "correct the premise clearly and without ambiguity",
+        "give the accurate 250-employee threshold",
+        "explain the two-of-three criteria logic"
+      ],
+      "expected_citations": [
+        "secr_environmental_reporting_guidelines_2019.pdf"
+      ],
+      "expected_retrieved_documents": [
+        "secr_environmental_reporting_guidelines_2019.pdf"
+      ],
+      "expected_retrieved_terms": [
+        "250 employees",
+        "two of",
+        "large company"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "yes SECR applies at 500 employees",
+        "500 is the correct threshold",
+        "500 or more employees"
+      ],
+      "notes": "Tests whether system corrects a wrong premise rather than validating it."
+    },
+    {
+      "id": "eval_032",
+      "category": "hallucination_traps",
+      "question": "I heard the ESOS Phase 3 deadline was December 2024 — is that right?",
+      "company_context": "",
+      "expected_state": "clear",
+      "expected_facts": [
+        "Phase 3 deadline was 5 June 2024, not December 2024",
+        "December 2024 is not an ESOS compliance deadline",
+        "Phase 4 deadline is 5 December 2027"
+      ],
+      "expected_behaviour": [
+        "correct the premise clearly",
+        "give the accurate date of 5 June 2024",
+        "note that late compliance does not extinguish the Phase 3 obligation"
+      ],
+      "expected_citations": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_documents": [
+        "esos_overview.md"
+      ],
+      "expected_retrieved_terms": [
+        "5 June 2024",
+        "Phase 3",
+        "deadline"
+      ],
+      "required_caveats": [],
+      "forbidden_certainty": [],
+      "must_not_contain": [
+        "yes that is correct",
+        "December 2024 is the right deadline",
+        "the deadline is December 2024"
+      ],
+      "notes": "Tests whether system corrects a wrong date rather than confirming it."
+    }
+  ]
+}
