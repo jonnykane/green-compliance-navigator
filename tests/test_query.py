@@ -1,5 +1,5 @@
 import pytest
-from src.query import QueryEngine, QueryResponse
+from src.query import QueryEngine
 from src.models import ClassificationResult, DetectedContext, QueryResult
 from src.retriever.retriever import RetrievedChunk
 from src.generator.generator import Answer
@@ -80,17 +80,6 @@ def _out_of_scope_classifier() -> FakeClassifier:
     return FakeClassifier(
         ClassificationResult(state="out_of_scope", reason="Unrelated question.")
     )
-
-
-# ---------------------------------------------------------------------------
-# QueryResponse (kept for backwards compatibility)
-# ---------------------------------------------------------------------------
-
-def test_query_response_fields():
-    qr = QueryResponse(answer="text", sources=["a.md"], chunks_used=2)
-    assert qr.answer == "text"
-    assert qr.sources == ["a.md"]
-    assert qr.chunks_used == 2
 
 
 # ---------------------------------------------------------------------------

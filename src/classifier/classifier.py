@@ -79,9 +79,15 @@ class Classifier:
         if cleaned.startswith("```"):
             cleaned = cleaned.split("\n", 1)[-1]  # drop opening fence line
             cleaned = cleaned.rsplit("```", 1)[0]  # drop closing fence
+        _VALID_STATES = {"clear", "needs_clarification", "out_of_scope"}
         try:
             data = json.loads(cleaned)
             state = data["state"]
+            if state not in _VALID_STATES:
+                raise ValueError(
+                    f"Failed to parse classifier response: unexpected state {state!r} "
+                    f"(expected one of {sorted(_VALID_STATES)})"
+                )
             reason = data["reason"]
             ctx_data = data.get("detected_context", {})
             detected_context = DetectedContext(

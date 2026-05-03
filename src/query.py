@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Protocol
 
 from src.classifier.classifier import CLARIFICATION_OPTIONS, CLARIFICATION_QUESTION
@@ -29,13 +28,6 @@ class GeneratorProtocol(Protocol):
 class ClassifierProtocol(Protocol):
     def classify(self, question: str) -> ClassificationResult: ...
 
-
-# Kept for backwards compatibility — not returned by ask() any more.
-@dataclass
-class QueryResponse:
-    answer: str
-    sources: list[str]
-    chunks_used: int
 
 
 class QueryEngine:

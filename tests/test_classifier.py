@@ -162,6 +162,24 @@ def test_classify_strips_markdown_code_fences():
     assert result.state == "clear"
 
 
+def test_classify_unexpected_state_raises_value_error():
+    """Valid JSON with an unrecognised state value must raise ValueError, not silently route."""
+    resp = json.dumps({
+        "state": "hallucinated_state",
+        "reason": "something unexpected",
+        "detected_context": {
+            "company_size": "unknown",
+            "listing_or_regulated_status": "unknown",
+            "public_procurement": "unknown",
+            "eu_operations": "unknown",
+        },
+        "missing_fields": [],
+    })
+    classifier = Classifier(client=FakeClassifierClient(resp))
+    with pytest.raises(ValueError, match="hallucinated_state"):
+        classifier.classify("q")
+
+
 def test_classify_client_receives_the_question():
     fake = FakeClassifierClient(_make_response())
     classifier = Classifier(client=fake)
