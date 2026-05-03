@@ -152,3 +152,51 @@ def test_generate_sources_deduplicates():
     gen = Generator(anthropic_client=client, model="claude-sonnet-4-5")
     answer = gen.generate(query="q", chunks=chunks)
     assert answer.sources.count("esos.md") == 1
+
+
+# ---------------------------------------------------------------------------
+# Injectable system prompt
+# ---------------------------------------------------------------------------
+
+def test_generate_uses_default_system_prompt_when_none_passed():
+    """Generator references its built-in default when no system_prompt arg given."""
+    from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
+    client = FakeAnthropicClient()
+    gen = Generator(anthropic_client=client, model="claude-sonnet-4-5")
+    gen.generate(query="q", chunks=_make_chunks())
+    # Default contains compliance-related instructions
+    assert "compliance" in client.last_system.lower()
+
+
+def test_generate_uses_custom_system_prompt_when_injected():
+    """When a custom system_prompt is injected, generate() uses it as the system message."""
+    client = FakeAnthropicClient()
+    custom = "Custom system prompt for testing. {company_context}"
+    gen = Generator(anthropic_client=client, model="claude-sonnet-4-5", system_prompt=custom)
+    gen.generate(query="q", chunks=_make_chunks())
+    assert "Custom system prompt for testing." in client.last_system
+
+
+def test_generate_injects_company_context_into_system_prompt():
+    """Non-empty company_context appears in the rendered system message."""
+    client = FakeAnthropicClient()
+    gen = Generator(anthropic_client=client, model="claude-sonnet-4-5")
+    gen.generate(query="q", chunks=_make_chunks(),
+                 company_context="The user is a large UK company.")
+    assert "The user is a large UK company." in client.last_system
+
+
+def test_generate_empty_company_context_removes_placeholder():
+    """When company_context is empty the {company_context} placeholder is not in the output."""
+    client = FakeAnthropicClient()
+    gen = Generator(anthropic_client=client, model="claude-sonnet-4-5")
+    gen.generate(query="q", chunks=_make_chunks(), company_context="")
+    assert "{company_context}" not in client.last_system
+
+
+def test_generate_empty_company_context_leaves_no_extra_blank_lines():
+    """Removing an empty placeholder must not leave triple newlines in the system prompt."""
+    client = FakeAnthropicClient()
+    gen = Generator(anthropic_client=client, model="claude-sonnet-4-5")
+    gen.generate(query="q", chunks=_make_chunks(), company_context="")
+    assert "\n\n\n" not in client.last_system
