@@ -21,7 +21,9 @@
       "Bash(python -m pytest tests/test_query.py::test_ask_retriever_receives_augmented_query_when_company_context_provided tests/test_query.py::test_ask_retriever_receives_bare_question_when_no_company_context -v)",
       "Bash(git checkout *)",
       "Bash(git add *)",
-      "Bash(python -m pytest tests/test_classifier.py::test_classify_unexpected_state_raises_value_error -v)"
+      "Bash(python -m pytest tests/test_classifier.py::test_classify_unexpected_state_raises_value_error -v)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'{len\\(d\\)} entries'\\); print\\(json.dumps\\(d[:3], indent=2\\)\\)\")",
+      "Bash(python -m pytest tests/test_evals_runner.py -v)"
     ]
   }
 }
