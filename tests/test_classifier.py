@@ -253,3 +253,22 @@ def test_context_from_option_listed():
 
 def test_context_from_option_sme():
     assert "sme" in CONTEXT_FROM_OPTION[2].lower()
+
+
+# ---------------------------------------------------------------------------
+# Retrieval gap — CONTEXT_FROM_OPTION[1] must contain UK SDS vocabulary
+# ---------------------------------------------------------------------------
+
+def test_context_from_option_listed_contains_uk_sds():
+    """Option 1 must mention UK SDS to surface uk_sds_status_timeline.md chunks."""
+    assert "uk sds" in CONTEXT_FROM_OPTION[1].lower()
+
+
+def test_context_from_option_listed_contains_2026():
+    """Option 1 must include '2026' to match the incoming obligation timeline."""
+    assert "2026" in CONTEXT_FROM_OPTION[1]
+
+
+def test_context_from_option_listed_contains_sustainability_disclosure():
+    """Option 1 must include 'sustainability disclosure' retrieval vocabulary."""
+    assert "sustainability disclosure" in CONTEXT_FROM_OPTION[1].lower()

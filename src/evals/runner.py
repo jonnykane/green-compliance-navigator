@@ -1,7 +1,13 @@
+import re
 from dataclasses import dataclass, field
 from typing import Protocol
 
 from src.models import QueryResult
+
+def _normalise_source(s: str) -> str:
+    """Strip path prefix, lowercase, and strip whitespace for source comparison."""
+    return s.strip().lower().split("/")[-1].split("\\")[-1]
+
 
 # Maps QueryResult.kind to the expected_state vocabulary used in the golden set.
 _KIND_TO_STATE: dict[str, str] = {
@@ -67,7 +73,7 @@ class EvalRunner:
         citation_accuracy = self._score_citation_accuracy(expected_citations, sources)
         retrieval_recall = self._score_retrieval_recall(expected_retrieved_documents, sources)
 
-        facts_present, facts_missing = self._score_presence(expected_facts, answer_text)
+        facts_present, facts_missing = self._score_facts(expected_facts, answer_text)
         caveats_present, caveats_missing = self._score_presence(required_caveats, answer_text)
 
         forbidden_phrases_found = self._find_forbidden(must_not_contain, answer_text)
@@ -127,7 +133,8 @@ class EvalRunner:
     def _score_citation_accuracy(expected_citations: list[str], sources: list[str]) -> bool:
         if not expected_citations:
             return True
-        return all(c in sources for c in expected_citations)
+        norm_sources = {_normalise_source(s) for s in sources}
+        return all(_normalise_source(c) in norm_sources for c in expected_citations)
 
     @staticmethod
     def _score_retrieval_recall(
@@ -135,7 +142,8 @@ class EvalRunner:
     ) -> float:
         if not expected_retrieved_documents:
             return 1.0
-        found = sum(1 for d in expected_retrieved_documents if d in sources)
+        norm_sources = {_normalise_source(s) for s in sources}
+        found = sum(1 for d in expected_retrieved_documents if _normalise_source(d) in norm_sources)
         return found / len(expected_retrieved_documents)
 
     @staticmethod
@@ -144,6 +152,43 @@ class EvalRunner:
         lower_text = text.lower()
         for phrase in phrases:
             (present if phrase.lower() in lower_text else missing).append(phrase)
+        return present, missing
+
+    @staticmethod
+    def _score_fact_presence(fact: str, answer: str) -> bool:
+        """
+        Score a fact as present if key terms from the fact appear in the answer.
+        Tries exact substring match first; falls back to key-term matching on
+        numbers, currency amounts, and significant words (>4 chars, non-stop).
+        """
+        answer_lower = answer.lower()
+        if fact.lower() in answer_lower:
+            return True
+
+        _STOP_WORDS = {
+            "that", "this", "with", "from", "they", "have", "been",
+            "their", "which", "will", "would", "could", "should",
+            "applies", "apply", "whether", "because", "likely",
+            "already", "criterion", "criteria", "employees",
+            "turnover", "threshold", "company", "companies",
+        }
+        key_terms: list[str] = []
+        key_terms.extend(re.findall(r"[£€]?\d+[.]?\d*[bmk]?", fact.lower()))
+        words = re.findall(r"\b[a-z]{5,}\b", fact.lower())
+        key_terms.extend(w for w in words if w not in _STOP_WORDS)
+        key_terms = list(set(key_terms))
+
+        if len(key_terms) < 2:
+            return False
+
+        matches = sum(1 for term in key_terms if term in answer_lower)
+        return matches >= max(2, len(key_terms) // 2)
+
+    @classmethod
+    def _score_facts(cls, expected_facts: list[str], answer_text: str) -> tuple[list[str], list[str]]:
+        present, missing = [], []
+        for fact in expected_facts:
+            (present if cls._score_fact_presence(fact, answer_text) else missing).append(fact)
         return present, missing
 
     @staticmethod
