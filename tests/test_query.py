@@ -264,3 +264,31 @@ def test_ask_classifier_receives_the_question():
     )
     engine.ask("specific question about SECR")
     assert classifier.last_question == "specific question about SECR"
+
+
+def test_ask_retriever_receives_augmented_query_when_company_context_provided():
+    """Retriever must see both the question and company_context so embeddings match the right corpus."""
+    retriever = FakeRetriever(_chunks())
+    engine = QueryEngine(
+        retriever=retriever,
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    engine.ask(
+        "What sustainability reporting do we need to do?",
+        company_context="The user has confirmed they are a large UK company.",
+    )
+    assert "What sustainability reporting do we need to do?" in retriever.last_query
+    assert "The user has confirmed they are a large UK company." in retriever.last_query
+
+
+def test_ask_retriever_receives_bare_question_when_no_company_context():
+    """Without company_context the retrieval query must be exactly the original question."""
+    retriever = FakeRetriever(_chunks())
+    engine = QueryEngine(
+        retriever=retriever,
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    engine.ask("We have 300 employees — what must we report?")
+    assert retriever.last_query == "We have 300 employees — what must we report?"
