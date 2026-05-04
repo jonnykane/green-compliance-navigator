@@ -368,3 +368,57 @@ def test_document_metadata_propagated_to_chunks():
     for c in chunks:
         assert c.metadata.get("issuing_body") == "Cabinet Office"
         assert c.metadata.get("publication_date") == "2022-01-01"
+
+
+# ---------------------------------------------------------------------------
+# Parent-section metadata (parent-child chunking fix)
+# ---------------------------------------------------------------------------
+
+def test_pdf_split_section_chunks_have_parent_section_text():
+    """When a PDF section is too long and split, each sub-chunk must carry parent_section_text."""
+    long_body = " ".join([f"w{i}" for i in range(600)])
+    content = f"2. Big Section\n\n{long_body}"
+    chunker = Chunker(max_tokens=200)
+    doc = _pdf_doc(content)
+    chunks = chunker.chunk(doc)
+    assert len(chunks) > 1, "section must be split for this test to be meaningful"
+    for c in chunks:
+        assert "parent_section_text" in c.metadata, (
+            f"chunk {c.chunk_index} is missing parent_section_text"
+        )
+
+
+def test_pdf_parent_section_text_contains_full_body():
+    """parent_section_text must contain the full section body including all split words."""
+    long_body = " ".join([f"w{i}" for i in range(300)])
+    content = f"2. Big Section\n\nIntro sentence. {long_body}"
+    chunker = Chunker(max_tokens=100)
+    doc = _pdf_doc(content)
+    chunks = chunker.chunk(doc)
+    assert len(chunks) > 1
+    parent = chunks[0].metadata["parent_section_text"]
+    # Every sub-chunk's parent text should cover the full body
+    assert "Intro sentence." in parent
+    assert "w299" in parent  # last word of the body is present
+
+
+def test_pdf_parent_section_text_contains_heading():
+    """parent_section_text must include the section heading so tables have context."""
+    long_body = " ".join([f"row{i}" for i in range(300)])
+    content = f"2. Threshold Tables\n\n{long_body}"
+    chunker = Chunker(max_tokens=100)
+    doc = _pdf_doc(content)
+    chunks = chunker.chunk(doc)
+    assert len(chunks) > 1
+    for c in chunks:
+        assert "Threshold Tables" in c.metadata["parent_section_text"]
+
+
+def test_pdf_short_section_has_no_parent_section_text():
+    """Sections that fit in one chunk must NOT get parent_section_text."""
+    content = "2. Short Section\n\nThis section fits in one chunk easily."
+    chunker = Chunker(max_tokens=512)
+    doc = _pdf_doc(content)
+    chunks = chunker.chunk(doc)
+    assert len(chunks) == 1
+    assert "parent_section_text" not in chunks[0].metadata

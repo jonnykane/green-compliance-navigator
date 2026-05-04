@@ -19,6 +19,7 @@ class RetrievedChunk:
     section: str
     doc_type: str
     score: float
+    parent_section_text: str = ""
 
 
 class Retriever:
@@ -41,4 +42,5 @@ class Retriever:
             section=meta.get("section", ""),
             doc_type=meta.get("doc_type", ""),
             score=score,
+            parent_section_text=meta.get("parent_section_text", ""),
         )

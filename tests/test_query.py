@@ -525,3 +525,60 @@ def test_ask_clarification_needed_has_empty_retrieved_chunks():
     )
     result = engine.ask("What sustainability reporting do we need to do?")
     assert result.retrieved_chunks == []
+
+
+# ---------------------------------------------------------------------------
+# QueryEngine — parent-section expansion for generation
+# ---------------------------------------------------------------------------
+
+def _chunk_with_parent(parent_text: str) -> RetrievedChunk:
+    return RetrievedChunk(
+        text="250 employees",
+        source="secr.pdf",
+        section="Thresholds",
+        doc_type="real",
+        score=0.9,
+        parent_section_text=parent_text,
+    )
+
+
+def test_ask_generator_receives_expanded_text_when_parent_section_text_set():
+    """Generator must see the full parent section text, not just the matched chunk text."""
+    full_section = "2. Thresholds\n\n250 employees or £36m turnover or £18m balance sheet."
+    chunk = _chunk_with_parent(full_section)
+    generator = FakeGenerator(_answer())
+    engine = QueryEngine(
+        retriever=FakeRetriever([chunk]),
+        generator=generator,
+        classifier=_clear_classifier(),
+    )
+    engine.ask("SECR thresholds")
+    assert len(generator.last_chunks) == 1
+    assert generator.last_chunks[0].text == full_section
+
+
+def test_ask_retrieved_chunks_in_result_keep_original_text():
+    """QueryResult.retrieved_chunks must carry the original (pre-expansion) chunk text."""
+    full_section = "2. Thresholds\n\n250 employees or £36m turnover or £18m balance sheet."
+    chunk = _chunk_with_parent(full_section)
+    engine = QueryEngine(
+        retriever=FakeRetriever([chunk]),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    result = engine.ask("SECR thresholds")
+    assert result.retrieved_chunks[0]["text"] == "250 employees"
+
+
+def test_ask_generator_receives_original_text_when_no_parent_section_text():
+    """Chunks without parent_section_text must pass through to the generator unchanged."""
+    generator = FakeGenerator(_answer())
+    chunks = _chunks(2)
+    engine = QueryEngine(
+        retriever=FakeRetriever(chunks),
+        generator=generator,
+        classifier=_clear_classifier(),
+    )
+    engine.ask("q")
+    assert generator.last_chunks[0].text == chunks[0].text
+    assert generator.last_chunks[1].text == chunks[1].text
