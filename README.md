@@ -1,326 +1,227 @@
 # UK Green Compliance Navigator
 
-A RAG-powered assistant that helps UK businesses understand what green regulations apply to them, what those regulations require, and when deadlines fall — with every answer cited back to the specific source document.
+A RAG-powered assistant that helps UK businesses understand what green regulations apply to them, what those regulations require, and when deadlines fall — with every answer cited back to the source document and section.
 
----
-
-## The problem
-
-UK green regulation is fragmented across multiple frameworks — SECR, ESOS, TCFD, CSRD, PPN 06/21, and UK SDS incoming. Each has different thresholds, different deadlines, and different issuing bodies. The question "what do I actually have to do, and by when?" currently requires reading across 15+ government documents and understanding how the thresholds interact.
-
-A company with 300 employees and £45m turnover sits differently under each framework. SECR uses a two-of-three criteria test. ESOS uses a different OR logic. FCA TCFD applies to listed companies regardless of size. CSRD only triggers via EU presence. Figuring this out is the problem this tool solves.
+**Live UI:** `https://green-nav-guide.lovable.app`  
+**Live API:** `https://green-compliance-navigator-production.up.railway.app`
 
 ---
 
 ## What it does
 
-Ask a plain-English question. Get a cited answer.
+A user describes their company. The assistant retrieves relevant regulatory text from an 8-document corpus, classifies the query, asks one clarifying question if needed, and produces a plain-English cited answer. Every claim is traceable to a real regulation.
 
 ```
-$ python ask.py "We have 300 employees and £45m turnover. What green reporting applies to us?"
+POST /ask
+{ "question": "We have 300 employees and £45m turnover — what sustainability reporting applies to us?",
+  "company_context": "Large UK company with 300+ employees and £45m turnover" }
 
-To give you an accurate answer, which description is closest to your organisation?
-
-  1. Large UK company — 250+ employees, or high turnover/balance sheet
-  2. Listed or FCA-regulated — listed company, asset manager, insurer, or pension provider
-  3. UK SME — under 250 employees and below large-company thresholds
-  4. UK supplier bidding for public sector contracts
-  5. UK company with significant EU operations — EU subsidiary, branch, or major EU turnover
-  6. Not sure
-
-Enter number (1-6): 1
-
-Answer:
-Based on your company profile, the following reporting frameworks apply:
-
-**SECR (Streamlined Energy and Carbon Reporting):** You meet two of three
-large company criteria (250+ employees and £36m+ turnover), so SECR applies.
-You must report UK energy use, Scope 1 and 2 GHG emissions, at least one
-intensity metric, and energy efficiency actions in your Directors' Report.
-(secr_environmental_reporting_guidelines_2019.pdf)
-
-**ESOS (Energy Savings Opportunity Scheme):** Your employee count of 300
-exceeds the 250-employee threshold. An ESOS energy audit is required every
-four years. Phase 4 deadline is 5 December 2027.
-(esos_overview.md)
+→ { "kind": "answer",
+    "answer": "Based on your size, SECR applies. You meet the 250+ employee and £36m+ turnover thresholds...",
+    "clarification_question": null,
+    "options": null,
+    "sources": ["secr_environmental_reporting_guidelines_2019.pdf", "csrd_uk_applicability_summary.md"] }
 ```
-
-Every answer cites the specific source document. The tool flags when regulations are incoming or when guidance may have changed.
 
 ---
 
 ## Architecture
 
-This project implements a RAG (Retrieval-Augmented Generation) pipeline — a pattern where an LLM generates answers grounded in retrieved documents rather than its training data alone. This is the right architecture for compliance questions because:
-
-- **The corpus is too large for a single context window.** TCFD guidance alone is 74 pages. SECR is ~80 pages. Combined they exceed a single prompt.
-- **Answers often span multiple regulations.** "What do we have to do?" may require chunks from SECR, ESOS, and TCFD simultaneously. Retrieval enables multi-document synthesis.
-- **Every answer must be traceable.** RAG provides citations back to specific source documents. Hallucinated compliance advice is harmful — citations let users verify.
-
-### Pipeline
-
 ```
 User question
-      │
-      ▼
-┌─────────────────┐
-│   Classifier    │  Determines: clear / needs_clarification /
-│   (Claude)      │  partial_answer_needs_clarification / out_of_scope
-└────────┬────────┘
-         │
-    ┌────┴─────────────────────────────────┐
-    │                                      │
-    ▼                                      ▼
-Clarification                        Retrieval
-question returned                    query built
-(if needed)                          (question + company context)
-                                          │
-                                          ▼
-                                   ┌─────────────┐
-                                   │  Voyage AI  │  Embed query → vector
-                                   │ (voyage-3)  │
-                                   └──────┬──────┘
-                                          │
-                                          ▼
-                                   ┌─────────────┐
-                                   │  ChromaDB   │  Find nearest chunks
-                                   │             │
-                                   └──────┬──────┘
-                                          │
-                                          ▼
-                                   ┌─────────────┐
-                                   │   Claude    │  Generate cited answer
-                                   │  Generator  │  from retrieved chunks
-                                   └──────┬──────┘
-                                          │
-                                          ▼
-                                     QueryResult
-                                  (answer + sources)
+     │
+     ▼
+Lovable UI  (React · green-nav-guide.lovable.app)
+     │
+     ▼  POST /ask
+FastAPI server  (Railway · green-compliance-navigator-production.up.railway.app)
+     │
+     ▼
+QueryEngine  (src/query.py)
+     │
+     ├─ Classifier (Claude)
+     │    ├─ out of scope → return directly
+     │    ├─ needs clarification → return question + 6 options
+     │    └─ clear / partial → continue
+     │
+     ▼  clear / partial answer
+Retriever  (src/retriever/)
+     ├─ enrich query with regulation vocabulary (_enrich_retrieval_query)
+     ├─ embed enriched query → Voyage AI (voyage-3)
+     └─ search → Pinecone (1,109 chunks)
+     │
+     ▼
+Generator (Claude)
+     │
+     ▼
+QueryResult JSON
+{ kind, answer, clarification_question, options, sources }
 ```
 
-### Module structure
+---
 
-| Module | Responsibility |
-|--------|---------------|
-| `src/loader/` | PDF extraction (pdfplumber) and markdown reading |
-| `src/chunker/` | Section-aware chunking that respects regulatory document structure |
-| `src/embedder/` | Voyage AI client wrapper (voyage-3) |
-| `src/vector_store/` | ChromaDB client wrapper |
-| `src/classifier/` | Pre-retrieval classifier — determines routing state |
-| `src/retriever/` | Embeds query, queries ChromaDB, returns ranked chunks |
-| `src/generator/` | Builds cited prompt, calls Claude, returns structured answer |
-| `src/query.py` | `QueryEngine.ask()` — single public interface |
-| `src/wiring.py` | Factory functions wiring real clients via dependency injection |
-| `src/models.py` | Shared dataclasses: `DetectedContext`, `ClassificationResult`, `QueryResult` |
-| `ingest.py` | One-shot ingestion: 8 documents → 276 chunks → ChromaDB |
-| `ask.py` | CLI entry point |
-| `run_evals.py` | Eval runner against the golden set |
+## The corpus
+
+Eight documents covering seven UK green regulatory frameworks:
+
+| Document | Type | Frameworks covered |
+|---|---|---|
+| TCFD 2017 Recommendations | Real PDF (74p) | TCFD, UK SDS baseline |
+| SECR Environmental Reporting Guidelines (2019) | Real PDF (~80p) | SECR |
+| PPN 06/21 — Carbon Reduction Plans | Real PDF (~20p) | PPN 06/21 |
+| PPN 06/21 — Technical Standard for CRP | Real PDF (~10p) | PPN 06/21 |
+| CSRD UK Applicability Summary | Synthetic summary | CSRD |
+| FCA TCFD PS21/24 Summary | Synthetic summary | FCA TCFD |
+| ESOS Overview | Synthetic summary | ESOS |
+| UK SDS Status and Timeline | Synthetic summary | UK SDS |
+
+Synthetic summaries are labelled `source_type: synthetic_summary` in chunk metadata. Real PDFs are labelled `source_type: real_pdf`. The UI surfaces this distinction so users know which answers come from primary legislation.
 
 ---
 
-## Corpus
+## Eval results
 
-Eight documents covering the main UK green compliance frameworks:
+32 golden Q&A pairs manually verified against source documents. Results after Phase 4 classifier and generator fixes:
 
-| Document | Type | Coverage |
-|----------|------|----------|
-| TCFD 2017 Recommendations | Real PDF (74 pages) | Climate-related financial disclosure framework |
-| SECR Environmental Reporting Guidelines | Real PDF (~80 pages) | Streamlined Energy and Carbon Reporting |
-| PPN 06/21 — Carbon Reduction Plans | Real PDF | Public procurement sustainability requirements |
-| PPN 06/21 — Technical Standard | Real PDF | CRP completion requirements |
-| CSRD UK Applicability Summary | Synthetic summary | EU Corporate Sustainability Reporting Directive — UK scope |
-| FCA TCFD PS21/24 Summary | Synthetic summary | FCA mandatory climate disclosure rules |
-| ESOS Overview | Synthetic summary | Energy Savings Opportunity Scheme |
-| UK SDS Status and Timeline | Synthetic summary | UK Sustainability Disclosure Standards — incoming |
+| Metric | Result |
+|---|---|
+| Pass rate | 78.1% (25/32) |
+| State match rate | 93.8% |
+| Citation accuracy | 81.2% |
+| Mean retrieval recall | 88.3% |
+| **Hallucination rate** | **0.0%** |
 
-**On synthetic summaries:** Four documents are purpose-built summaries rather than primary legislation. They contain accurate thresholds and dates drawn from the real regulatory texts, are clearly labelled `source_type: synthetic_summary` in chunk metadata, and exist because the primary texts (CSRD runs to hundreds of pages of EU legislation; ESOS requires reading multiple statutory instruments) are impractical for a v0 corpus. The real PDF documents anchor the corpus with primary source material.
-
----
-
-## Evaluation
-
-The pipeline is evaluated against a golden set of 32 manually verified question/answer pairs covering:
-
-- Threshold and applicability questions
-- What must be reported under each framework
-- Compliance deadlines and timelines
-- Cross-framework synthesis questions
-- Clarification-triggering (ambiguous) questions
-- Out-of-scope boundary questions
-- Hallucination traps (non-existent regulations, wrong premises, wrong dates)
-
-### Eval metrics
-
-| Metric | Method |
-|--------|--------|
-| State match | Classifier output matches expected state |
-| Citation accuracy | All expected source documents appear in answer |
-| Retrieval recall | % of expected documents surfaced |
-| Fact presence | Expected facts appear in answer text |
-| Hallucination rate | Forbidden phrases or fabricated content detected |
-
-### Results
-
-Two eval runs were completed. Run 1 exposed the classifier failure pattern. Run 2 followed a classifier prompt revision.
-
-| Metric | Run 1 (baseline) | Run 2 (after fix) |
-|--------|-----------------|-------------------|
-| Pass rate | 40.6% | **78.1%** |
-| State match rate | 53.1% | **93.8%** |
-| Citation accuracy | 50.0% | **81.2%** |
-| Mean retrieval recall | 53.9% | **88.3%** |
-| Hallucination rate | **0.0%** | **0.0%** |
+Category breakdown:
 
 | Category | Result |
-|----------|--------|
-| Deadlines and timelines | 4/4 (100%) |
+|---|---|
+| Threshold / applicability | 5/6 (83.3%) |
 | What must be reported | 5/5 (100%) |
-| Hallucination traps | 3/3 (100%) |
+| Deadlines and timelines | 4/4 (100%) |
+| Cross-framework synthesis | 4/7 (57.1%) |
+| Clarification triggering | 2/5 (40.0%) |
 | Out of scope | 2/2 (100%) |
-| Threshold / applicability | 5/6 (83%) |
-| Cross-framework synthesis | 4/7 (57%) |
-| Clarification triggering | 2/5 (40%) |
-
-The 0% hallucination rate held across both runs — the system does not fabricate regulatory obligations. The remaining failures are concentrated in broad cross-framework applicability synthesis (retrieving multiple frameworks simultaneously) and a known partial-answer classification gap. See [Current limitations](#current-limitations) for detail.
+| Hallucination traps | 3/3 (100%) |
 
 ---
 
 ## Tech stack
 
-| Component | Tool | Alternatives considered |
-|-----------|------|------------------------|
-| Answer generation | Claude (claude-sonnet-4-5) | GPT-4o, Gemini 1.5 Pro |
-| Embeddings | Voyage AI (voyage-3) | OpenAI text-embedding-3-small, Cohere Embed |
-| Vector store | ChromaDB (local) | Pinecone, Weaviate, pgvector |
-| PDF extraction | pdfplumber | PyMuPDF, Unstructured.io |
-| Testing | pytest + pytest-cov | unittest |
-| Agentic coding | Claude Code | Cursor, GitHub Copilot |
+| Component | Choice | Why |
+|---|---|---|
+| Embeddings | Voyage AI (voyage-3, 1024-dim) | Anthropic-recommended partner; strong on technical regulatory text |
+| Vector store | Pinecone (production) / ChromaDB (local) | Pinecone when `PINECONE_API_KEY` present; ChromaDB otherwise |
+| Generation + classification | Anthropic claude-sonnet-4-6 | Strong system prompt adherence; 0% hallucination rate |
+| API | FastAPI + uvicorn | Automatic validation, CORS, OpenAPI docs |
+| Deployment | Railway (from GitHub) | Zero-config, deploys on push to master |
+| UI | Lovable (React) | AI-generated React UI calling the Railway endpoint |
+| PDF extraction | pdfplumber | Reliable on multi-column regulatory PDFs |
+| Testing | pytest | 308 tests; all external APIs faked — runs without network access |
 
 ---
 
-## Getting started
+## Build standards
 
-### Prerequisites
-
-- Python 3.11+
-- A Voyage AI API key ([voyageai.com](https://www.voyageai.com))
-- An Anthropic API key ([console.anthropic.com](https://console.anthropic.com))
-
-### Installation
+- **TDD throughout** — tests written before implementation at every module
+- **Dependency injection** — every external client is injectable; wiring.py wires real clients
+- **No hardcoded config** — all API keys and paths via environment variables
+- **Fake discipline** — every external API call (Voyage AI, Pinecone, Anthropic) has a fake; tests never burn credits
+- **Eval-gated CI** — `run_evals.py` exits 1 if pass rate drops below 70%
 
 ```bash
-git clone https://github.com/jonnykane/green-compliance-navigator.git
-cd green-compliance-navigator
-python -m venv venv
-source venv/bin/activate
+pytest              # 308 tests, runs in seconds, no network required
+python run_evals.py # 32 live eval queries against real API
+```
+
+---
+
+## Project structure
+
+```
+green-compliance-navigator/
+├── api.py                  # FastAPI server (POST /ask, GET /health)
+├── ask.py                  # CLI entry point
+├── ingest.py               # Ingestion script: 8 docs → 1,109 chunks → vector store
+├── run_evals.py            # Eval runner CLI
+├── requirements.txt
+├── TECHNICAL_DEBT.md       # Known gaps, deferred decisions, fix guidance
+├── src/
+│   ├── query.py            # QueryEngine.ask() — includes _enrich_retrieval_query()
+│   ├── wiring.py           # Wires real clients (Voyage / vector store / Anthropic)
+│   ├── models.py           # QueryResult, ClassificationResult, DetectedContext
+│   ├── loader/             # PDF + markdown text extraction
+│   ├── chunker/            # Section-aware chunking
+│   ├── embedder/           # Voyage AI client wrapper
+│   ├── vector_store/       # ChromaDB + Pinecone wrappers (VectorStoreProtocol)
+│   ├── retriever/          # Embed query → search → rank chunks
+│   ├── classifier/         # Pre-retrieval intent classifier
+│   ├── generator/          # Build cited answer from retrieved chunks
+│   └── evals/              # EvalRunner, reporter
+├── evals/
+│   └── golden_set.json     # 32 manually verified Q&A pairs
+└── tests/                  # 308 tests across all modules
+```
+
+---
+
+## Running locally
+
+```bash
 pip install -r requirements.txt
-```
 
-### Configuration
+export ANTHROPIC_API_KEY=...
+export VOYAGE_API_KEY=...
+export PINECONE_API_KEY=...   # omit to use ChromaDB locally
 
-Create a `.env` file in the project root:
-
-```
-ANTHROPIC_API_KEY=your_anthropic_key_here
-VOYAGE_API_KEY=your_voyage_key_here
-```
-
-### Download the real corpus documents
-
-```bash
-python scripts/download_corpus.py
-```
-
-This downloads the four real regulatory PDFs into `corpus/real/`. The four synthetic summary documents are already present in `corpus/mock/`.
-
-### Ingest the corpus
-
-```bash
-python ingest.py
-```
-
-This processes all 8 documents, creates 276 chunks with section-aware boundaries, embeds them with Voyage AI, and persists them to ChromaDB in `chroma_db/`.
-
-### Ask a question
-
-```bash
-python ask.py "What are the SECR reporting thresholds for large UK companies?"
-```
-
-### Run the eval suite
-
-```bash
-# Dry run (no API calls)
-python run_evals.py --dry-run
-
-# Full live eval (uses real APIs)
-python run_evals.py
-```
-
-### Run tests
-
-```bash
-pytest tests/ -v
-pytest tests/ --cov=src --cov-report=term-missing
+python ingest.py              # one-time corpus ingestion
+uvicorn api:app --reload      # start API server
+python ask.py "We have 300 employees — what sustainability reporting applies to us?"
 ```
 
 ---
 
-## Current limitations
+## Environment variables
 
-This is a v0 prototype. Understanding what it does and doesn't do well matters before using it.
-
-**What the system is reliable at:**
-
-- Named-regulation questions — thresholds, deadlines, what a specific framework requires
-- Single-framework applicability questions where company context is clear
-- Out-of-scope rejection — the system correctly declines questions outside the indexed corpus
-- Hallucination resistance — across all eval runs, the system has never fabricated a regulation, obligation, or deadline (0% hallucination rate)
-- Premise correction — if a question contains a wrong threshold or date, the system corrects it rather than confirming it
-
-**What the system is not yet reliable at:**
-
-- Broad cross-framework applicability synthesis — questions like "what green regulations apply to us?" that require retrieving and synthesising across multiple frameworks simultaneously. The system retrieves well for single and double-framework questions but struggles to surface all relevant documents when a question spans four or more frameworks at once.
-- Partial-context applicability questions — when a user provides some but not all company facts, the system answers what it can but doesn't always signal clearly that the answer is incomplete. A future version will natively handle this as a distinct response type.
-
-**Corpus limitations:**
-
-Four of the eight corpus documents are purpose-built synthetic summaries rather than primary legislation. They are accurate but are not primary sources. Always verify against current official guidance before making compliance decisions.
-
-**What this means in practice:**
-
-This tool is a credible assistant for bounded regulatory Q&A — understanding what a specific regulation requires, whether a threshold applies, what a deadline is, and what a Carbon Reduction Plan needs to contain. It is not yet a robust end-to-end applicability assessment engine for broad "what applies to us?" questions across all seven indexed frameworks simultaneously.
+| Variable | Required | Purpose |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | Yes | Claude API (classifier + generator) |
+| `VOYAGE_API_KEY` | Yes | Voyage AI embeddings |
+| `PINECONE_API_KEY` | No | Pinecone vector store (ChromaDB used if absent) |
 
 ---
 
-## Design decisions
+## Phase status
 
-**Why section-aware chunking?** Regulatory documents have natural boundaries — articles, clauses, annexes. Chunking that respects these boundaries produces better retrieval than arbitrary token splits. A clause about SECR thresholds that spans a chunk boundary loses its meaning. This was validated by a real retrieval failure in Phase 2 where SECR threshold chunks were not being surfaced — the fix was in the chunker, not the retrieval parameters.
-
-**Why a clarification agent?** UK green compliance obligations depend heavily on company size, listing status, EU presence, and procurement context. The same question — "what do we have to report?" — has completely different answers for an SME vs a listed company vs a company with EU operations. The pre-retrieval classifier routes ambiguous questions to a clarification step rather than attempting an incomplete answer.
-
-**Why synthetic corpus documents?** The CSRD runs to hundreds of pages of EU legislation. The ESOS regulations require reading multiple statutory instruments. Purpose-built summaries with accurate thresholds and dates keep the corpus at a manageable size for a v0 build while covering the regulatory triggers that matter. They are clearly labelled in metadata so users know what they're reading.
-
-**Why dependency injection throughout?** Every module accepts its dependencies via constructor injection rather than creating them directly. This makes every module independently testable with fake clients — the full 243-test suite runs without any network calls or API costs.
-
----
-
-## Project status
-
-- ✅ Phase 1 — Corpus assembly (8 documents)
-- ✅ Phase 2 — RAG pipeline (ingestion, chunking, embeddings, retrieval, generation)
-- ✅ Phase 3 — Clarification agent (four-state classifier, QueryResult, CLI)
-- ✅ Phase 4 — Evals (32-question golden set, eval runner, 78.1% pass rate)
-- 🔲 Phase 5 — UI (Lovable)
+| Phase | Description | Status |
+|---|---|---|
+| 1–2 | RAG pipeline foundation | ✅ Complete |
+| 3 | Clarification agent | ✅ Complete |
+| 4 | Evals (78.1% pass rate, 0% hallucination) | ✅ Complete |
+| 5 Step 1 | Pinecone migration (1,109 chunks) | ✅ Complete |
+| 5 Step 2 | FastAPI server | ✅ Complete |
+| 5 Step 3 | Railway deployment | ✅ Complete |
+| 5 Step 4 | Lovable UI | ✅ Complete |
+| 5 Post | SECR retrieval fix (_enrich_retrieval_query, 308 tests) | ✅ Complete |
 
 ---
 
-## Repository
+## Known limitations
 
-[github.com/jonnykane/green-compliance-navigator](https://github.com/jonnykane/green-compliance-navigator)
+See [TECHNICAL_DEBT.md](./TECHNICAL_DEBT.md) for full detail. Key open items:
+
+- **TD-005** — Classifier does not natively support `partial_answer_needs_clarification`. Partial-context questions are routed as `clear`; the generator handles the gap in prose.
+- **TD-006** — Broad cross-framework questions (4+ frameworks) miss some documents. 57.1% on cross-framework synthesis eval category.
+- **TD-007** — SECR threshold chunk does not consistently surface for threshold-specific queries despite existing in Pinecone.
+- **TD-008** — Railway cold start latency (10–20s on first request after idle period).
 
 ---
 
-## Disclaimer
+## Design decisions worth noting
 
-This tool is a learning project and proof of concept. It is not a substitute for legal or compliance advice. Regulatory requirements change — always verify against current primary sources before making compliance decisions.
+**Why RAG rather than long-context stuffing:** TCFD is 74 pages, SECR is ~80 pages. The combined corpus cannot fit in a single prompt. RAG also enables multi-document synthesis across frameworks.
+
+**Why synthetic summaries for 4 of 8 documents:** The real CSRD text is hundreds of pages of EU legislation. Synthetic summaries with accurate thresholds and dates keep the corpus manageable and give full control over eval verifiability. They are clearly labelled.
+
+**Why deterministic clarification questions:** Six constant options — predictable, testable, auditable. Essential for a compliance tool.
+
+**Why query enrichment rather than re-chunking for the SECR retrieval gap:** The SECR threshold text exists correctly in Pinecone. The problem was vocabulary mismatch between natural-language queries and the flat similarity band of SECR chunks. `_enrich_retrieval_query()` appends regulation-specific vocabulary before embedding, fixing retrieval without requiring re-ingestion.
