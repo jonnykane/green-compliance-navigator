@@ -250,12 +250,11 @@ class EvalRunner:
             "that", "this", "with", "from", "they", "have", "been",
             "their", "which", "will", "would", "could", "should",
             "applies", "apply", "whether", "because", "likely",
-            "already", "criterion", "criteria", "employees",
-            "turnover", "threshold", "company", "companies",
+            "already", "criterion", "criteria",
         }
         key_terms: list[str] = []
         key_terms.extend(re.findall(r"[£€]?\d+[.]?\d*[bmk]?", fact.lower()))
-        words = re.findall(r"\b[a-z]{5,}\b", fact.lower())
+        words = re.findall(r"\b[a-z]{3,}\b", fact.lower())
         key_terms.extend(w for w in words if w not in _STOP_WORDS)
         key_terms = list(set(key_terms))
 
