@@ -459,3 +459,69 @@ def test_ask_retriever_query_still_contains_original_secr_question():
     q = "What is SECR and who does it apply to?"
     engine.ask(q)
     assert q in retriever.last_query
+
+
+# ---------------------------------------------------------------------------
+# QueryEngine — retrieved_chunks in QueryResult
+# ---------------------------------------------------------------------------
+
+def test_ask_answer_result_has_retrieved_chunks():
+    """QueryResult for an answer must carry the retrieved chunks."""
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks(3)),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    result = engine.ask("What is ESOS?")
+    assert isinstance(result.retrieved_chunks, list)
+    assert len(result.retrieved_chunks) == 3
+
+
+def test_ask_retrieved_chunks_have_source_text_score_keys():
+    """Each retrieved chunk dict must contain source, text, and score."""
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks(2)),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    result = engine.ask("What is ESOS?")
+    for chunk in result.retrieved_chunks:
+        assert "source" in chunk
+        assert "text" in chunk
+        assert "score" in chunk
+
+
+def test_ask_retrieved_chunks_carry_correct_values():
+    """Chunk dict values must match the RetrievedChunk fields from the retriever."""
+    chunks = _chunks(1)
+    engine = QueryEngine(
+        retriever=FakeRetriever(chunks),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    result = engine.ask("What is ESOS?")
+    assert result.retrieved_chunks[0]["source"] == chunks[0].source
+    assert result.retrieved_chunks[0]["text"] == chunks[0].text
+    assert result.retrieved_chunks[0]["score"] == chunks[0].score
+
+
+def test_ask_out_of_scope_has_empty_retrieved_chunks():
+    """out_of_scope responses never retrieve — retrieved_chunks must be empty."""
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=FakeGenerator(_answer()),
+        classifier=_out_of_scope_classifier(),
+    )
+    result = engine.ask("How do I make pasta?")
+    assert result.retrieved_chunks == []
+
+
+def test_ask_clarification_needed_has_empty_retrieved_chunks():
+    """clarification_needed responses never retrieve — retrieved_chunks must be empty."""
+    engine = QueryEngine(
+        retriever=FakeRetriever(_chunks()),
+        generator=FakeGenerator(_answer()),
+        classifier=_needs_clarification_classifier(),
+    )
+    result = engine.ask("What sustainability reporting do we need to do?")
+    assert result.retrieved_chunks == []

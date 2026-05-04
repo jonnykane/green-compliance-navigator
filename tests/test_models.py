@@ -98,3 +98,26 @@ def test_query_result_out_of_scope_kind():
 def test_query_result_sources_defaults_to_empty_list():
     qr = QueryResult(kind="answer", answer="text")
     assert qr.sources == []
+
+
+# ---------------------------------------------------------------------------
+# QueryResult.retrieved_chunks
+# ---------------------------------------------------------------------------
+
+def test_query_result_retrieved_chunks_defaults_to_empty_list():
+    qr = QueryResult(kind="answer", answer="text")
+    assert qr.retrieved_chunks == []
+
+
+def test_query_result_retrieved_chunks_can_be_set():
+    chunks = [{"source": "esos.md", "text": "ESOS text", "score": 0.9}]
+    qr = QueryResult(kind="answer", answer="text", retrieved_chunks=chunks)
+    assert qr.retrieved_chunks == chunks
+
+
+def test_query_result_retrieved_chunks_carries_source_text_score():
+    chunk = {"source": "secr.pdf", "text": "SECR threshold text", "score": 0.85}
+    qr = QueryResult(kind="answer", answer="text", retrieved_chunks=[chunk])
+    assert qr.retrieved_chunks[0]["source"] == "secr.pdf"
+    assert qr.retrieved_chunks[0]["text"] == "SECR threshold text"
+    assert qr.retrieved_chunks[0]["score"] == 0.85

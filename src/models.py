@@ -26,3 +26,4 @@ class QueryResult:
     clarification_question: str | None = None
     options: list[str] | None = None
     sources: list[str] = field(default_factory=list)
+    retrieved_chunks: list[dict] = field(default_factory=list)

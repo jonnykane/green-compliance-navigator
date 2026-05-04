@@ -835,3 +835,50 @@ def test_forbidden_certainty_flag_false_when_only_must_not_contain_triggered():
         _answer_result(text="SECR applies to companies with 500 employees.")
     ).run_eval(case)
     assert result.forbidden_certainty_flag is False
+
+
+# ---------------------------------------------------------------------------
+# Change 2 — EvalResult.retrieved_chunks
+# ---------------------------------------------------------------------------
+
+def _answer_result_with_chunks(
+    text: str = "Some answer text.",
+    sources: list[str] | None = None,
+    chunks: list[dict] | None = None,
+) -> QueryResult:
+    return QueryResult(
+        kind="answer",
+        answer=text,
+        sources=sources or [],
+        retrieved_chunks=chunks or [],
+    )
+
+
+def test_eval_result_has_retrieved_chunks_field():
+    """EvalResult must expose a retrieved_chunks field."""
+    result = _runner(_answer_result()).run_eval(_eval_case())
+    assert hasattr(result, "retrieved_chunks")
+
+
+def test_run_eval_retrieved_chunks_empty_when_query_result_has_none():
+    """retrieved_chunks must be [] when the engine returns no chunks."""
+    result = _runner(_answer_result()).run_eval(_eval_case())
+    assert result.retrieved_chunks == []
+
+
+def test_run_eval_populates_retrieved_chunks_from_query_result():
+    """retrieved_chunks on EvalResult must mirror query_result.retrieved_chunks."""
+    chunks = [
+        {"source": "secr.pdf", "text": "SECR applies.", "score": 0.9},
+        {"source": "esos.md", "text": "ESOS applies.", "score": 0.8},
+    ]
+    result = _runner(_answer_result_with_chunks(chunks=chunks)).run_eval(_eval_case())
+    assert result.retrieved_chunks == chunks
+
+
+def test_run_eval_retrieved_chunks_length_matches_query_result():
+    """Number of retrieved_chunks on EvalResult must equal number in query_result."""
+    chunks = [{"source": f"doc{i}.pdf", "text": f"text {i}", "score": 0.9 - i * 0.1}
+              for i in range(4)]
+    result = _runner(_answer_result_with_chunks(chunks=chunks)).run_eval(_eval_case())
+    assert len(result.retrieved_chunks) == 4

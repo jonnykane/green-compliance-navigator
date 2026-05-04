@@ -408,3 +408,112 @@ def test_report_contains_product_gaps_section():
     report = generate_report([_passing_arch()])
     lower = report.lower()
     assert "product gap" in lower or "known gap" in lower or "td-" in lower.replace("td_", "td-")
+
+
+# ---------------------------------------------------------------------------
+# Change 3 — Chunk trace in FAILURES section
+# ---------------------------------------------------------------------------
+
+def _failure_with_chunks(
+    failure_type: str,
+    chunks: list[dict] | None = None,
+    **kwargs,
+) -> EvalResult:
+    """EvalResult with a specific failure_type and optional retrieved_chunks."""
+    return EvalResult(
+        eval_id=kwargs.get("eval_id", "eval_001"),
+        category=kwargs.get("category", "threshold"),
+        question=kwargs.get("question", "What triggers SECR?"),
+        expected_state=kwargs.get("expected_state", "clear"),
+        actual_state=kwargs.get("actual_state", "clear"),
+        state_match=kwargs.get("state_match", True),
+        citation_accuracy=kwargs.get("citation_accuracy", True),
+        retrieval_recall=kwargs.get("retrieval_recall", 1.0),
+        facts_present=kwargs.get("facts_present", []),
+        facts_missing=kwargs.get("facts_missing", ["some fact"]),
+        caveats_present=kwargs.get("caveats_present", []),
+        caveats_missing=kwargs.get("caveats_missing", []),
+        forbidden_phrases_found=kwargs.get("forbidden_phrases_found", []),
+        forbidden_certainty_found=kwargs.get("forbidden_certainty_found", []),
+        hallucination_flag=kwargs.get("hallucination_flag", False),
+        passed=False,
+        notes=kwargs.get("notes", ""),
+        failure_type=failure_type,
+        forbidden_certainty_flag=kwargs.get("forbidden_certainty_flag", False),
+        passed_architecture_compatible=kwargs.get("passed_architecture_compatible", False),
+        required_retrieval_recall=kwargs.get("required_retrieval_recall", 0.5),
+        retrieved_chunks=chunks or [],
+    )
+
+
+_SAMPLE_CHUNKS = [
+    {"source": "secr.pdf", "text": "A" * 400, "score": 0.91},
+    {"source": "esos.md", "text": "B" * 150, "score": 0.75},
+]
+
+
+def test_report_missing_facts_failure_shows_retrieved_chunks():
+    """FAILURES section must print chunk details for missing_facts failures."""
+    result = _failure_with_chunks("missing_facts", chunks=_SAMPLE_CHUNKS)
+    report = generate_report([result])
+    failures_section = report.split("FAILURES")[-1].split("HALLUCINATION")[0]
+    assert "secr.pdf" in failures_section
+    assert "esos.md" in failures_section
+
+
+def test_report_retrieval_failure_shows_retrieved_chunks():
+    """FAILURES section must print chunk details for retrieval_failure failures."""
+    result = _failure_with_chunks(
+        "retrieval_failure",
+        chunks=_SAMPLE_CHUNKS,
+        retrieval_recall=0.0,
+    )
+    report = generate_report([result])
+    failures_section = report.split("FAILURES")[-1].split("HALLUCINATION")[0]
+    assert "secr.pdf" in failures_section
+
+
+def test_report_chunk_text_truncated_to_300_chars():
+    """Chunk text in the report must be capped at 300 characters."""
+    long_chunk = [{"source": "secr.pdf", "text": "X" * 500, "score": 0.9}]
+    result = _failure_with_chunks("missing_facts", chunks=long_chunk)
+    report = generate_report([result])
+    # 500 Xs must not appear; 300 Xs must appear
+    assert "X" * 500 not in report
+    assert "X" * 300 in report
+
+
+def test_report_chunk_score_shown_in_failures():
+    """Chunk score must be visible in the FAILURES section."""
+    chunk = [{"source": "secr.pdf", "text": "some text", "score": 0.91}]
+    result = _failure_with_chunks("missing_facts", chunks=chunk)
+    report = generate_report([result])
+    failures_section = report.split("FAILURES")[-1].split("HALLUCINATION")[0]
+    assert "0.91" in failures_section or "0.910" in failures_section
+
+
+def test_report_non_retrieval_failure_does_not_show_chunks():
+    """Chunk trace must NOT appear for classification_failure or other non-retrieval types."""
+    result = _failure_with_chunks(
+        "classification_failure",
+        chunks=_SAMPLE_CHUNKS,
+        state_match=False,
+        facts_missing=[],
+    )
+    report = generate_report([result])
+    failures_section = report.split("FAILURES")[-1].split("HALLUCINATION")[0]
+    # chunk sources should not appear in the failure detail for classification errors
+    assert "0.91" not in failures_section
+    assert "0.75" not in failures_section
+
+
+def test_report_passing_eval_does_not_show_chunks():
+    """Chunk trace must not appear in the report for passing evals."""
+    passing = _passing_arch(
+        retrieved_chunks=_SAMPLE_CHUNKS,
+        passed=True,
+        passed_architecture_compatible=True,
+    )
+    report = generate_report([passing])
+    assert "0.91" not in report
+    assert "0.75" not in report

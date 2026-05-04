@@ -125,6 +125,14 @@ def _add_failures(lines: list[str], results: list[EvalResult]) -> None:
             lines.append(f"  {r.eval_id} | {q_short!r}")
             ft_label = f"[{r.failure_type}]" if r.failure_type else ""
             lines.append(f"    Failed {ft_label}: {', '.join(reasons)}")
+            # For retrieval-sensitive failures, show what the retriever actually returned
+            # so it's easy to tell whether the answer content was in the chunks at all.
+            if r.failure_type in ("missing_facts", "retrieval_failure") and r.retrieved_chunks:
+                for chunk in r.retrieved_chunks:
+                    src = chunk.get("source", "?")
+                    score = chunk.get("score", 0.0)
+                    text = chunk.get("text", "")[:300]
+                    lines.append(f"    ↳ [{src}] score={score:.3f} | {text!r}")
     lines.append("")
 
 

@@ -116,4 +116,8 @@ class QueryEngine:
             kind="answer",
             answer=answer.text,
             sources=answer.sources,
+            retrieved_chunks=[
+                {"source": c.source, "text": c.text, "score": c.score}
+                for c in chunks
+            ],
         )

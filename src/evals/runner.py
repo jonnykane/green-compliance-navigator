@@ -62,6 +62,7 @@ class EvalResult:
     forbidden_certainty_flag: bool = False
     passed_architecture_compatible: bool | None = None
     required_retrieval_recall: float = _DEFAULT_REQUIRED_RETRIEVAL_RECALL
+    retrieved_chunks: list[dict] = field(default_factory=list)
 
 
 class EvalRunner:
@@ -87,6 +88,7 @@ class EvalRunner:
         actual_state = _KIND_TO_STATE.get(query_result.kind, query_result.kind)
         answer_text = query_result.answer or ""
         sources = query_result.sources or []
+        retrieved_chunks = list(query_result.retrieved_chunks)
 
         notes, state_match = self._score_state(
             expected_state, actual_state, expected_facts, expected_citations,
@@ -178,6 +180,7 @@ class EvalRunner:
             forbidden_certainty_flag=forbidden_certainty_flag,
             passed_architecture_compatible=passed_architecture_compatible,
             required_retrieval_recall=required_retrieval_recall,
+            retrieved_chunks=retrieved_chunks,
         )
 
     # ------------------------------------------------------------------
