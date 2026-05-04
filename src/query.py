@@ -1,6 +1,8 @@
+from dataclasses import replace as _dataclass_replace
 from typing import Protocol
 
 from src.classifier.classifier import CLARIFICATION_OPTIONS, CLARIFICATION_QUESTION
+from src.config import settings
 from src.generator.generator import Answer
 from src.models import ClassificationResult, QueryResult
 from src.retriever.retriever import RetrievedChunk
@@ -28,6 +30,9 @@ _REGULATION_VOCAB: dict[str, str] = {
         "large companies 250 employees £36m turnover Directors Report"
     ),
 }
+
+# Canonical source trigger map — loaded from settings so this module stays data-free.
+CANONICAL_SOURCE_MAP: dict[str, str] = settings.CANONICAL_SOURCE_MAP
 
 
 def _expand_parent_sections(chunks: list[RetrievedChunk]) -> list[RetrievedChunk]:
@@ -74,6 +79,10 @@ class RetrieverProtocol(Protocol):
     def retrieve(self, query: str) -> list[RetrievedChunk]: ...
 
 
+class CanonicalRetrieverProtocol(Protocol):
+    def retrieve_by_source(self, query: str, source: str) -> list[RetrievedChunk]: ...
+
+
 class GeneratorProtocol(Protocol):
     def generate(
         self,
@@ -87,6 +96,61 @@ class ClassifierProtocol(Protocol):
     def classify(self, question: str) -> ClassificationResult: ...
 
 
+def _inject_canonical_sources(
+    question: str,
+    chunks: list[RetrievedChunk],
+    *,
+    canonical_retriever: CanonicalRetrieverProtocol,
+    source_map: dict[str, str],
+    top_k: int,
+) -> list[RetrievedChunk]:
+    """Guarantee that trigger-matched canonical sources appear in retrieved chunks.
+
+    Triggers are matched against the original user question only (case-insensitive).
+    Injection is skipped when the canonical source is already represented.
+    When the chunk list is at top_k capacity the lowest-scoring non-canonical
+    chunk is replaced so the injected chunk is never discarded.
+    """
+    q_lower = question.lower()
+    injected = list(chunks)
+
+    for trigger, source in source_map.items():
+        if trigger not in q_lower:
+            continue
+
+        # Already represented — skip.
+        if any(c.source == source for c in injected):
+            continue
+
+        canonical_chunks = canonical_retriever.retrieve_by_source(question, source)
+        if not canonical_chunks:
+            continue
+
+        tagged = [
+            _dataclass_replace(
+                c,
+                retrieval_reason="canonical_source_injection",
+                canonical_trigger=trigger,
+            )
+            for c in canonical_chunks
+        ]
+
+        for canonical_chunk in tagged:
+            if len(injected) < top_k:
+                injected.append(canonical_chunk)
+            else:
+                # Replace the lowest-scoring non-canonical chunk.
+                non_canonical = [
+                    (i, c) for i, c in enumerate(injected)
+                    if c.retrieval_reason != "canonical_source_injection"
+                ]
+                if not non_canonical:
+                    break
+                min_idx, _ = min(non_canonical, key=lambda x: x[1].score)
+                injected[min_idx] = canonical_chunk
+
+    return injected
+
 
 class QueryEngine:
     def __init__(
@@ -94,10 +158,14 @@ class QueryEngine:
         retriever: RetrieverProtocol,
         generator: GeneratorProtocol,
         classifier: ClassifierProtocol,
+        canonical_retriever: CanonicalRetrieverProtocol | None = None,
+        top_k: int = settings.RETRIEVER_TOP_K,
     ):
         self._retriever = retriever
         self._generator = generator
         self._classifier = classifier
+        self._canonical_retriever = canonical_retriever
+        self._top_k = top_k
 
     def ask(self, question: str, company_context: str = "") -> QueryResult:
         classification = self._classifier.classify(question)
@@ -130,6 +198,16 @@ class QueryEngine:
         )
         retrieval_query = _enrich_retrieval_query(base_query)
         chunks = self._retriever.retrieve(retrieval_query)
+
+        if self._canonical_retriever is not None:
+            chunks = _inject_canonical_sources(
+                question,
+                chunks,
+                canonical_retriever=self._canonical_retriever,
+                source_map=CANONICAL_SOURCE_MAP,
+                top_k=self._top_k,
+            )
+
         gen_chunks = _expand_parent_sections(chunks)
         answer = self._generator.generate(
             query=question,
