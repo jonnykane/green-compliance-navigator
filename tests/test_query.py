@@ -1,5 +1,5 @@
 import pytest
-from src.query import QueryEngine, _enrich_retrieval_query, _expand_parent_sections
+from src.query import QueryEngine, _enrich_retrieval_query, _expand_parent_sections, _inject_canonical_sources
 from src.models import ClassificationResult, DetectedContext, QueryResult
 from src.retriever.retriever import RetrievedChunk
 from src.generator.generator import Answer
@@ -647,3 +647,224 @@ def test_expand_parent_sections_mixed_chunks():
     assert len(result) == 2
     assert result[0].text == full_section
     assert result[1].text == "standalone"
+
+
+# ---------------------------------------------------------------------------
+# Canonical source injection — fakes
+# ---------------------------------------------------------------------------
+
+_SECR_SUMMARY_SOURCE = "secr_guidelines_summary.md"
+
+_CANONICAL_SOURCE_MAP: dict[str, str] = {
+    "secr": _SECR_SUMMARY_SOURCE,
+    "streamlined energy": _SECR_SUMMARY_SOURCE,
+    "streamlined carbon": _SECR_SUMMARY_SOURCE,
+}
+
+
+def _secr_summary_chunk(score: float = 0.75) -> RetrievedChunk:
+    return RetrievedChunk(
+        text="SECR threshold: 250 employees or £36m turnover or £18m balance sheet.",
+        source=_SECR_SUMMARY_SOURCE,
+        section="Thresholds",
+        doc_type="real",
+        score=score,
+    )
+
+
+class FakeCanonicalRetriever:
+    """Returns a preset chunk when retrieve_by_source matches, empty list otherwise."""
+
+    def __init__(self, chunks_by_source: dict[str, list[RetrievedChunk]]):
+        self._chunks = chunks_by_source
+        self.calls: list[tuple[str, str]] = []
+
+    def retrieve_by_source(self, query: str, source: str) -> list[RetrievedChunk]:
+        self.calls.append((query, source))
+        return list(self._chunks.get(source, []))
+
+
+def _make_non_secr_chunks(n: int = 3, base_score: float = 0.9) -> list[RetrievedChunk]:
+    return [
+        RetrievedChunk(
+            text=f"chunk {i}", source=f"doc{i}.pdf",
+            section="S", doc_type="real", score=base_score - 0.05 * i,
+        )
+        for i in range(n)
+    ]
+
+
+# ---------------------------------------------------------------------------
+# _inject_canonical_sources — standalone function tests
+# ---------------------------------------------------------------------------
+
+def test_inject_secr_question_adds_summary_when_absent():
+    chunks = _make_non_secr_chunks(2)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "What is SECR and who does it apply to?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    sources = [c.source for c in result]
+    assert _SECR_SUMMARY_SOURCE in sources
+
+
+def test_inject_secr_summary_already_present_no_duplicate():
+    existing_summary = _secr_summary_chunk(score=0.8)
+    chunks = _make_non_secr_chunks(1) + [existing_summary]
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "What is SECR?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    summary_count = sum(1 for c in result if c.source == _SECR_SUMMARY_SOURCE)
+    assert summary_count == 1
+    assert not canonical.calls  # canonical retriever must not be called
+
+
+def test_inject_non_secr_question_does_not_inject():
+    chunks = _make_non_secr_chunks(3)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "What is ESOS and who does it apply to?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    sources = [c.source for c in result]
+    assert _SECR_SUMMARY_SOURCE not in sources
+    assert not canonical.calls
+
+
+def test_inject_trigger_matching_is_case_insensitive():
+    chunks = _make_non_secr_chunks(2)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "WHAT IS SECR AND WHO DOES IT APPLY TO?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    sources = [c.source for c in result]
+    assert _SECR_SUMMARY_SOURCE in sources
+
+
+def test_inject_streamlined_energy_trigger_injects_secr_summary():
+    chunks = _make_non_secr_chunks(2)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "Who must comply with streamlined energy reporting?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    sources = [c.source for c in result]
+    assert _SECR_SUMMARY_SOURCE in sources
+
+
+def test_inject_at_top_k_capacity_replaces_lowest_non_canonical_chunk():
+    # 3 chunks at top_k=3; injection must replace the lowest-scoring one.
+    chunks = [
+        RetrievedChunk(text="a", source="a.pdf", section="S", doc_type="real", score=0.9),
+        RetrievedChunk(text="b", source="b.pdf", section="S", doc_type="real", score=0.8),
+        RetrievedChunk(text="c", source="c.pdf", section="S", doc_type="real", score=0.5),  # lowest
+    ]
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk(score=0.75)]})
+    result = _inject_canonical_sources(
+        "What is SECR?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=3,
+    )
+    assert len(result) == 3
+    sources = [c.source for c in result]
+    assert _SECR_SUMMARY_SOURCE in sources
+    assert "c.pdf" not in sources  # lowest-scoring chunk was displaced
+
+
+def test_inject_at_top_k_capacity_injected_chunk_remains():
+    """The injected canonical chunk must survive — not be sliced off."""
+    chunks = [
+        RetrievedChunk(text="a", source="a.pdf", section="S", doc_type="real", score=0.9),
+        RetrievedChunk(text="b", source="b.pdf", section="S", doc_type="real", score=0.8),
+        RetrievedChunk(text="c", source="c.pdf", section="S", doc_type="real", score=0.5),
+    ]
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk(score=0.75)]})
+    result = _inject_canonical_sources(
+        "SECR thresholds",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=3,
+    )
+    injected = [c for c in result if c.retrieval_reason == "canonical_source_injection"]
+    assert len(injected) == 1
+
+
+def test_inject_marks_injected_chunk_with_retrieval_reason():
+    chunks = _make_non_secr_chunks(1)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "What is SECR?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    injected = next(c for c in result if c.source == _SECR_SUMMARY_SOURCE)
+    assert injected.retrieval_reason == "canonical_source_injection"
+
+
+def test_inject_marks_injected_chunk_with_canonical_trigger():
+    chunks = _make_non_secr_chunks(1)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    result = _inject_canonical_sources(
+        "What is SECR?",
+        chunks,
+        canonical_retriever=canonical,
+        source_map=_CANONICAL_SOURCE_MAP,
+        top_k=8,
+    )
+    injected = next(c for c in result if c.source == _SECR_SUMMARY_SOURCE)
+    assert injected.canonical_trigger == "secr"
+
+
+# ---------------------------------------------------------------------------
+# QueryEngine integration — canonical injection via ask()
+# ---------------------------------------------------------------------------
+
+def test_ask_with_canonical_retriever_injects_secr_summary():
+    chunks = _make_non_secr_chunks(2)
+    canonical = FakeCanonicalRetriever({_SECR_SUMMARY_SOURCE: [_secr_summary_chunk()]})
+    engine = QueryEngine(
+        retriever=FakeRetriever(chunks),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+        canonical_retriever=canonical,
+        top_k=8,
+    )
+    result = engine.ask("What is SECR and who does it apply to?")
+    sources = [c["source"] for c in result.retrieved_chunks]
+    assert _SECR_SUMMARY_SOURCE in sources
+
+
+def test_ask_without_canonical_retriever_skips_injection():
+    chunks = _make_non_secr_chunks(2)
+    engine = QueryEngine(
+        retriever=FakeRetriever(chunks),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    result = engine.ask("What is SECR and who does it apply to?")
+    sources = [c["source"] for c in result.retrieved_chunks]
+    assert _SECR_SUMMARY_SOURCE not in sources

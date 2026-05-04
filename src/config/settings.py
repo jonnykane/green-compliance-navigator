@@ -31,3 +31,12 @@ CHUNK_OVERLAP_TOKENS = int(os.getenv("CHUNK_OVERLAP_TOKENS", "64"))
 RETRIEVER_TOP_K = int(os.getenv("RETRIEVER_TOP_K", "8"))
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
+
+# Canonical source injection — maps trigger phrases (lowercase) to the source
+# filename that must be present in retrieved chunks when that phrase appears in
+# the user's question.  Loaded from config so query.py stays data-free.
+CANONICAL_SOURCE_MAP: dict[str, str] = {
+    "secr": "secr_guidelines_summary.md",
+    "streamlined energy": "secr_guidelines_summary.md",
+    "streamlined carbon": "secr_guidelines_summary.md",
+}

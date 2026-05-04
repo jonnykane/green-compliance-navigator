@@ -66,8 +66,12 @@ class FakePineconeIndex:
         vector: list[float],
         top_k: int,
         include_metadata: bool,
+        filter: dict[str, Any] | None = None,
     ) -> _FakeQueryResponse:
-        n = min(top_k, len(self._records))
+        records = self._records
+        if filter:
+            records = self._apply_filter(records, filter)
+        n = min(top_k, len(records))
         matches = [
             _FakeMatch(
                 id=r["id"],
@@ -75,9 +79,25 @@ class FakePineconeIndex:
                 score=max(0.0, 1.0 - 0.1 * i),
                 metadata=dict(r.get("metadata", {})),
             )
-            for i, r in enumerate(self._records[:n])
+            for i, r in enumerate(records[:n])
         ]
         return _FakeQueryResponse(matches=matches)
+
+    @staticmethod
+    def _apply_filter(records: list[dict[str, Any]], filter: dict[str, Any]) -> list[dict[str, Any]]:
+        """Apply Pinecone-style metadata filter (supports $eq operator only)."""
+        result = []
+        for record in records:
+            meta = record.get("metadata", {})
+            match = True
+            for field, condition in filter.items():
+                if isinstance(condition, dict) and "$eq" in condition:
+                    if meta.get(field) != condition["$eq"]:
+                        match = False
+                        break
+            if match:
+                result.append(record)
+        return result
 
     def delete(self, delete_all: bool = False) -> None:
         if delete_all:

@@ -93,4 +93,10 @@ def build_query_engine() -> QueryEngine:
             model=settings.ANTHROPIC_MODEL,
         )
     )
-    return QueryEngine(retriever=retriever, generator=generator, classifier=classifier)
+    return QueryEngine(
+        retriever=retriever,
+        generator=generator,
+        classifier=classifier,
+        canonical_retriever=retriever,
+        top_k=settings.RETRIEVER_TOP_K,
+    )

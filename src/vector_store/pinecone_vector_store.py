@@ -44,6 +44,7 @@ class _PineconeIndexProtocol(Protocol):
         vector: list[float],
         top_k: int,
         include_metadata: bool,
+        filter: dict[str, Any] | None = None,
     ) -> _PineconeQueryResponseProtocol: ...
 
     def describe_index_stats(self) -> Any: ...
@@ -107,6 +108,23 @@ class PineconeVectorStore:
             top_k=n_results,
             include_metadata=True,
         )
+        return self._parse_response(response)
+
+    def query_filtered(
+        self,
+        vector: list[float],
+        n_results: int = 1,
+        filter: dict[str, Any] | None = None,
+    ) -> list[SearchResult]:
+        response = self._index.query(
+            vector=vector,
+            top_k=n_results,
+            include_metadata=True,
+            filter=filter,
+        )
+        return self._parse_response(response)
+
+    def _parse_response(self, response: _PineconeQueryResponseProtocol) -> list[SearchResult]:
         results: list[SearchResult] = []
         for match in response.matches:
             meta = dict(match.metadata)
