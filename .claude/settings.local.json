@@ -25,7 +25,8 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'{len\\(d\\)} entries'\\); print\\(json.dumps\\(d[:3], indent=2\\)\\)\")",
       "Bash(python -m pytest tests/test_evals_runner.py -v)",
       "Bash(python -m pytest --tb=no -q)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(python -m pytest tests/agent/test_registry.py -v)"
     ]
   }
 }
