@@ -81,7 +81,7 @@ def build_query_engine() -> QueryEngine:
         batch_size=settings.VOYAGE_BATCH_SIZE,
     )
     store = _build_vector_store()
-    retriever = Retriever(embedder=embedder, store=store, top_k=5)
+    retriever = Retriever(embedder=embedder, store=store, top_k=settings.RETRIEVER_TOP_K)
     anthropic_client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
     generator = Generator(
         anthropic_client=anthropic_client,
