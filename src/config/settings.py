@@ -27,3 +27,5 @@ PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "green-compliance-navigat
 
 CHUNK_MAX_TOKENS = int(os.getenv("CHUNK_MAX_TOKENS", "512"))
 CHUNK_OVERLAP_TOKENS = int(os.getenv("CHUNK_OVERLAP_TOKENS", "64"))
+
+ENVIRONMENT = os.getenv("ENVIRONMENT", "production")

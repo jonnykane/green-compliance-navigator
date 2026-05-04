@@ -6,17 +6,23 @@ Start with:
 
 Environment variables:
     PINECONE_API_KEY   — if set, QueryEngine uses Pinecone; otherwise ChromaDB
+    ENVIRONMENT        — "development" enables localhost CORS origins (default: "production")
     (all other env vars as documented in src/config/settings.py)
 """
+import logging
 from dataclasses import asdict
 from typing import Annotated, Protocol
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from src.config import settings
 from src.models import QueryResult
 from src.wiring import build_query_engine
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -34,12 +40,44 @@ class _QueryEngineProtocol(Protocol):
 
 app = FastAPI(title="UK Green Compliance Navigator API")
 
+
+def _get_allowed_origins() -> list[str]:
+    """Return CORS allowed origins for the current environment.
+
+    Production: Lovable app only.
+    Development: also includes localhost dev-server ports.
+    """
+    origins = ["https://green-nav-guide.lovable.app"]
+    if settings.ENVIRONMENT == "development":
+        origins.extend([
+            "http://localhost:3000",
+            "http://localhost:5173",
+        ])
+    return origins
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_get_allowed_origins(),
+    allow_credentials=False,
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type"],
 )
+
+
+# ---------------------------------------------------------------------------
+# Global exception handler — catches anything that escapes route handlers.
+# Logs the full traceback to Railway logs; returns a clean JSON body to the
+# client so internal details are never exposed.
+# ---------------------------------------------------------------------------
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.error("Unhandled exception", exc_info=exc)
+    return JSONResponse(
+        status_code=500,
+        content={"error": "An unexpected error occurred. Please try again."},
+    )
 
 
 # ---------------------------------------------------------------------------

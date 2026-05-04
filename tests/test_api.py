@@ -7,7 +7,8 @@ no real API calls to Voyage AI, Anthropic, or Pinecone are made.
 import pytest
 from fastapi.testclient import TestClient
 
-from api import app, get_engine
+from api import app, get_engine, _get_allowed_origins
+from src.config import settings as settings_module
 from src.models import QueryResult
 
 
@@ -225,3 +226,135 @@ def test_ask_engine_error_detail_in_response():
     data = client.post("/ask", json={"question": "What is ESOS?"}).json()
     assert "detail" in data
     assert "Upstream service unavailable" in data["detail"]
+
+
+# ---------------------------------------------------------------------------
+# Change 1 — _get_allowed_origins() unit tests
+# ---------------------------------------------------------------------------
+
+def test_get_allowed_origins_includes_lovable_in_production(monkeypatch):
+    monkeypatch.setattr(settings_module, "ENVIRONMENT", "production")
+    assert "https://green-nav-guide.lovable.app" in _get_allowed_origins()
+
+
+def test_get_allowed_origins_excludes_localhost_in_production(monkeypatch):
+    monkeypatch.setattr(settings_module, "ENVIRONMENT", "production")
+    origins = _get_allowed_origins()
+    assert not any("localhost" in o for o in origins)
+
+
+def test_get_allowed_origins_includes_localhost_in_development(monkeypatch):
+    monkeypatch.setattr(settings_module, "ENVIRONMENT", "development")
+    origins = _get_allowed_origins()
+    assert any("localhost" in o for o in origins)
+
+
+def test_get_allowed_origins_still_includes_lovable_in_development(monkeypatch):
+    monkeypatch.setattr(settings_module, "ENVIRONMENT", "development")
+    assert "https://green-nav-guide.lovable.app" in _get_allowed_origins()
+
+
+# ---------------------------------------------------------------------------
+# Change 1 — CORS middleware behaviour (via preflight requests)
+# ---------------------------------------------------------------------------
+
+def test_cors_lovable_origin_allowed_in_preflight():
+    client = TestClient(app)
+    response = client.options(
+        "/ask",
+        headers={
+            "Origin": "https://green-nav-guide.lovable.app",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "Content-Type",
+        },
+    )
+    assert response.headers.get("access-control-allow-origin") == "https://green-nav-guide.lovable.app"
+
+
+def test_cors_unknown_origin_denied_in_preflight():
+    client = TestClient(app)
+    response = client.options(
+        "/ask",
+        headers={
+            "Origin": "https://evil.example.com",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_cors_post_and_get_in_allowed_methods():
+    client = TestClient(app)
+    response = client.options(
+        "/ask",
+        headers={
+            "Origin": "https://green-nav-guide.lovable.app",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    allow_methods = response.headers.get("access-control-allow-methods", "")
+    assert "POST" in allow_methods
+    assert "GET" in allow_methods
+
+
+def test_cors_credentials_not_allowed():
+    client = TestClient(app)
+    response = client.options(
+        "/ask",
+        headers={
+            "Origin": "https://green-nav-guide.lovable.app",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    # allow_credentials=False means this header should be absent or explicitly "false"
+    creds = response.headers.get("access-control-allow-credentials", "false")
+    assert creds.lower() != "true"
+
+
+# ---------------------------------------------------------------------------
+# Change 2 — Global unhandled exception handler
+# ---------------------------------------------------------------------------
+
+class _RaisingDependency:
+    """Raises a raw RuntimeError when called as a FastAPI dependency.
+
+    Because the exception is raised in the dependency (before the route's
+    try/except runs), it reaches the global exception handler directly.
+    """
+    _SENTINEL = "sentinel_xyz_not_for_clients"
+
+    def __call__(self):
+        raise RuntimeError(self._SENTINEL)
+
+
+_raising_dep = _RaisingDependency()
+
+
+def test_unhandled_exception_returns_500():
+    app.dependency_overrides[get_engine] = _raising_dep
+    client = TestClient(app, raise_server_exceptions=False)
+    response = client.post("/ask", json={"question": "test"})
+    assert response.status_code == 500
+
+
+def test_unhandled_exception_body_is_clean_json():
+    app.dependency_overrides[get_engine] = _raising_dep
+    client = TestClient(app, raise_server_exceptions=False)
+    data = client.post("/ask", json={"question": "test"}).json()
+    assert data == {"error": "An unexpected error occurred. Please try again."}
+
+
+def test_unhandled_exception_does_not_expose_internal_details():
+    app.dependency_overrides[get_engine] = _raising_dep
+    client = TestClient(app, raise_server_exceptions=False)
+    response = client.post("/ask", json={"question": "test"})
+    assert _RaisingDependency._SENTINEL not in response.text
+
+
+def test_http_exception_uses_detail_not_error_key():
+    """HTTPException (from the route's own handler) must not be intercepted by the
+    global exception handler — it must still return {"detail": ...}."""
+    client = _inject(ErrorEngine())
+    data = client.post("/ask", json={"question": "test"}).json()
+    assert "detail" in data
+    assert "error" not in data
