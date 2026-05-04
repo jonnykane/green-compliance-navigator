@@ -11,6 +11,41 @@ _OUT_OF_SCOPE_MESSAGE = (
     "Please rephrase or ask about a specific regulation."
 )
 
+# ---------------------------------------------------------------------------
+# Retrieval-query enrichment
+# ---------------------------------------------------------------------------
+
+# Vocabulary appended to queries that mention a specific regulation keyword.
+# The extra terms close the gap between natural-language questions and the
+# technical language embedded in policy document chunks.
+_REGULATION_VOCAB: dict[str, str] = {
+    "secr": (
+        "large unquoted companies LLPs Directors Report "
+        "250 employees £36m turnover £18m balance sheet "
+        "qualifying thresholds energy carbon reporting"
+    ),
+    "streamlined energy": (
+        "large companies 250 employees £36m turnover Directors Report"
+    ),
+}
+
+
+def _enrich_retrieval_query(question: str) -> str:
+    """Return *question* with regulation-specific vocabulary appended.
+
+    If the question (case-insensitively) contains any keyword in
+    ``_REGULATION_VOCAB`` the corresponding vocabulary string is appended.
+    Questions that match no keyword are returned unchanged.
+    """
+    q_lower = question.lower()
+    extra_terms: list[str] = []
+    for keyword, vocab in _REGULATION_VOCAB.items():
+        if keyword in q_lower:
+            extra_terms.append(vocab)
+    if extra_terms:
+        return f"{question} {' '.join(extra_terms)}"
+    return question
+
 
 class RetrieverProtocol(Protocol):
     def retrieve(self, query: str) -> list[RetrievedChunk]: ...
@@ -67,9 +102,10 @@ class QueryEngine:
 
         # "clear", "partial_answer_needs_clarification", or "needs_clarification" with
         # context provided — retrieve and generate.
-        retrieval_query = (
+        base_query = (
             f"{question} {company_context}".strip() if company_context else question
         )
+        retrieval_query = _enrich_retrieval_query(base_query)
         chunks = self._retriever.retrieve(retrieval_query)
         answer = self._generator.generate(
             query=question,

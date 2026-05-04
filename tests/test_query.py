@@ -1,5 +1,5 @@
 import pytest
-from src.query import QueryEngine
+from src.query import QueryEngine, _enrich_retrieval_query
 from src.models import ClassificationResult, DetectedContext, QueryResult
 from src.retriever.retriever import RetrievedChunk
 from src.generator.generator import Answer
@@ -373,3 +373,89 @@ def test_partial_state_no_missing_fields_note_when_missing_fields_empty():
     )
     engine.ask("We have 300 employees and £45m turnover.")
     assert "Note: the following context is missing" not in generator.last_company_context
+
+
+# ---------------------------------------------------------------------------
+# _enrich_retrieval_query — standalone function tests
+# ---------------------------------------------------------------------------
+
+def test_enrich_retrieval_query_no_keyword_returns_unchanged():
+    """Questions with no regulation keyword must pass through unmodified."""
+    q = "We have 300 employees — what must we report?"
+    assert _enrich_retrieval_query(q) == q
+
+
+def test_enrich_retrieval_query_esos_only_returns_unchanged():
+    """'ESOS' alone (no 'secr' / 'streamlined energy') must not be enriched."""
+    q = "ESOS compliance threshold"
+    assert _enrich_retrieval_query(q) == q
+
+
+def test_enrich_retrieval_query_secr_lowercase_triggers_enrichment():
+    """Lower-case 'secr' in the question must trigger vocabulary expansion."""
+    result = _enrich_retrieval_query("what is secr and who must comply?")
+    assert len(result) > len("what is secr and who must comply?")
+
+
+def test_enrich_retrieval_query_secr_uppercase_triggers_enrichment():
+    """Upper-case 'SECR' must also trigger vocabulary expansion (case-insensitive)."""
+    result = _enrich_retrieval_query("What is SECR and who does it apply to?")
+    assert len(result) > len("What is SECR and who does it apply to?")
+
+
+def test_enrich_retrieval_query_secr_result_contains_llp_terms():
+    """Enriched SECR query must contain qualifying-threshold vocabulary."""
+    result = _enrich_retrieval_query("What is SECR?")
+    lower = result.lower()
+    assert "llp" in lower or "250 employees" in lower or "£36m" in lower or "directors report" in lower
+
+
+def test_enrich_retrieval_query_secr_result_contains_original_question():
+    """Original question text must be preserved at the start of the enriched query."""
+    q = "What is SECR and who does it apply to?"
+    result = _enrich_retrieval_query(q)
+    assert result.startswith(q)
+
+
+def test_enrich_retrieval_query_streamlined_energy_triggers_enrichment():
+    """'streamlined energy' keyword must trigger vocabulary expansion."""
+    q = "What is streamlined energy reporting?"
+    result = _enrich_retrieval_query(q)
+    assert len(result) > len(q)
+
+
+def test_enrich_retrieval_query_streamlined_energy_result_contains_original():
+    """Original question preserved when enriching via 'streamlined energy' keyword."""
+    q = "What is streamlined energy reporting?"
+    result = _enrich_retrieval_query(q)
+    assert result.startswith(q)
+
+
+# ---------------------------------------------------------------------------
+# QueryEngine integration — enriched retrieval query
+# ---------------------------------------------------------------------------
+
+def test_ask_retriever_receives_enriched_query_for_secr_question():
+    """Retriever must see the expanded vocabulary when the question mentions SECR."""
+    retriever = FakeRetriever(_chunks())
+    engine = QueryEngine(
+        retriever=retriever,
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    engine.ask("What is SECR and who does it apply to?")
+    lower = retriever.last_query.lower()
+    assert "llp" in lower or "250 employees" in lower or "£36m" in lower or "directors report" in lower
+
+
+def test_ask_retriever_query_still_contains_original_secr_question():
+    """Original question must remain present in the (enriched) retrieval query."""
+    retriever = FakeRetriever(_chunks())
+    engine = QueryEngine(
+        retriever=retriever,
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    q = "What is SECR and who does it apply to?"
+    engine.ask(q)
+    assert q in retriever.last_query
