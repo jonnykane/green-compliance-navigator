@@ -203,3 +203,75 @@ def test_load_directory_propagates_doc_context(tmp_path):
         docs = loader.load_directory(tmp_path, file_type="pdf")
     assert len(docs) == 1
     assert docs[0].metadata.get("doc_context") == "SECR context"
+
+
+# ---------------------------------------------------------------------------
+# PDF layout extraction (layout=True preferred, fallback to default)
+# ---------------------------------------------------------------------------
+
+def _make_mock_pdf_with_layout(layout_text: str | None, fallback_text: str | None):
+    """Page mock where extract_text behaves differently for layout=True vs no args."""
+    page = MagicMock()
+
+    def extract_text_side_effect(*args, **kwargs):
+        if kwargs.get("layout"):
+            return layout_text
+        return fallback_text
+
+    page.extract_text.side_effect = extract_text_side_effect
+    pdf_obj = MagicMock()
+    pdf_obj.pages = [page]
+    cm = MagicMock()
+    cm.__enter__ = MagicMock(return_value=pdf_obj)
+    cm.__exit__ = MagicMock(return_value=False)
+    return cm
+
+
+def test_load_pdf_prefers_layout_extraction(tmp_pdf):
+    """When extract_text(layout=True) returns text it must be used (not the fallback)."""
+    mock_cm = _make_mock_pdf_with_layout(
+        layout_text="Clean layout text.", fallback_text="Garbled fallback."
+    )
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader()
+        doc = loader.load_pdf(tmp_pdf)
+    assert "Clean layout text." in doc.content
+    assert "Garbled fallback." not in doc.content
+
+
+def test_load_pdf_falls_back_when_layout_returns_none(tmp_pdf):
+    """When extract_text(layout=True) returns None, default extraction must be used."""
+    mock_cm = _make_mock_pdf_with_layout(
+        layout_text=None, fallback_text="Good fallback text."
+    )
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader()
+        doc = loader.load_pdf(tmp_pdf)
+    assert "Good fallback text." in doc.content
+
+
+def test_load_pdf_falls_back_when_layout_returns_empty(tmp_pdf):
+    """When extract_text(layout=True) returns empty string, default extraction must be used."""
+    mock_cm = _make_mock_pdf_with_layout(
+        layout_text="", fallback_text="Non-empty fallback."
+    )
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader()
+        doc = loader.load_pdf(tmp_pdf)
+    assert "Non-empty fallback." in doc.content
+
+
+def test_load_pdf_falls_back_when_layout_returns_whitespace_only(tmp_pdf):
+    """When extract_text(layout=True) returns only whitespace, default extraction must be used.
+
+    pdfplumber layout=True returns whitespace strings (not empty) for many complex PDFs
+    (e.g. the TCFD multi-column layout). A whitespace-only result must be treated as
+    unusable so the fallback kicks in and produces readable text.
+    """
+    mock_cm = _make_mock_pdf_with_layout(
+        layout_text="   \n   \n   ", fallback_text="Readable fallback text."
+    )
+    with patch("src.loader.document_loader.pdfplumber.open", return_value=mock_cm):
+        loader = DocumentLoader()
+        doc = loader.load_pdf(tmp_pdf)
+    assert "Readable fallback text." in doc.content

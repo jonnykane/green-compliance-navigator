@@ -30,6 +30,29 @@ _REGULATION_VOCAB: dict[str, str] = {
 }
 
 
+def _expand_parent_sections(chunks: list[RetrievedChunk]) -> list[RetrievedChunk]:
+    """Replace chunk text with its full parent section where available.
+
+    Retrieval precision is preserved — the original chunk text and score are
+    unchanged in the QueryResult. Only the copy sent to the generator is
+    expanded, so the generator sees column headers and labels that may live
+    outside the matched sub-chunk.
+    """
+    result: list[RetrievedChunk] = []
+    for chunk in chunks:
+        if chunk.parent_section_text:
+            result.append(RetrievedChunk(
+                text=chunk.parent_section_text,
+                source=chunk.source,
+                section=chunk.section,
+                doc_type=chunk.doc_type,
+                score=chunk.score,
+            ))
+        else:
+            result.append(chunk)
+    return result
+
+
 def _enrich_retrieval_query(question: str) -> str:
     """Return *question* with regulation-specific vocabulary appended.
 
@@ -107,9 +130,10 @@ class QueryEngine:
         )
         retrieval_query = _enrich_retrieval_query(base_query)
         chunks = self._retriever.retrieve(retrieval_query)
+        gen_chunks = _expand_parent_sections(chunks)
         answer = self._generator.generate(
             query=question,
-            chunks=chunks,
+            chunks=gen_chunks,
             company_context=company_context,
         )
         return QueryResult(
