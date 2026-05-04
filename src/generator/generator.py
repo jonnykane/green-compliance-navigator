@@ -69,6 +69,30 @@ or similar hedging language, you must reproduce those
 qualifications in your answer. Do not silently convert a
 proposed or uncertain obligation into a definitive one.
 
+NUMERIC FACT EXTRACTION RULE: When retrieved chunks contain
+specific numeric values (employee counts, turnover figures,
+balance sheet totals, energy thresholds, contract values,
+dates), every such figure must appear explicitly in the answer.
+Do not summarise numeric facts — enumerate them individually.
+Example: if chunks contain "250 or more employees",
+"£36 million turnover", and "£18 million balance sheet total",
+all three must appear in the answer.
+
+CONJUNCTIVE CRITERIA RULE: When retrieved chunks describe
+criteria where multiple conditions apply (e.g. "two of three
+criteria must be met", "AND", "OR" conditions), the answer
+must explicitly state how many criteria must be satisfied and
+list each criterion separately. Do not collapse conjunctive
+conditions into a single summary statement.
+
+FALSE PREMISE CORRECTION RULE: When the question contains a
+factual premise that contradicts the retrieved evidence (e.g.
+"Does SECR apply to companies with more than 500 employees?"
+when the threshold is actually 250), the answer must explicitly
+correct the false premise before answering. State what the
+actual threshold or rule is, and note that the figure in the
+question is incorrect.
+
 If the sources do not contain enough information to answer
 fully, state clearly which obligations can be assessed from
 the available context and which cannot be determined without

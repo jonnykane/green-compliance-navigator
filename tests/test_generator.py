@@ -214,3 +214,18 @@ def test_default_system_prompt_contains_named_regulation_rule():
 def test_default_system_prompt_contains_partial_answer_rule():
     from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
     assert "PARTIAL ANSWER RULE" in _DEFAULT_SYSTEM_PROMPT
+
+
+def test_default_system_prompt_contains_numeric_fact_extraction_rule():
+    from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
+    assert "NUMERIC FACT EXTRACTION RULE" in _DEFAULT_SYSTEM_PROMPT
+
+
+def test_default_system_prompt_contains_conjunctive_criteria_rule():
+    from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
+    assert "CONJUNCTIVE CRITERIA RULE" in _DEFAULT_SYSTEM_PROMPT
+
+
+def test_default_system_prompt_contains_false_premise_correction_rule():
+    from src.generator.generator import _DEFAULT_SYSTEM_PROMPT
+    assert "FALSE PREMISE CORRECTION RULE" in _DEFAULT_SYSTEM_PROMPT
