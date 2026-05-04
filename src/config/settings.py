@@ -39,4 +39,9 @@ CANONICAL_SOURCE_MAP: dict[str, str] = {
     "secr": "secr_guidelines_summary.md",
     "streamlined energy": "secr_guidelines_summary.md",
     "streamlined carbon": "secr_guidelines_summary.md",
+    "ppn": "ppn_0621_carbon_reduction_plans.pdf",
+    "carbon reduction plan": "ppn_0621_carbon_reduction_plans.pdf",
+    "government contract": "ppn_0621_carbon_reduction_plans.pdf",
+    "public procurement": "ppn_0621_carbon_reduction_plans.pdf",
+    "procurement policy note": "ppn_0621_carbon_reduction_plans.pdf",
 }
