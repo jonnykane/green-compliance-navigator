@@ -130,3 +130,37 @@ def test_retrieve_text_preserved():
     retriever = Retriever(embedder=FakeEmbedder(), store=store)
     results = retriever.retrieve("q")
     assert results[0].text == "The specific text content"
+
+
+def test_retrieve_passes_parent_section_text_from_metadata():
+    """parent_section_text in store metadata must surface on the RetrievedChunk."""
+    full_section = "2. Thresholds\n\n250 employees or £36m turnover or £18m balance sheet."
+    store = FakeStore([
+        SearchResult(
+            text="250 employees",
+            metadata={
+                "source": "secr.pdf",
+                "section": "Thresholds",
+                "doc_type": "real",
+                "parent_section_text": full_section,
+            },
+            distance=0.1,
+        )
+    ])
+    retriever = Retriever(embedder=FakeEmbedder(), store=store)
+    results = retriever.retrieve("SECR thresholds")
+    assert results[0].parent_section_text == full_section
+
+
+def test_retrieve_parent_section_text_defaults_to_empty_when_absent():
+    """Chunks without parent_section_text in metadata get an empty string default."""
+    store = FakeStore([
+        SearchResult(
+            text="some text",
+            metadata={"source": "x.pdf", "section": "A", "doc_type": "real"},
+            distance=0.1,
+        )
+    ])
+    retriever = Retriever(embedder=FakeEmbedder(), store=store)
+    results = retriever.retrieve("q")
+    assert results[0].parent_section_text == ""

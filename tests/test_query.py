@@ -1,5 +1,5 @@
 import pytest
-from src.query import QueryEngine, _enrich_retrieval_query
+from src.query import QueryEngine, _enrich_retrieval_query, _expand_parent_sections
 from src.models import ClassificationResult, DetectedContext, QueryResult
 from src.retriever.retriever import RetrievedChunk
 from src.generator.generator import Answer
@@ -525,3 +525,125 @@ def test_ask_clarification_needed_has_empty_retrieved_chunks():
     )
     result = engine.ask("What sustainability reporting do we need to do?")
     assert result.retrieved_chunks == []
+
+
+# ---------------------------------------------------------------------------
+# QueryEngine — parent-section expansion for generation
+# ---------------------------------------------------------------------------
+
+def _chunk_with_parent(parent_text: str) -> RetrievedChunk:
+    return RetrievedChunk(
+        text="250 employees",
+        source="secr.pdf",
+        section="Thresholds",
+        doc_type="real",
+        score=0.9,
+        parent_section_text=parent_text,
+    )
+
+
+def test_ask_generator_receives_expanded_text_when_parent_section_text_set():
+    """Generator must see the full parent section text, not just the matched chunk text."""
+    full_section = "2. Thresholds\n\n250 employees or £36m turnover or £18m balance sheet."
+    chunk = _chunk_with_parent(full_section)
+    generator = FakeGenerator(_answer())
+    engine = QueryEngine(
+        retriever=FakeRetriever([chunk]),
+        generator=generator,
+        classifier=_clear_classifier(),
+    )
+    engine.ask("SECR thresholds")
+    assert len(generator.last_chunks) == 1
+    assert generator.last_chunks[0].text == full_section
+
+
+def test_ask_retrieved_chunks_in_result_keep_original_text():
+    """QueryResult.retrieved_chunks must carry the original (pre-expansion) chunk text."""
+    full_section = "2. Thresholds\n\n250 employees or £36m turnover or £18m balance sheet."
+    chunk = _chunk_with_parent(full_section)
+    engine = QueryEngine(
+        retriever=FakeRetriever([chunk]),
+        generator=FakeGenerator(_answer()),
+        classifier=_clear_classifier(),
+    )
+    result = engine.ask("SECR thresholds")
+    assert result.retrieved_chunks[0]["text"] == "250 employees"
+
+
+def test_ask_generator_receives_original_text_when_no_parent_section_text():
+    """Chunks without parent_section_text must pass through to the generator unchanged."""
+    generator = FakeGenerator(_answer())
+    chunks = _chunks(2)
+    engine = QueryEngine(
+        retriever=FakeRetriever(chunks),
+        generator=generator,
+        classifier=_clear_classifier(),
+    )
+    engine.ask("q")
+    assert generator.last_chunks[0].text == chunks[0].text
+    assert generator.last_chunks[1].text == chunks[1].text
+
+
+# ---------------------------------------------------------------------------
+# _expand_parent_sections — standalone function tests
+# ---------------------------------------------------------------------------
+
+def test_expand_parent_sections_output_length_equals_input_length_with_parents():
+    """Expansion must replace each chunk — never append — so len(out) == len(in)."""
+    full_section = "Heading\n\nFull body text with all details."
+    chunks = [
+        RetrievedChunk(
+            text="Full body text", source="doc.pdf", section="Heading",
+            doc_type="real", score=0.9, parent_section_text=full_section,
+        ),
+        RetrievedChunk(
+            text="other snippet", source="doc2.pdf", section="S2",
+            doc_type="real", score=0.8, parent_section_text=full_section,
+        ),
+    ]
+    result = _expand_parent_sections(chunks)
+    assert len(result) == len(chunks)
+
+
+def test_expand_parent_sections_output_length_equals_input_length_without_parents():
+    """Pass-through chunks (no parent_section_text) must not be duplicated."""
+    chunks = _chunks(5)
+    result = _expand_parent_sections(chunks)
+    assert len(result) == len(chunks)
+
+
+def test_expand_parent_sections_replaces_text_with_parent_text():
+    """Each chunk with parent_section_text must have its text replaced by the parent text."""
+    full_section = "2. Thresholds\n\n250 employees or £36m turnover."
+    chunk = RetrievedChunk(
+        text="250 employees", source="secr.pdf", section="Thresholds",
+        doc_type="real", score=0.9, parent_section_text=full_section,
+    )
+    result = _expand_parent_sections([chunk])
+    assert result[0].text == full_section
+
+
+def test_expand_parent_sections_passthrough_chunk_is_same_object():
+    """Chunks without parent_section_text must be passed through as-is."""
+    chunk = RetrievedChunk(
+        text="no parent here", source="doc.pdf", section="S",
+        doc_type="real", score=0.7,
+    )
+    result = _expand_parent_sections([chunk])
+    assert result[0] is chunk
+
+
+def test_expand_parent_sections_mixed_chunks():
+    """Mixed input: expanded chunks replace text; pass-through chunks are unchanged."""
+    full_section = "Full section text."
+    chunk_with_parent = RetrievedChunk(
+        text="fragment", source="a.pdf", section="S", doc_type="real",
+        score=0.9, parent_section_text=full_section,
+    )
+    chunk_without_parent = RetrievedChunk(
+        text="standalone", source="b.pdf", section="T", doc_type="mock", score=0.8,
+    )
+    result = _expand_parent_sections([chunk_with_parent, chunk_without_parent])
+    assert len(result) == 2
+    assert result[0].text == full_section
+    assert result[1].text == "standalone"

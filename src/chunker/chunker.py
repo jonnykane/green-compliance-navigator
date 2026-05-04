@@ -139,12 +139,16 @@ class Chunker:
             if _approx_tokens(chunk_text) <= self._max_tokens:
                 chunks.append(self._make_chunk(chunk_text, heading, len(chunks), doc))
             else:
-                # Long section: split the body, re-prepend heading to each piece
+                # Long section: split the body, re-prepend heading to each piece.
+                # Store the full section in metadata so the generator can see column
+                # headers and labels that may be separated from their values by the split.
                 heading_tokens = (_approx_tokens(heading) + 2) if heading else 0
                 body_max = max(self._max_tokens - heading_tokens, 50)
                 for part in _split_tokens(body, body_max, self._overlap_tokens):
                     text = f"{heading}\n\n{part}" if heading else part
-                    chunks.append(self._make_chunk(text, heading, len(chunks), doc))
+                    chunk = self._make_chunk(text, heading, len(chunks), doc)
+                    chunk.metadata["parent_section_text"] = chunk_text
+                    chunks.append(chunk)
         return chunks
 
     def _extract_pdf_sections(self, text: str) -> list[tuple[str, str]]:

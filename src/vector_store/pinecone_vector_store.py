@@ -37,6 +37,8 @@ class _PineconeQueryResponseProtocol(Protocol):
 class _PineconeIndexProtocol(Protocol):
     def upsert(self, vectors: list[dict[str, Any]]) -> None: ...
 
+    def delete(self, delete_all: bool = False) -> None: ...
+
     def query(
         self,
         vector: list[float],
@@ -71,10 +73,13 @@ class PineconeVectorStore:
         vectors: list[list[float]],
         metadatas: list[dict],
     ) -> None:
-        if not texts:
-            return
         if not (len(texts) == len(vectors) == len(metadatas)):
             raise ValueError("texts, vectors, and metadatas must have equal length")
+
+        self._index.delete(delete_all=True)
+
+        if not texts:
+            return
 
         records = [
             {

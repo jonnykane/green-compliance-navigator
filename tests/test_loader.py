@@ -203,3 +203,4 @@ def test_load_directory_propagates_doc_context(tmp_path):
         docs = loader.load_directory(tmp_path, file_type="pdf")
     assert len(docs) == 1
     assert docs[0].metadata.get("doc_context") == "SECR context"
+
