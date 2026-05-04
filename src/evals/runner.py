@@ -18,6 +18,21 @@ _KIND_TO_STATE: dict[str, str] = {
 
 _PARTIAL_STATE = "partial_answer_needs_clarification"
 
+# Default retrieval recall threshold; overridable per-eval via golden set field.
+_DEFAULT_REQUIRED_RETRIEVAL_RECALL = 0.5
+
+# Priority-ordered failure type labels.
+_FAILURE_TYPES = (
+    "classification_failure",
+    "retrieval_failure",
+    "missing_facts",
+    "missing_caveats",
+    "citation_failure",
+    "hallucination",
+    "forbidden_certainty",
+    "answer_posture_failure",
+)
+
 
 class QueryEngineProtocol(Protocol):
     def ask(self, question: str, company_context: str = "") -> QueryResult: ...
@@ -42,6 +57,11 @@ class EvalResult:
     hallucination_flag: bool
     passed: bool
     notes: str
+    # New fields — all have defaults so existing EvalResult constructions stay valid.
+    failure_type: str | None = None
+    forbidden_certainty_flag: bool = False
+    passed_architecture_compatible: bool | None = None
+    required_retrieval_recall: float = _DEFAULT_REQUIRED_RETRIEVAL_RECALL
 
 
 class EvalRunner:
@@ -58,6 +78,9 @@ class EvalRunner:
         required_caveats = eval_case.get("required_caveats", [])
         must_not_contain = eval_case.get("must_not_contain", [])
         forbidden_certainty_list = eval_case.get("forbidden_certainty", [])
+        required_retrieval_recall = eval_case.get(
+            "required_retrieval_recall", _DEFAULT_REQUIRED_RETRIEVAL_RECALL
+        )
 
         query_result = self._engine.ask(question, company_context)
 
@@ -70,6 +93,13 @@ class EvalRunner:
             answer_text, sources,
         )
 
+        # Strict state match: requires exact equality (no approximate scoring for
+        # partial_answer_needs_clarification). Used for native product gate.
+        if expected_state == _PARTIAL_STATE:
+            strict_state_match = actual_state == _PARTIAL_STATE
+        else:
+            strict_state_match = actual_state == expected_state
+
         citation_accuracy = self._score_citation_accuracy(expected_citations, sources)
         retrieval_recall = self._score_retrieval_recall(expected_retrieved_documents, sources)
 
@@ -78,9 +108,53 @@ class EvalRunner:
 
         forbidden_phrases_found = self._find_forbidden(must_not_contain, answer_text)
         forbidden_certainty_found = self._find_forbidden(forbidden_certainty_list, answer_text)
+        # Backward-compatible combined flag covers both must_not_contain and forbidden_certainty.
         hallucination_flag = bool(forbidden_phrases_found or forbidden_certainty_found)
+        # Separate flag for forbidden_certainty alone (used by taxonomy).
+        forbidden_certainty_flag = bool(forbidden_certainty_found)
 
-        passed = state_match and citation_accuracy and not hallucination_flag
+        # ------------------------------------------------------------------
+        # Native product gate (strict state match required)
+        # ------------------------------------------------------------------
+        passed = (
+            strict_state_match
+            and citation_accuracy
+            and retrieval_recall >= required_retrieval_recall
+            and len(facts_missing) == 0
+            and len(caveats_missing) == 0
+            and not hallucination_flag
+            and not forbidden_certainty_flag
+        )
+
+        # ------------------------------------------------------------------
+        # Architecture-compatible gate (approximate state match for partial state)
+        # ------------------------------------------------------------------
+        passed_architecture_compatible = (
+            state_match
+            and citation_accuracy
+            and retrieval_recall >= required_retrieval_recall
+            and len(facts_missing) == 0
+            and len(caveats_missing) == 0
+            and not hallucination_flag
+            and not forbidden_certainty_flag
+        )
+
+        # ------------------------------------------------------------------
+        # Failure taxonomy — first applicable type in priority order
+        # ------------------------------------------------------------------
+        failure_type = self._compute_failure_type(
+            passed=passed,
+            expected_state=expected_state,
+            strict_state_match=strict_state_match,
+            approx_state_match=state_match,
+            retrieval_recall=retrieval_recall,
+            required_retrieval_recall=required_retrieval_recall,
+            facts_missing=facts_missing,
+            caveats_missing=caveats_missing,
+            citation_accuracy=citation_accuracy,
+            forbidden_phrases_found=forbidden_phrases_found,
+            forbidden_certainty_found=forbidden_certainty_found,
+        )
 
         return EvalResult(
             eval_id=eval_case["id"],
@@ -100,6 +174,10 @@ class EvalRunner:
             hallucination_flag=hallucination_flag,
             passed=passed,
             notes=notes,
+            failure_type=failure_type,
+            forbidden_certainty_flag=forbidden_certainty_flag,
+            passed_architecture_compatible=passed_architecture_compatible,
+            required_retrieval_recall=required_retrieval_recall,
         )
 
     # ------------------------------------------------------------------
@@ -195,3 +273,61 @@ class EvalRunner:
     def _find_forbidden(phrases: list[str], text: str) -> list[str]:
         lower_text = text.lower()
         return [p for p in phrases if p.lower() in lower_text]
+
+    @staticmethod
+    def _compute_failure_type(
+        *,
+        passed: bool,
+        expected_state: str,
+        strict_state_match: bool,
+        approx_state_match: bool,
+        retrieval_recall: float,
+        required_retrieval_recall: float,
+        facts_missing: list[str],
+        caveats_missing: list[str],
+        citation_accuracy: bool,
+        forbidden_phrases_found: list[str],
+        forbidden_certainty_found: list[str],
+    ) -> str | None:
+        """Assign the first applicable failure type in priority order, or None if passed."""
+        if passed:
+            return None
+
+        # Check whether this is a partial_state eval where approximate scoring passes
+        # but the architecture gap causes native failure.
+        is_arch_gap_only = (
+            expected_state == _PARTIAL_STATE
+            and approx_state_match
+            and not strict_state_match
+        )
+
+        if not strict_state_match and not is_arch_gap_only:
+            # Genuine classification failure (wrong state, not just the arch gap).
+            return "classification_failure"
+
+        # For arch-gap cases, fall through to check other conditions —
+        # if something else also fails, that takes priority over answer_posture_failure.
+        if retrieval_recall < required_retrieval_recall:
+            return "retrieval_failure"
+
+        if facts_missing:
+            return "missing_facts"
+
+        if caveats_missing:
+            return "missing_caveats"
+
+        if not citation_accuracy:
+            return "citation_failure"
+
+        if forbidden_phrases_found:
+            return "hallucination"
+
+        if forbidden_certainty_found:
+            return "forbidden_certainty"
+
+        # Only remaining case: partial state eval where the arch gap is the sole cause.
+        if is_arch_gap_only:
+            return "answer_posture_failure"
+
+        # Fallback (should not occur in practice).
+        return "classification_failure"
