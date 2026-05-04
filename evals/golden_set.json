@@ -55,10 +55,10 @@
       "company_context": "",
       "expected_state": "clear",
       "expected_facts": [
-        "250 employees",
-        "\u00a336m turnover",
-        "\u00a318m balance sheet",
-        "two of three criteria must be met",
+        "250 or more employees",
+        "\u00a336 million or more",
+        "\u00a318 million or more",
+        "two of the three criteria must be satisfied",
         "quoted companies are in scope for SECR reporting requirements"
       ],
       "expected_behaviour": [

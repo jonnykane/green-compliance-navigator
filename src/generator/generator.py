@@ -137,6 +137,7 @@ class Generator:
             max_tokens=1024,
             system=system,
             messages=[{"role": "user", "content": user_message}],
+            temperature=0,
         )
         answer_text = response.content[0].text
         sources = list(dict.fromkeys(c.source for c in chunks))
