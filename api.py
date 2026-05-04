@@ -21,6 +21,7 @@ from pydantic import BaseModel
 from src.config import settings
 from src.models import QueryResult
 from src.wiring import build_query_engine
+from src.agent.routes import router as agent_router
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ class _QueryEngineProtocol(Protocol):
 # ---------------------------------------------------------------------------
 
 app = FastAPI(title="UK Green Compliance Navigator API")
+app.include_router(agent_router)
 
 
 def _get_allowed_origins() -> list[str]:
