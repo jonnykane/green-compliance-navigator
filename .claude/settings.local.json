@@ -27,7 +27,10 @@
       "Bash(python -m pytest --tb=no -q)",
       "Bash(git commit -m ' *)",
       "Bash(python -m pytest tests/agent/test_registry.py -v)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(gh pr create --title 'Add EvalFlagger for flagging golden evals after rechunking' --base master --body ' *)",
+      "Bash(gh pr *)"
     ]
   }
 }
