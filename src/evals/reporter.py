@@ -6,6 +6,11 @@ _PARTIAL_STATE = "partial_answer_needs_clarification"
 _WIDTH = 72
 
 
+def print_report(results: list[EvalResult]) -> None:
+    """Print the full eval report to stdout."""
+    print(generate_report(results))
+
+
 def generate_report(results: list[EvalResult]) -> str:
     lines: list[str] = []
 

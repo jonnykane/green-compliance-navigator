@@ -517,3 +517,46 @@ def test_report_passing_eval_does_not_show_chunks():
     report = generate_report([passing])
     assert "0.91" not in report
     assert "0.75" not in report
+
+
+# ---------------------------------------------------------------------------
+# print_report — stdout wrapper
+# ---------------------------------------------------------------------------
+
+def test_print_report_is_importable():
+    from src.evals.reporter import print_report  # noqa: F401
+
+
+def test_print_report_writes_to_stdout(capsys):
+    from src.evals.reporter import print_report
+    print_report([_passing()])
+    captured = capsys.readouterr()
+    assert "SUMMARY" in captured.out
+
+
+def test_print_report_writes_nothing_to_stderr(capsys):
+    from src.evals.reporter import print_report
+    print_report([_passing()])
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
+def test_print_report_output_matches_generate_report(capsys):
+    from src.evals.reporter import print_report
+    results = [_passing(), _failing()]
+    print_report(results)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == generate_report(results).strip()
+
+
+def test_print_report_includes_failures_section_with_chunks(capsys):
+    """print_report must propagate the chunk trace in the FAILURES section."""
+    from src.evals.reporter import print_report
+    result = _failure_with_chunks(
+        "missing_facts",
+        chunks=[{"source": "secr.pdf", "text": "threshold text", "score": 0.88}],
+    )
+    print_report([result])
+    captured = capsys.readouterr()
+    assert "secr.pdf" in captured.out
+    assert "0.88" in captured.out or "0.880" in captured.out

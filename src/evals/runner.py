@@ -334,3 +334,101 @@ class EvalRunner:
 
         # Fallback (should not occur in practice).
         return "classification_failure"
+
+
+# ---------------------------------------------------------------------------
+# Entry point — python -m src.evals.runner [--dry-run] [--results-dir PATH]
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    import argparse
+    import dataclasses
+    import json
+    import sys
+    from datetime import datetime
+    from pathlib import Path
+
+    from src.evals.reporter import print_report
+    from src.models import QueryResult as _QueryResult
+
+    _GOLDEN_SET_PATH = Path("evals/golden_set.json")
+
+    _parser = argparse.ArgumentParser(
+        description="Run the UK Green Compliance Navigator eval suite.",
+    )
+    _parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Score against a static fake engine — no API calls.",
+    )
+    _parser.add_argument(
+        "--results-dir",
+        default="evals/results",
+        help="Directory to write the JSON results file (default: evals/results).",
+    )
+    _args = _parser.parse_args()
+
+    if not _GOLDEN_SET_PATH.exists():
+        print(f"ERROR: golden set not found at {_GOLDEN_SET_PATH}", file=sys.stderr)
+        sys.exit(1)
+
+    with _GOLDEN_SET_PATH.open() as _f:
+        _golden = json.load(_f)
+
+    _eval_cases = _golden["evals"]
+    _total = len(_eval_cases)
+
+    if _args.dry_run:
+        _DRY_RUN_ANSWER = (
+            "SECR applies to large UK companies with 250 or more employees, "
+            "£36 million or more annual turnover, or £18 million or more balance "
+            "sheet total. ESOS applies to organisations with 250 or more employees "
+            "OR £44m turnover and £38m balance sheet. Subject to company type, group "
+            "structure, and professional advice. Subject to consultation and "
+            "indicative timeline only."
+        )
+        _DRY_RUN_SOURCES = [
+            "secr_environmental_reporting_guidelines_2019.pdf",
+            "esos_overview.md",
+        ]
+
+        class _DryRunEngine:
+            def ask(self, question: str, company_context: str = "") -> _QueryResult:
+                return _QueryResult(
+                    kind="answer",
+                    answer=_DRY_RUN_ANSWER,
+                    sources=_DRY_RUN_SOURCES,
+                )
+
+        print("[dry-run] Using static fake engine — no API calls will be made.")
+        _engine = _DryRunEngine()
+    else:
+        from src.wiring import build_query_engine
+        print("Wiring real QueryEngine via wiring.py …")
+        _engine = build_query_engine()
+
+    _runner = EvalRunner(engine=_engine)
+    _results: list[EvalResult] = []
+
+    print(f"Running {_total} evals …\n")
+    for _i, _case in enumerate(_eval_cases, 1):
+        print(
+            f"  [{_i:>2}/{_total}] {_case['id']} — {_case['question'][:60]}",
+            end="",
+            flush=True,
+        )
+        _result = _runner.run_eval(_case)
+        _results.append(_result)
+        print(f"  [{'PASS' if _result.passed else 'FAIL'}]")
+
+    print()
+    print_report(_results)
+
+    _results_dir = Path(_args.results_dir)
+    _results_dir.mkdir(parents=True, exist_ok=True)
+    _timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+    _out_path = _results_dir / f"run_{_timestamp}.json"
+    _payload = [dataclasses.asdict(r) for r in _results]
+    with _out_path.open("w") as _f:
+        json.dump(_payload, _f, indent=2)
+    print(f"\nResults written to {_out_path}")
