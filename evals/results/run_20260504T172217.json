@@ -1,0 +1,1679 @@
+[
+  {
+    "eval_id": "eval_001",
+    "category": "threshold",
+    "question": "What are the size thresholds that determine whether a UK company must comply with SECR?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "\u00a318m balance sheet",
+      "quoted companies are in scope for SECR reporting requirements"
+    ],
+    "facts_missing": [
+      "250 employees",
+      "\u00a336m turnover",
+      "two of three criteria must be met"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "7. SECR   reporting   requirements    for  large unquoted\n\ncompanies     and  large  limited liability partnerships              \n                                                                                  \n                                                                                  \n            Unquoted organisations in scope of SECR are required to report:",
+        "score": 0.5760612487792969
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Quoted companies              Large unquoted companies\n\nand LLPs                              \n                                                                                  \n              Annual GHG emissions from     UK energy use (as a minimum           \n              activities for which the company gas, electricity and transport,    \n              is responsible including      including UK offshore area)           \n              combustion of fuel and operation                                    \n              of any facility; and the annual                                     \n              emissions from the purchase of                                      \n              electricity, heat, steam or cooling                                 \n              by the company for its own use",
+        "score": 0.5480380058288574
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Large unquoted  companies and large limited liability partnerships\n\nUnder changes made by the 2018 Regulations, unquoted companies        \n                                                                                  \n            incorporated in the UK which are required to prepare a Directors\u2019 Report under\n                                                                                  \n             22 The CRC Energy Efficiency Scheme (CRC) will be closed following the 2018-19\n             compliance year, with no purchase of allowances required to cover emissions for energy\n             supplied from April 2019. Organisations will be required to report under CRC for the last time\n             in July 2019 and submit allowances in October 2019 and may want to use CRC systems to\n             help collect some of the SECR information.                           \n                                        28                                        \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n            Part 15 of the Companies Act 2006, and which are \u201clarge\u201d (see below) are\n            required to prepare and file energy and carbon information in their Directors\u2019\n                                                                                  \n            Reports. This applies to both registered companies and to unregistered\n                                                                                  \n            companies23 which are required to prepare company accounts and reports.\n                                                                                  \n            Under the 2018 Regulations, LLPs which are \u201clarge\u201d are also required to\n            prepare and file energy and carbon information in their accounts and reports\n            (in a new \u2018Energy and Carbon Report\u2019).                                \n                                                                                  \n            The definition of \u201clarge\u201d is the same as applies in the existing framework for\n                                                                                  \n            annual accounts and reports, based on sections 465 and 466 of the     \n            Companies Act 2006. The qualifying conditions are met by a company or LLP\n            in a year in which it satisfies two or more of the following requirements:\n                                                                                  \n               \u2022 Turnover          \u00a336 million or more24                          \n                                                                                  \n               \u2022 Balance sheet total \u00a318 million or more                          \n                                                                                  \n               \u2022 Number of employees 250 or more",
+        "score": 0.5454017817974091
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "8. Common     Requirements      that apply  for both\n\nquoted   and  unquoted    large  companies     and",
+        "score": 0.54390749335289
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "LLPs\n\nIn addition to the steps outlined in Sections 6 and 7, the following reporting\n            requirements apply to both quoted and unquoted organisations and should be\n            included in the relevant business report in addition to energy use and GHG\n            emissions.",
+        "score": 0.5319980978965759
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_002",
+    "category": "threshold",
+    "question": "What size thresholds determine whether a UK company must participate in ESOS?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "250 or more employees",
+      "OR annual turnover exceeding \u00a344 million AND balance sheet total exceeding \u00a338 million",
+      "OR condition \u2014 employee threshold is independent of financial thresholds",
+      "group structures assessed at highest UK-registered parent level"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "esos_overview.md",
+        "text": "An organisation must participate in ESOS if it is a **large undertaking** on the **qualification date** (which is the 31 December immediately preceding each compliance deadline).\n\nAn organisation is a **large undertaking** for ESOS purposes if it meets **either** of the following criteria:\n\n| Criterion | Threshold |\n|-----------|-----------|\n| Employees | 250 or more employees (full-time equivalent) |\n| Turnover AND balance sheet | Annual turnover exceeding **\u00a344 million** AND annual balance sheet total exceeding **\u00a338 million** |\n\n**Note:** The employee threshold is an OR condition with the financial thresholds \u2014 satisfying either employees \u2265250, OR both financial thresholds, brings an organisation into scope.",
+        "score": 0.46422940492630005
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "For UK corporate groups, the qualification assessment applies at the **highest UK-registered parent level**. A UK subsidiary within a qualifying group is in scope regardless of its own size. Overseas parents are also assessed \u2014 a non-UK parent with UK-registered subsidiaries may qualify the UK entities for ESOS if the group as a whole meets the thresholds.",
+        "score": 0.20849007368087769
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "The Energy Savings Opportunity Scheme (ESOS) is a mandatory energy assessment scheme for large UK businesses, implemented under the **Energy Savings Opportunity Scheme Regulations 2014** (SI 2014/1643). It implements the UK's obligations under Article 8 of the EU Energy Efficiency Directive, retained and amended post-Brexit.\n\nESOS requires qualifying organisations to carry out comprehensive audits of their energy use across all buildings, industrial processes, and transport, and to identify cost-effective energy-saving opportunities. Participation does not require organisations to implement the identified measures \u2014 the obligation is to **audit and notify**, not to act.\n\n---",
+        "score": 0.15325963497161865
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "Organisations that have a valid **ISO 50001** certification covering their total energy consumption are exempt from conducting separate ESOS audits (but must still notify compliance to the Environment Agency).\n\nPublic sector bodies are **not** required to participate in ESOS (they are subject to the Greening Government Commitments framework instead), although public sector-owned trading companies may be in scope.\n\n---",
+        "score": 0.045864105224609375
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The UK government has indicated that mandatory UK SDS will initially apply to:\n\n- **UK premium and standard listed companies** (via FCA listing rule changes) \u2014 likely first wave\n- **Large UK companies** meeting a size threshold (details under consultation) \u2014 likely second wave\n- **Large private UK companies** \u2014 potentially in a later phase\n\nThe thresholds for unlisted companies have not been confirmed. The Companies Act 2006 definition of \"large company\" (two of three: >250 employees, >\u00a336 million turnover, >\u00a318 million balance sheet total) has been referenced as a likely basis, but the government has indicated a higher threshold may apply initially.\n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_003",
+    "category": "threshold",
+    "question": "Under what circumstances does CSRD apply to a UK-headquartered company?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "net EU turnover exceeding \u20ac150 million",
+      "in each of the last two consecutive financial years",
+      "AND at least one qualifying EU subsidiary, listed EU subsidiary, or EU branch with >\u20ac40m turnover",
+      "Article 40 third-country undertaking provision",
+      "EU subsidiary or branch files group-level report \u2014 UK parent does not file directly",
+      "Wave 4: financial year beginning 1 January 2028, first report 2029"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [
+      "based on synthetic summary not primary EU legislation",
+      "subject to EU member state implementation"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_caveats",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The CSRD does not automatically apply to UK companies by virtue of UK law. However, it applies in two distinct ways:",
+        "score": 0.47298842668533325
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The Corporate Sustainability Reporting Directive (EU Directive 2022/2464) entered into force on 5 January 2023. It replaces the Non-Financial Reporting Directive (NFRD) and significantly expands the scope, detail, and assurance requirements for sustainability reporting across the EU.\n\nThe CSRD requires in-scope companies to report on environmental, social, and governance (ESG) matters using the European Sustainability Reporting Standards (ESRS), developed by the European Financial Reporting Advisory Group (EFRAG). Reporting must appear in a dedicated section of companies' management reports and must be independently assured.\n\nAlthough the UK is no longer an EU member state, the CSRD is directly relevant to many UK-headquartered businesses. This document sets out when and how.\n\n---",
+        "score": 0.04828834533691406
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "CSRD reports require **limited assurance** by an accredited independent auditor or assurance service provider from Wave 1. The European Commission may move to **reasonable assurance** in subsequent phases.\n\nUK companies providing data to EU subsidiaries for group-level CSRD reports should note that the data they supply will ultimately be subject to this assurance requirement.\n\n---",
+        "score": 0.0
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "A UK-based parent company falls into CSRD scope under Article 40 (the \"third-country undertaking\" provision) if:\n\n- It generated **net turnover exceeding \u20ac150 million** in the EU in each of the last two consecutive financial years, **AND**\n- It has at least one of the following EU-based entities:\n  - A **large EU subsidiary** (meeting the large company thresholds \u2014 see Section 3)\n  - An EU-regulated-market-**listed subsidiary** (regardless of size)\n  - An EU **branch** generating net turnover exceeding \u20ac40 million in the previous financial year\n\nWhere these conditions are met, the **EU subsidiary or branch** is required to produce a sustainability report covering the entire **group** (including the UK parent). The UK parent does not file directly, but must provide its EU subsidiary with the necessary data.",
+        "score": 0.0
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "| Framework | Relationship to CSRD |\n|-----------|---------------------|\n| TCFD (FCA mandatory) | ESRS climate disclosure (ESRS E1) broadly aligns with TCFD; companies compliant with FCA TCFD rules will have a foundation but CSRD requires more detail |\n| SECR | SECR energy and carbon data satisfies some ESRS E1 inputs but does not constitute CSRD compliance |\n| UK SDS (forthcoming) | UK SDS is based on ISSB standards, not ESRS; UK and EU standards will diverge; companies with dual obligations will need to manage both |\n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_004",
+    "category": "threshold",
+    "question": "What assets under management thresholds trigger FCA mandatory TCFD disclosures for UK asset managers?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "AUM of \u00a350 billion or more: applies from financial years beginning on or after 1 January 2022",
+      "AUM of \u00a35 billion or more (and below \u00a350bn): applies from financial years beginning on or after 1 January 2023"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "| Entity type | AUM threshold | Applies from |\n|-------------|---------------|--------------|\n| UK-authorised asset managers (UCITS management companies, AIFMs, MiFID portfolio managers) | Assets under management **\u2265 \u00a350 billion** | Financial years beginning **on or after 1 January 2022** |\n| UK-authorised asset managers | AUM **\u2265 \u00a35 billion** (and < \u00a350bn) | Financial years beginning **on or after 1 January 2023** |\n| Occupational pension schemes (TPR regulated) | Assets **\u2265 \u00a31 billion** | From **1 October 2021** (first report by 31 October 2022) |\n| Occupational pension schemes | Assets **\u2265 \u00a3500 million** | From **1 October 2022** |\n\nAsset managers must publish an entity-level report on their website and produce product-level disclosures referencing how climate-related risks and opportunities are integrated into investment decisions.",
+        "score": 0.22178936004638672
+      },
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "Large UK life insurers and FCA-regulated pension providers are subject to TCFD-aligned disclosure requirements under COBS/SUP rules. Thresholds and timelines broadly mirror those for asset managers above based on assets under management or administration.\n\n---",
+        "score": 0.14272713661193848
+      },
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "FCA mandatory TCFD-aligned disclosures apply to the following categories of regulated entities:",
+        "score": 0.14020252227783203
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "Likewise, asset managers and asset owners\n\nstages and encourages progress and innovation by\n                 should consider materiality in the context of                      \n                                                the industry.                       \n                 their respective mandates and investment                           \n                 performance for clients and beneficiaries.                         \n            53 The Task Force chose a one billion USDE annual revenue threshold because it captures organizations responsible for over 90% of Scope 1\n             and 2 GHG emissions in the industries represented by the four non-financial groups (about 2,250 organizations out of roughly 15,000).\n            54 \u201cOther reports\u201d should be official company reports that are issued at least annually, widely distributed and available to investors and others,\n             and subject to internal governance processes that are substantially similar to those used for financial reporting.\n            Recommendations of the Task Force on Climate-related Financial Disclosures 34",
+        "score": 0.06571614742279053
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "Appendices\n\nshould be provided to asset managers\u2019 clients and asset owners\u2019 beneficiaries so that they may\n                 better understand the performance of their assets, consider the risks of their investments, and\n                 make more informed investment choices.                             \n                 Consistent with existing global stewardship frameworks, asset owners should engage with the\n                 organizations in which they invest to encourage adoption of these recommendations. They\n                 should also ask their asset managers to adopt these recommendations. Asset owners\u2019\n                 expectations in relation to climate-related risk reporting from organizations and asset managers\n                 are likely to evolve as data availability and quality improves, understanding of climate-related risk\n                 increases, and risk measurement methodologies are further developed.\n                 The Task Force recognizes that several asset owners expressed concern about being identified as\n                 the potential \u201cpolicing body\u201d charged with ensuring adoption of the Task Force\u2019s\n                 recommendations by asset managers and underlying organizations. The Task Force appreciates\n                 that expectations must be reasonable and that asset owners have many competing priorities, but\n            58 Thresholds for climate-related financial disclosures should be aligned to the financial disclosure requirements more broadly in the\n             jurisdictions where a preparer is incorporated and/or operates and is required to make financial disclosures.\n            Recommendations of the Task Force on Climate-related Financial Disclosures 38\n\n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                 encourages them to help drive adoption of the recommendations. Because asset owners and\n                 asset managers sit at the top of the investment chain, they have an important role to play in\n                 influencing the organizations in which they invest to provide better climate-related financial\n                 disclosures.",
+        "score": 0.05845224857330322
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_005",
+    "category": "threshold",
+    "question": "Our finance director says we might be caught by ESOS and SECR. We have 260 staff and about \u00a340m turnover. Are they right?",
+    "expected_state": "partial_answer_needs_clarification",
+    "actual_state": "clear",
+    "state_match": false,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.5,
+    "facts_present": [
+      "260 employees exceeds the SECR employee criterion of 250",
+      "SECR likely applies because two of three size criteria are already met on employee count and turnover alone",
+      "260 employees exceeds the ESOS 250-employee threshold",
+      "ESOS likely applies on employee count alone"
+    ],
+    "facts_missing": [
+      "\u00a340m turnover exceeds the SECR turnover criterion of \u00a336m"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "subject to company type and group structure",
+      "subject to professional advice for definitive confirmation"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "WARNING: partial_answer_needs_clarification is not natively supported by the Phase 3 classifier. Scored approximately \u2014 actual_state='clear', fact_hit=False, citation_hit=True.",
+    "failure_type": "classification_failure",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Group  Reporting\n\nIf you are reporting at group level, for a financial year for which you are required to prepare a group Directors\u2019 Report,25 when making your energy and carbon disclosures, you must take into account not only your own information, but also the information of any subsidiaries included in the consolidation which are quoted companies, unquoted companies or LLPs. However, you have the option to exclude from your report any energy and carbon information relating to a subsidiary which the subsidiary would not itself be obliged to include if reporting on its own account. The same applies to LLPs required to prepare a group Energy and Carbon Report.26 If you are reporting at subsidiary level, for a financial year for which your parent company (or parent LLP) is preparing a group relevant Report (i.e. a group Directors\u2019 Report or a group Energy and Carbon Report), you might not be obliged to include your energy and carbon information in your own accounts and reports. A subsidiary is not obliged to report their energy and carbon information if: 23 Unregistered companies are incorporated companies not formed or registered under the Companies Acts or under any other public general Act of Parliament (for example, companies formed under private Acts of Parliament, Royal Charters and letters patent). 24 In the case of charitable companies, the reference to turnover shall be taken as a reference to the charitable company\u2019s gross income, as defined for its jurisdiction of registration, or operation. 25 Under section 415(2) of the Companies Act 2006. 26 Under section 415(2) of the Companies Act 2006 as applied to LLPs by regulation 12A of the Limited Liability Partnerships (Account and Audit) (Application of Companies Act 2006) Regulations 2008 as amended by the 2018 Regulations. 29 \u2022 They are a \u201csubsidiary undertaking\u201d at the end of the relevant financial year; \u2022 They are included in the group Report (whether a group Directors\u2019 Report or a group Energy and Carbon Report) of a \u201cparent undertaking\u201d; \u2022 That group Report is prepared for a financial year of the parent that ends at the same time as, or before the end of, the subsidiary\u2019s financial year; and \u2022 The group Report complies with the relevant obligations on the parent to report energy and carbon information for themselves and their subsidiaries; but this provision does not apply where the group Report relies on the seriously prejudicial option. Note this is different to the approach taken under ESOS, where a smaller subsidiary of a parent company is not exempt, even where on its own, it would not meet ESOS eligibility criteria. Similarly, this is also different from the approach under the CRC Energy Efficiency Scheme. A corporate group is defined in the Companies Act 2006, and sections 1158 to 1162 of that Act explain how to identify if an undertaking is a parent to, or subsidiary of, another undertaking. You may wish to speak to your Finance Director in order to establish your organisation\u2019s existing obligations relating to group reporting. The legislation requires organisations to take the same",
+        "score": 0.37372004985809326
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Financial control boundary\n\nYour organisation reports on all sources of environmental impact over which it\n            has financial control. Your organisation has financial control over an\n                                                                                  \n            operation if your organisation has the ability to direct the financial and\n            operating policies of the operation with a view to gaining economic benefits\n            from its activities.",
+        "score": 0.3156919479370117
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Group  Reporting\n\nScheme. A corporate group is defined in the Companies Act 2006, and sections 1158 to 1162 of that Act explain how to identify if an undertaking is a parent to, or subsidiary of, another undertaking. You may wish to speak to your Finance Director in order to establish your organisation\u2019s existing obligations relating to group reporting. The legislation requires organisations to take the same approach, with the option to apply subsidiary exemptions as outlined above.",
+        "score": 0.3010408282279968
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "3. Identify the risks and opportunities that arise from your impact on the\n\nenvironment and from the environment\u2019s impact on you through, for\n                 example, climate change. Be clear whether your organisation has  \n                                                                                  \n                 been subject to any environmental fines. The date, location, reason\n                 and amount of fine should be stated.                             \n                                        15",
+        "score": 0.2970430254936218
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Introduction\n\nThe Companies Act 2006 (Strategic Report and Directors\u2019 Report) Regulations\n            201320 introduced changes to require quoted companies to report their annual\n                                                                                  \n            emissions and an intensity ratio in their Directors\u2019 Report.          \n                                                                                  \n            The 2018 Regulations21 bring in additional disclosure requirements for quoted\n            companies. The 2018 Regulations also introduce requirements for large \n            unquoted companies and limited liability partnerships to disclose their annual\n            energy use and greenhouse gas emissions, and related information.     \n                                                                                  \n                                                                                  \n            This chapter sets out the mandatory requirements of the legislation and\n            outlines additional voluntary information that is likely to be useful to qualifying\n            organisations and a wide range of stakeholders.                       \n                                                                                  \n            This guidance includes changes, which take effect from 1 April 2019, and\n            cover financial reporting years starting on or after this date, replacing the\n                                                                                  \n            guidance on Mandatory Greenhouse Gas Reporting (MGHG) that was        \n            contained in the previous version of this guidance.                   \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n             20 The Companies Act 2006 (Strategic Report and Directors\u2019 Report) Regulations 2013\n             amended the Large and Medium-Sized Companies and Groups (Accounts and Reports)\n             Regulations 2008, including adding Part 7 of Schedule 7 dealing with GHG emissions by\n             quoted companies.                                                    \n             21 The 2018 Regulations amend the Large and Medium-Sized Companies and Groups\n             (Accounts and Reports) Regulations 2008, in particular adding a Part 7A to Schedule 7\n             dealing with energy and carbon disclosures by large unquoted companies. The 2018\n             Regulations also amend the Limited Liability Partnerships (Accounts and Audit) (Application\n             of Companies Act 2006) Regulations 2008, which apply certain provisions of the Companies\n             Act 2006 to Limited Liability Partnerships, to provide for large LLPs to prepare an equivalent\n             report to the Directors\u2019 Report to disclose energy and carbon information.\n                                        25                                        \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n            The legislation affects:                                              \n                                                                                  \n               \u2022 quoted companies;                                                \n                                                                                  \n                                                                                  \n               \u2022 large unquoted companies (including charitable companies);       \n                                                                                  \n               \u2022 large Limited Liability Partnerships (LLPs).                     \n                                                                                  \n            Remember, you, or part of your organisation, may fall within the scope of\n            SECR even if undertaking public, or not for profit activities as registered\n            companies or companies/LLPs owned by universities, academies or NHS   \n                                                                                  \n            Trusts. You are however not however required to report under the SECR \n            framework at an organisational level if your organisation is defined as a public\n            body, although you may still have other reporting requirements such as under\n            the Greening Government Commitments.                                  \n                                                                                  \n            Companies incorporated outside of the United Kingdom are not required to\n                                                                                  \n            include energy and carbon information in their Directors\u2019 Report under this\n            legislation, including foreign parent companies of UK subsidiaries. The\n            government encourages all private sector organisations which are not in scope\n            of the legislation to report similarly, although this remains voluntary.\n                                                                                  \n            Businesses are responsible for ensuring they meet the requirements of the\n                                                                                  \n            2018 Regulations. This guidance is not a substitute for the 2018 Regulations\n            but is intended to help businesses understand how they must comply with it.\n            You may wish to refer directly to the provisions of the regulations or seek\n            independent legal advice to confirm that you are complying in full.",
+        "score": 0.2912949323654175
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_006",
+    "category": "threshold",
+    "question": "What contract value threshold triggers the Carbon Reduction Plan requirement under PPN 06/21?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "\u00a35 million per year",
+      "applies to UK central government contracts"
+    ],
+    "facts_missing": [
+      "requirement falls on suppliers bidding, not the contracting authority"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "Declaration and Sign Off\n\nThis Carbon Reduction Plan has been completed in accordance with PPN 06/21 and\n          associated guidance and reporting standard for Carbon Reduction Plans.  \n                                                                                  \n          Emissions have been reported and recorded in accordance with the published reporting\n          standard for Carbon Reduction Plans and the GHG Reporting Protocol corporate standard13\n          and uses the appropriate Government emission conversion factors for greenhouse gas\n                                                                                  \n          company reporting14.                                                    \n                                                                                  \n          Scope 1 and Scope 2 emissions have been reported in accordance with SECR\n          requirements, and the required subset of Scope 3 emissions have been reported in\n          accordance with the published reporting standard for Carbon Reduction Plans and the\n          Corporate Value Chain (Scope 3) Standard15.                             \n                                                                                  \n          This Carbon Reduction Plan has been reviewed and signed off by the board of directors (or\n          equivalent management body).                                            \n                                                                                  \n          Signed on behalf of the Supplier:                                       \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.                                              \n                                                                                  \n          Date: \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.\u2026\u2026\u2026.                                                    \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          13https://ghgprotocol.org/corporate-standard                            \n          14https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting\n          15https://ghgprotocol.org/standards/scope-3-standard",
+        "score": 0.11375808715820312
+      },
+      {
+        "source": "ppn_0621_technical_standard_crp.pdf",
+        "text": "Introduction\n\nIn 2019, the UK became the first major economy to adopt a legal commitment to achieve \u2018Net Zero\u2019 carbon emissions by 20501. This guidance supports Procurement Policy Note (PPN) 06/21 which sets out how suppliers\u2019 Carbon Reduction Plans and commitment to Net Zero can be taken into account in the procurement of in-scope central Government contracts (subject to the Public Contracts Regulations 2015 and contracts in excess of \u00a35 million per annum). This guidance sets out the standards that carbon footprint data should adhere to for inclusion in your Carbon Reduction Plan, how and where you should publish your Carbon Reduction Plan, and how it should be approved and signed off within your organisation. Carbon Reduction Plans: Carbon Reduction Plans (CRPs) are to be completed on behalf of the bidding supplier and must meet the reporting requirements set out in this guidance, and include the supplier\u2019s current carbon footprint and its commitment to reducing emissions to achieve Net Zero emissions by 2050. Carbon Reduction Plans (CRP) will help suppliers and customers understand the impact the contract and therefore their wider operations have upon the environment. They detail the organisation's emissions across a single year against a range of emissions sources and greenhouse gasses. Carbon Reduction Plans must be provided by suppliers when responding to in-scope procurements as defined by PPN 06/21. The Carbon Reduction Plan is not intended to replace existing reporting or calculation of your organisational carbon footprint. It is a summary document that details high level information that demonstrates your compliance with the measure. 1 Climate Change Act 2008: https://www.legislation.gov.uk/ukpga/2008/27/contents The content and structure of the CRP is detailed in the \u2018Template Carbon Reduction Plan\u2019 published alongside PPN 06/21, and the reporting requirements are further detailed in this supporting guidance. Committing to Net Zero by 2050: Within their Carbon Reduction Plan, suppliers must confirm their organisational commitment to achieving Net Zero by 2050 at the latest. This is consistent with the UK Government\u2019s commitment under the Climate Change Act, and will play a significant role in the decarbonisation of the United Kingdom as a whole. Meeting the Reporting Requirements: Carbon Reduction Plans focus upon the recording and reporting of Scope 1 and 2 emissions, and introduce additional reporting against a subset of Scope 3 emissions. Please read the \u2018Scope Guidance\u2019 section carefully to determine which sources are considered to be in-scope. In order to ensure consistency of reporting and ease of comparison between suppliers, Carbon Reduction Plans should be completed in accordance with the latest environmental reporting guidance2 for Scope 1 and Scope 2 emissions, and the reporting of the required subset of Scope 3 emissions should be in line with best industry practice and technical guidance3 detailed below. Suppliers\u2019 Carbon Reduction Plans should be reviewed and updated annually to reflect changes in organisational structure and to take account of the efforts made to reduce their emissions over time. Suppliers should ensure that the same reporting period is used throughout the submission, to ensure the most accurate and meaningful data can be used in the completion of",
+        "score": 0.10261166095733643
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "6.   In-Scope Organisations must apply the provisions of this PPN to relevant\n\nprocurements advertised on or after 30 September 2021.",
+        "score": 0.0679929256439209
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "3.   In-Scope Organisations should take action to apply this PPN when procuring goods\n\nand/or services and/or works with an anticipated contract value above \u00a35 million per annum3\n                                                                                  \n          (excluding VAT) which are subject to the Public Contracts Regulations 2015 save where it\n          would not be related and proportionate to the contract.",
+        "score": 0.06651115417480469
+      },
+      {
+        "source": "ppn_0621_technical_standard_crp.pdf",
+        "text": "Optional: Emissions from employee\n\nteleworking",
+        "score": 0.03860771656036377
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_007",
+    "category": "what_must_be_reported",
+    "question": "What must a large UK company include in its SECR report?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "Scope 1 GHG emissions",
+      "Scope 2 GHG emissions"
+    ],
+    "facts_missing": [
+      "UK energy use in kWh",
+      "at least one intensity metric",
+      "energy efficiency actions taken during the year",
+      "disclosures appear in the Directors' Report in annual accounts"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Quoted companies              Large unquoted companies\n\nand LLPs                              \n                                                                                  \n              Annual GHG emissions from     UK energy use (as a minimum           \n              activities for which the company gas, electricity and transport,    \n              is responsible including      including UK offshore area)           \n              combustion of fuel and operation                                    \n              of any facility; and the annual                                     \n              emissions from the purchase of                                      \n              electricity, heat, steam or cooling                                 \n              by the company for its own use",
+        "score": 0.6079896092414856
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Example  corporate SECR report for unquoted large\n\ncompanies  and large LLPs                                             \n                                                                                  \n            Note that in the first year of reporting, organisations are not required to\n            disclose information for the previous year. The template below presents both\n            minimum information to be reported but businesses could choose to     \n            voluntarily report total energy use across all energy types, not just electricity,\n            gas & transport, and not just related Scope 1 & Scope 2 emissions.    \n                                                                                  \n                                                                                  \n            GHG  emissions and energy use data for period 1 April 2019 to 31 March\n            2020",
+        "score": 0.6034758388996124
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "7. SECR   reporting   requirements    for  large unquoted\n\ncompanies     and  large  limited liability partnerships              \n                                                                                  \n                                                                                  \n            Unquoted organisations in scope of SECR are required to report:",
+        "score": 0.6000711917877197
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "8. Common     Requirements      that apply  for both\n\nquoted   and  unquoted    large  companies     and",
+        "score": 0.5867381989955902
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "LLPs\n\nIn addition to the steps outlined in Sections 6 and 7, the following reporting\n            requirements apply to both quoted and unquoted organisations and should be\n            included in the relevant business report in addition to energy use and GHG\n            emissions.",
+        "score": 0.5768061876296997
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_008",
+    "category": "what_must_be_reported",
+    "question": "What are the four pillars of the TCFD framework and what does each cover?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "Metrics and Targets: metrics used, GHG emissions including Scope 1 and 2, and targets"
+    ],
+    "facts_missing": [
+      "Governance: board oversight and management role in climate-related risks and opportunities",
+      "Strategy: climate-related risks and opportunities identified, their impact, and strategy resilience",
+      "Risk Management: processes for identifying, assessing, and managing climate-related risks",
+      "eleven recommended disclosures in total across the four pillars"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "H\n\nd o i r                                  \n                                           . s                                      \n                                           i l r d p i e a o a o o e p h            \n                                            s                                       \n                                            s",
+        "score": 0.2061833143234253
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "S\n\n.                                           \n                                        f a                                         \n                                        f                                           \n                                         d r o e u u m                              \n                                         ,                                          \n                                         o t e                                      \n                                         n                                          \n                                         e e t                                      \n                                         t                                          \n                                         i c u                                      \n                                         a                                          \n                                         l ne h                                     \n                                         h                                          \n                                         a o                                        \n                                          i                                         \n                                          d l c e t r                               \n                                          f n                                       \n                                          a l s u e o                               \n                                          e                                         \n                                          n d t                                     \n                                          e                                         \n                                          d n t c , t                               \n                                           d                                        \n                                           c o r ,                                  \n                                           s                                        \n                                           e i d o p                                \n                                           s                                        \n                                           op e h                                   \n                                           t                                        \n                                           r a o                                    \n                                            l                                       \n                                            d a                                     \n                                            p",
+        "score": 0.20390468835830688
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "D\n\nDisclose how the organization identifies, assesses, and manages climate-related risks.",
+        "score": 0.1965787410736084
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "D\n\nn                                                                 \n                  i                                                                 \n                  n                                                                 \n                  r e                                                               \n                  s                                                                 \n                  i                                                                 \n                  i                                                                 \n                   s                                                                \n                   o s                                                              \n                   l                                                                \n                   k                                                                \n                   d                                                                \n                   c                                                                \n                   i                                                                \n                   c                                                                \n                   c c                                                              \n                   n                                                                \n                    s                                                               \n                    o                                                               \n                    l                                                               \n                    r                                                               \n                    l e                                                             \n                    o                                                               \n                    e                                                               \n                    o m                                                             \n                    a                                                               \n                    i                                                               \n                     s                                                              \n                     s                                                              \n                     s                                                              \n                     n                                                              \n                     s                                                              \n                     w                                                              \n                     s                                                              \n                     k                                                              \n                     e                                                              \n                     m u                                                            \n                      d                                                             \n                      .                                                             \n                      i m",
+        "score": 0.19331282377243042
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "D\n\nl                                           \n                                        ; r i r i l                                 \n                                        o                                           \n                                        o n t s l                                   \n                                        o                                           \n                                        t a g n a e",
+        "score": 0.1897963285446167
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_009",
+    "category": "what_must_be_reported",
+    "question": "What does TCFD recommend for climate scenario analysis?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "assess resilience of strategy under different climate-related scenarios",
+      "scenarios should include a 2\u00b0C or lower scenario"
+    ],
+    "facts_missing": [
+      "scenario analysis covers short, medium, and long-term time horizons"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "TCFD 2017 recommends scenario analysis including a 2\u00b0C or lower scenario \u2014 do not describe 1.5\u00b0C as mandatory under TCFD 2017"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "1. Overview of Scenario Analysis\n\nScenario analysis is a process for identifying and assessing the potential implications of a range of\n                 plausible future states under conditions of uncertainty. Scenarios are hypothetical constructs and\n                 not designed to deliver precise outcomes or forecasts. Instead, scenarios provide a way for\n                 organizations to consider how the future might look if certain trends continue or certain\n                 conditions are met. In the case of climate change, for example, scenarios allow an organization to\n                 explore and develop an understanding of how various combinations of climate-related risks, both\n                 transition and physical risks, may affect its businesses, strategies, and financial performance over\n                 time.                                                              \n                 Scenario analysis can be qualitative, relying on descriptive, written narratives, or quantitative,\n                 relying on numerical data and models, or some combination of both. Qualitative scenario analysis\n            42 Some organizations in the energy sector and some large investors have made public disclosures describing the results of their climate-related\n             scenario analysis, including discussing how the transition might affect their current portfolios. In some instances, this information was\n             published in financial filings.                                        \n            Recommendations of the Task Force on Climate-related Financial Disclosures 25\n\n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                 explores relationships and trends for which little or no numerical data is available, while\n                 quantitative scenario analysis can be used to assess measurable trends and relationships using\n                 models and other analytical techniques.43 Both rely on scenarios that are internally consistent,\n                 logical, and based on explicit assumptions and constraints that result in plausible future\n                 development paths.                                                 \n                                                                                    \n                 As summarized in Figure 7, there are several reasons why scenario analysis is a useful tool for\n                 organizations in assessing the potential implications of climate-related risks and opportunities.",
+        "score": 0.37650519609451294
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "F\n\nConclusion   historical precedent. This is one of the reasons the Task Force believes scenario analysis is\n                 important for organizations to consider incorporating into their strategic planning or risk\n    Appendices   management practices.                                              \n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n                                                                                    \n            Recommendations of the Task Force on Climate-related Financial Disclosures 9",
+        "score": 0.3474375009536743
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "Recommendations and\n\nGuidance        3  Scenario analysis can help organizations frame and assess the potential range of\n                       plausible business, strategic, and financial impacts from climate change and the",
+        "score": 0.334325909614563
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "4. Applying Scenario Analysis\n\nWhile the Task Force recognizes the complexities of scenario analysis and the potential resources\n                 needed to conduct it, organizations are encouraged to use scenario analysis to assess climate-\n                 related risks and opportunities. For organizations just beginning to use scenario analysis, a\n                 qualitative approach that progresses and deepens over time may be appropriate.48 Greater rigor\n                 and sophistication in the use of data and quantitative models and analysis may be warranted for\n                 organizations with more extensive experience in conducting scenario analysis. Organizations may\n                 decide to use existing external scenarios and models (e.g., those provided by third-party vendors)\n                 or develop their own, in-house modeling capabilities. The choice of approach will depend on an\n                 organization\u2019s needs, resources, and capabilities.                 \n                                                                                    \n                 In conducting scenario analysis, organizations should strive to achieve:\n                   \uf06e transparency around parameters, assumptions, analytical approaches, and time frames;\n                                                                                    \n                   \uf06e comparability of results across different scenarios and analytical approaches;\n                   \uf06e adequate documentation for the methodology, assumptions, data sources, and analytics;\n                                                                                    \n    A              \uf06e consistency of methodology year over year;",
+        "score": 0.3302919864654541
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "Guidance\n\nScenario analysis is an important and useful tool for understanding the",
+        "score": 0.3108326196670532
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_010",
+    "category": "what_must_be_reported",
+    "question": "We've just qualified for ESOS. What does the audit actually require us to do?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "measure total energy consumption across buildings, industrial processes, and transport",
+      "audit must cover at least 90% of total energy consumption",
+      "appoint a qualified Lead Assessor",
+      "identify cost-effective energy-saving opportunities",
+      "notify the Environment Agency of compliance by the deadline"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "esos_overview.md",
+        "text": "Organisations that have a valid **ISO 50001** certification covering their total energy consumption are exempt from conducting separate ESOS audits (but must still notify compliance to the Environment Agency).\n\nPublic sector bodies are **not** required to participate in ESOS (they are subject to the Greening Government Commitments framework instead), although public sector-owned trading companies may be in scope.\n\n---",
+        "score": 0.14240872859954834
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "Qualifying organisations must:\n\n1. **Measure total energy consumption** across all areas: buildings, industrial processes, and transport used for business purposes\n2. **Conduct energy audits** covering at least **90% of total energy consumption** (by value), identifying energy efficiency improvement opportunities\n3. **Appoint a Lead Assessor** \u2014 a qualified energy auditor who oversees and signs off the assessment\n4. **Notify the Environment Agency (EA)** of compliance by the compliance deadline, using the ESOS notification system\n\nThe energy audit must:\n- Identify significant areas of energy consumption\n- Identify cost-effective energy-saving recommendations\n- Be based on current, representative, and measured data\n- Be documented sufficiently for the Lead Assessor to sign off\n\n---",
+        "score": 0.1144033670425415
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "The Energy Savings Opportunity Scheme (ESOS) is a mandatory energy assessment scheme for large UK businesses, implemented under the **Energy Savings Opportunity Scheme Regulations 2014** (SI 2014/1643). It implements the UK's obligations under Article 8 of the EU Energy Efficiency Directive, retained and amended post-Brexit.\n\nESOS requires qualifying organisations to carry out comprehensive audits of their energy use across all buildings, industrial processes, and transport, and to identify cost-effective energy-saving opportunities. Participation does not require organisations to implement the identified measures \u2014 the obligation is to **audit and notify**, not to act.\n\n---",
+        "score": 0.09458833932876587
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "ESOS operates on a **4-year compliance cycle**. Each phase has a compliance deadline by which qualifying organisations must have completed their audit and notified the EA.\n\n| Phase | Qualification date | Compliance deadline | Status |\n|-------|--------------------|--------------------|-|\n| Phase 1 | 31 December 2014 | **5 December 2015** | Closed |\n| Phase 2 | 31 December 2018 | **5 December 2019** | Closed |\n| Phase 3 | 31 December 2022 | **5 June 2024** | Closed (deadline passed) |\n| Phase 4 | 31 December 2026 | **5 December 2027** | Upcoming |\n\n**Phase 3 note:** The compliance deadline for Phase 3 was **5 June 2024**. Organisations that missed this deadline are in breach of the Regulations and may be subject to enforcement action by the EA. Late compliance does not extinguish the obligation \u2014 organisations should complete and notify as soon as possible.\n\n---",
+        "score": 0.03450429439544678
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "ESOS sits alongside \u2014 but does not replace \u2014 other reporting obligations:\n\n| Scheme | Frequency | Focus |\n|--------|-----------|-------|\n| ESOS | 4-yearly | Energy audit and opportunity identification |\n| SECR | Annual | Energy use and carbon emissions reporting in annual accounts |\n| TCFD / FCA rules | Annual | Climate-related financial risk disclosure |\n| UK ETS | Annual | Carbon allowance trading (energy-intensive industries) |\n| Climate Change Agreements (CCAs) | Ongoing | Reduced climate change levy in exchange for energy efficiency targets |\n\nData collected for SECR reporting (annual energy consumption figures) can be used as input to ESOS assessments, reducing duplication.\n\n---",
+        "score": 0.0030440092086791992
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_011",
+    "category": "what_must_be_reported",
+    "question": "We're bidding for an NHS contract worth \u00a37m a year. Someone told us we need a carbon plan. What actually needs to be in it?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "PPN 06/21 requires a Carbon Reduction Plan for contracts above \u00a35 million per year",
+      "\u00a37m contract exceeds the \u00a35m threshold so the requirement applies",
+      "commitment to net zero by 2050",
+      "emission reduction targets and actions",
+      "published on the company's website"
+    ],
+    "facts_missing": [
+      "GHG emissions baseline required",
+      "signed off at director level or above"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "Carbon       Reduction        Plan    Template\n\nSupplier name: \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.                               \n                                                                                  \n          Publication date: \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026....................................................",
+        "score": 0.15755581855773926
+      },
+      {
+        "source": "ppn_0621_technical_standard_crp.pdf",
+        "text": "Introduction\n\nIn 2019, the UK became the first major economy to adopt a legal commitment to achieve \u2018Net Zero\u2019 carbon emissions by 20501. This guidance supports Procurement Policy Note (PPN) 06/21 which sets out how suppliers\u2019 Carbon Reduction Plans and commitment to Net Zero can be taken into account in the procurement of in-scope central Government contracts (subject to the Public Contracts Regulations 2015 and contracts in excess of \u00a35 million per annum). This guidance sets out the standards that carbon footprint data should adhere to for inclusion in your Carbon Reduction Plan, how and where you should publish your Carbon Reduction Plan, and how it should be approved and signed off within your organisation. Carbon Reduction Plans: Carbon Reduction Plans (CRPs) are to be completed on behalf of the bidding supplier and must meet the reporting requirements set out in this guidance, and include the supplier\u2019s current carbon footprint and its commitment to reducing emissions to achieve Net Zero emissions by 2050. Carbon Reduction Plans (CRP) will help suppliers and customers understand the impact the contract and therefore their wider operations have upon the environment. They detail the organisation's emissions across a single year against a range of emissions sources and greenhouse gasses. Carbon Reduction Plans must be provided by suppliers when responding to in-scope procurements as defined by PPN 06/21. The Carbon Reduction Plan is not intended to replace existing reporting or calculation of your organisational carbon footprint. It is a summary document that details high level information that demonstrates your compliance with the measure. 1 Climate Change Act 2008: https://www.legislation.gov.uk/ukpga/2008/27/contents The content and structure of the CRP is detailed in the \u2018Template Carbon Reduction Plan\u2019 published alongside PPN 06/21, and the reporting requirements are further detailed in this supporting guidance. Committing to Net Zero by 2050: Within their Carbon Reduction Plan, suppliers must confirm their organisational commitment to achieving Net Zero by 2050 at the latest. This is consistent with the UK Government\u2019s commitment under the Climate Change Act, and will play a significant role in the decarbonisation of the United Kingdom as a whole. Meeting the Reporting Requirements: Carbon Reduction Plans focus upon the recording and reporting of Scope 1 and 2 emissions, and introduce additional reporting against a subset of Scope 3 emissions. Please read the \u2018Scope Guidance\u2019 section carefully to determine which sources are considered to be in-scope. In order to ensure consistency of reporting and ease of comparison between suppliers, Carbon Reduction Plans should be completed in accordance with the latest environmental reporting guidance2 for Scope 1 and Scope 2 emissions, and the reporting of the required subset of Scope 3 emissions should be in line with best industry practice and technical guidance3 detailed below. Suppliers\u2019 Carbon Reduction Plans should be reviewed and updated annually to reflect changes in organisational structure and to take account of the efforts made to reduce their emissions over time. Suppliers should ensure that the same reporting period is used throughout the submission, to ensure the most accurate and meaningful data can be used in the completion of",
+        "score": 0.13119840621948242
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "14.  The UK\u2019s 2050 Net Zero target is one of the most ambitious in the world and was\n\nrecommended by the Committee on Climate Change, the UK\u2019s independent climate advisory\n                                                                                  \n          7Carbon dioxide (CO2), Methane (CH4), Nitrous Oxide (N2O), Hydrofluorocarbons (HFCs), Perfluorocarbons (PFCs), and\n          Sulphur Hexafluoride (SF6)                                              \n          8HM Treasury\u2019s review into funding the transitionto a net zero greenhouse gas economy:\n          https://www.gov.uk/government/publications/net-zero-review-terms-of-reference/hm-treasurys-review-into-funding-the-transition-\n          to-a-net-zero-greenhouse-gas-economy-terms-of-reference                 \n          9Clean Growth Strategy 2018:                                            \n          https://www.gov.uk/government/publications/clean-growth-strategy/clean-growth-strategy-executive-summary\n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          body. Net Zero requires a reduction in emissions and (if necessary) that any emissions\n          generated are balanced by schemes to offset an equivalent amount of greenhouse gases\n          from the atmosphere, such as planting trees or using technology like carbon capture and\n          storage.",
+        "score": 0.13051259517669678
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "Procurement        Policy    Note    \u2013 Taking     Account\n\nof  Carbon     Reduction       Plans    in the                          \n                                                                                  \n          procurement        of  major    government                              \n                                                                                  \n                                                                                  \n          contracts",
+        "score": 0.10437500476837158
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "Scope 3       XX\n\n(Included Sources)",
+        "score": 0.10307157039642334
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_012",
+    "category": "deadlines_and_timelines",
+    "question": "What was the ESOS Phase 3 compliance deadline?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "Phase 3 compliance deadline was 5 June 2024",
+      "Phase 4 deadline is 5 December 2027"
+    ],
+    "facts_missing": [
+      "Phase 3 qualification date was 31 December 2022"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "esos_overview.md",
+        "text": "ESOS operates on a **4-year compliance cycle**. Each phase has a compliance deadline by which qualifying organisations must have completed their audit and notified the EA.\n\n| Phase | Qualification date | Compliance deadline | Status |\n|-------|--------------------|--------------------|-|\n| Phase 1 | 31 December 2014 | **5 December 2015** | Closed |\n| Phase 2 | 31 December 2018 | **5 December 2019** | Closed |\n| Phase 3 | 31 December 2022 | **5 June 2024** | Closed (deadline passed) |\n| Phase 4 | 31 December 2026 | **5 December 2027** | Upcoming |\n\n**Phase 3 note:** The compliance deadline for Phase 3 was **5 June 2024**. Organisations that missed this deadline are in breach of the Regulations and may be subject to enforcement action by the EA. Late compliance does not extinguish the obligation \u2014 organisations should complete and notify as soon as possible.\n\n---",
+        "score": 0.23659378290176392
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "- Energy Savings Opportunity Scheme Regulations 2014, SI 2014/1643\n- Energy Savings Opportunity Scheme (Amendment) Regulations 2023, SI 2023/551\n- Environment Agency: *ESOS guidance for participants*, 2023 update\n- DESNZ: *ESOS Phase 3 guidance*, 2023\n- Environment Agency: *ESOS notification and compliance portal guidance*",
+        "score": 0.003266274929046631
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "**Document type:** Synthetic regulatory summary  \n**Source type:** synthetic_summary  \n**Based on:** The Energy Savings Opportunity Scheme Regulations 2014 (SI 2014/1643); ESOS Amendment Regulations 2023 (SI 2023/551); Environment Agency ESOS guidance; DESNZ ESOS Phase 3 guidance  \n**Accuracy note:** Obligations, thresholds, compliance dates, and phase structure reflect the 2014 Regulations as amended and EA guidance as of mid-2024.  \n**Last reviewed:** June 2024  \n\n---",
+        "score": 0.002445399761199951
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "Organisations that have a valid **ISO 50001** certification covering their total energy consumption are exempt from conducting separate ESOS audits (but must still notify compliance to the Environment Agency).\n\nPublic sector bodies are **not** required to participate in ESOS (they are subject to the Greening Government Commitments framework instead), although public sector-owned trading companies may be in scope.\n\n---",
+        "score": 0.0
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "The Energy Savings Opportunity Scheme (ESOS) is a mandatory energy assessment scheme for large UK businesses, implemented under the **Energy Savings Opportunity Scheme Regulations 2014** (SI 2014/1643). It implements the UK's obligations under Article 8 of the EU Energy Efficiency Directive, retained and amended post-Brexit.\n\nESOS requires qualifying organisations to carry out comprehensive audits of their energy use across all buildings, industrial processes, and transport, and to identify cost-effective energy-saving opportunities. Participation does not require organisations to implement the identified measures \u2014 the obligation is to **audit and notify**, not to act.\n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_013",
+    "category": "deadlines_and_timelines",
+    "question": "When do UK parent companies with qualifying EU subsidiaries need to start CSRD reporting?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "Wave 4: financial year beginning 1 January 2028",
+      "applies to third-country undertakings including UK parents",
+      "requires the \u20ac150m EU turnover threshold and qualifying EU entity to be met"
+    ],
+    "facts_missing": [
+      "first report due in 2029"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "based on synthetic summary not primary EU legislation",
+      "subject to EU implementation and any future amendments"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "A UK-based parent company falls into CSRD scope under Article 40 (the \"third-country undertaking\" provision) if:\n\n- It generated **net turnover exceeding \u20ac150 million** in the EU in each of the last two consecutive financial years, **AND**\n- It has at least one of the following EU-based entities:\n  - A **large EU subsidiary** (meeting the large company thresholds \u2014 see Section 3)\n  - An EU-regulated-market-**listed subsidiary** (regardless of size)\n  - An EU **branch** generating net turnover exceeding \u20ac40 million in the previous financial year\n\nWhere these conditions are met, the **EU subsidiary or branch** is required to produce a sustainability report covering the entire **group** (including the UK parent). The UK parent does not file directly, but must provide its EU subsidiary with the necessary data.",
+        "score": 0.21778064966201782
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "CSRD reports require **limited assurance** by an accredited independent auditor or assurance service provider from Wave 1. The European Commission may move to **reasonable assurance** in subsequent phases.\n\nUK companies providing data to EU subsidiaries for group-level CSRD reports should note that the data they supply will ultimately be subject to this assurance requirement.\n\n---",
+        "score": 0.0991288423538208
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The Corporate Sustainability Reporting Directive (EU Directive 2022/2464) entered into force on 5 January 2023. It replaces the Non-Financial Reporting Directive (NFRD) and significantly expands the scope, detail, and assurance requirements for sustainability reporting across the EU.\n\nThe CSRD requires in-scope companies to report on environmental, social, and governance (ESG) matters using the European Sustainability Reporting Standards (ESRS), developed by the European Financial Reporting Advisory Group (EFRAG). Reporting must appear in a dedicated section of companies' management reports and must be independently assured.\n\nAlthough the UK is no longer an EU member state, the CSRD is directly relevant to many UK-headquartered businesses. This document sets out when and how.\n\n---",
+        "score": 0.08778125047683716
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The CSRD does not automatically apply to UK companies by virtue of UK law. However, it applies in two distinct ways:",
+        "score": 0.04654902219772339
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "**Do we have an EU subsidiary?** If yes, check whether it qualifies as \"large\" under the EU thresholds. If so, your EU subsidiary may be in scope from Wave 2 (financial year 2025) and will need group-level sustainability data from you.\n\n**What is our EU turnover?** If your group's EU net turnover exceeded \u20ac150 million in each of the last two financial years, and you have a qualifying EU subsidiary or branch, you are in scope under Article 40 from 2028.\n\n**Are we listed on an EU regulated market?** If so, UK-headquartered status does not exempt you from the third-country obligations.\n\n**Does our EU subsidiary file under Wave 1 or Wave 2?** Wave 1 companies (former NFRD in-scope entities, >500 employees) are already reporting for FY2024. Wave 2 companies begin for FY2025.\n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_014",
+    "category": "deadlines_and_timelines",
+    "question": "Is UK SDS already mandatory?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "indicative mandatory date for large listed companies is financial years beginning on or after 1 January 2026",
+      "subject to government consultation outcomes and FCA rule changes",
+      "UKEB endorsement process was ongoing at time of corpus"
+    ],
+    "facts_missing": [
+      "UK SDS is not yet mandatory as of the corpus date"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "indicative timeline only",
+      "subject to government consultation",
+      "monitor FCA and DBT announcements"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The UK government has indicated that mandatory UK SDS will initially apply to:\n\n- **UK premium and standard listed companies** (via FCA listing rule changes) \u2014 likely first wave\n- **Large UK companies** meeting a size threshold (details under consultation) \u2014 likely second wave\n- **Large private UK companies** \u2014 potentially in a later phase\n\nThe thresholds for unlisted companies have not been confirmed. The Companies Act 2006 definition of \"large company\" (two of three: >250 employees, >\u00a336 million turnover, >\u00a318 million balance sheet total) has been referenced as a likely basis, but the government has indicated a higher threshold may apply initially.\n\n---",
+        "score": 0.23085236549377441
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "1. **Build on TCFD compliance**: Companies already making FCA-mandated TCFD disclosures should use those as the foundation for future UK SDS compliance\n2. **Assess CSRD exposure**: Determine whether EU subsidiaries trigger CSRD obligations before UK SDS is mandatory\n3. **Develop Scope 3 capability**: IFRS S2 requires Scope 3 disclosure; data collection for Scope 3 is the most common gap and requires supply chain engagement\n4. **Monitor government and FCA announcements**: The endorsement and consultation timeline will determine the mandatory start date\n\n---",
+        "score": 0.23065853118896484
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The UK government is following a formal **endorsement process** to adopt the ISSB standards as UK SDS. The process involves:\n\n1. **UK Endorsement Board (UKEB)** \u2014 technical assessment of IFRS S1 and S2 for UK endorsement, including assessment of whether any UK-specific modifications are needed\n2. **Government consultation** \u2014 public consultation on the endorsed standards and proposed mandatory application\n3. **Legislation or regulatory rulemaking** \u2014 to mandate UK SDS for applicable UK companies\n4. **FCA rule changes** \u2014 for listed companies, the FCA will update its disclosure rules to replace or extend the current TCFD-aligned requirements\n\n---",
+        "score": 0.18818068504333496
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "| Milestone | Indicative date | Status |\n|-----------|-----------------|--------|\n| ISSB publishes IFRS S1 and S2 | June 2023 | Complete |\n| UK government announces intent to adopt ISSB standards as UK SDS | July 2023 | Complete |\n| UKEB technical assessment and UK modifications review | 2023\u20132024 | In progress |\n| UK government consultation on UK SDS endorsement | 2024 | Expected H2 2024 |\n| UK SDS endorsed (government decision) | 2024\u20132025 | Expected |\n| FCA consultation on rule changes for listed companies | 2025 | Expected |\n| **Mandatory application for large UK listed companies** | **Financial years beginning on or after 1 January 2026** | Indicative \u2014 subject to consultation |\n| Mandatory application for large unlisted UK companies | TBC \u2014 likely phased | Under consideration |\n\n**Caveat:** These timelines are indicative. The mandatory application date for listed companies has been widely cited in government statements as targeting 2026, but this is subject to the outcome of consultation and parliamentary/regulatory process. Businesses should monitor DBT, FCA, and FRC announcements.\n\n---",
+        "score": 0.13665050268173218
+      },
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "The UK government is developing **UK Sustainability Disclosure Standards (UK SDS)** based on the ISSB's IFRS S1 and IFRS S2 standards. Once UK SDS are mandated (expected for large UK companies from 2026 onwards, subject to consultation), they will likely supersede or significantly extend the FCA TCFD rules for listed companies.\n\nThe FCA has indicated it will consult on updating its disclosure rules to reflect UK SDS once the standards are endorsed by the UK government. Companies currently complying with FCA TCFD rules should treat their existing disclosures as a foundation for future UK SDS compliance.\n\n---",
+        "score": 0.13116943836212158
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_015",
+    "category": "deadlines_and_timelines",
+    "question": "When did FCA mandatory TCFD disclosures apply to standard listed UK companies?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "financial years beginning on or after 1 January 2022",
+      "LR 14.3.27R",
+      "comply-or-explain basis",
+      "premium listed companies had an earlier start date of 1 January 2021"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "| Entity type | Rule | Applies from |\n|-------------|------|--------------|\n| UK **premium listed** commercial companies | LR 9.8.6R | Financial years beginning **on or after 1 January 2021** |\n| UK **standard listed** companies (equity shares, excl. investment entities and shell companies) | LR 14.3.27R | Financial years beginning **on or after 1 January 2022** |\n\nListed companies must make TCFD-aligned disclosures in their annual financial report. Where they do not comply with all recommended disclosures, they must explain why (comply-or-explain basis).",
+        "score": 0.4004063606262207
+      },
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "The UK government is developing **UK Sustainability Disclosure Standards (UK SDS)** based on the ISSB's IFRS S1 and IFRS S2 standards. Once UK SDS are mandated (expected for large UK companies from 2026 onwards, subject to consultation), they will likely supersede or significantly extend the FCA TCFD rules for listed companies.\n\nThe FCA has indicated it will consult on updating its disclosure rules to reflect UK SDS once the standards are endorsed by the UK government. Companies currently complying with FCA TCFD rules should treat their existing disclosures as a foundation for future UK SDS compliance.\n\n---",
+        "score": 0.21915680170059204
+      },
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "FCA mandatory TCFD-aligned disclosures apply to the following categories of regulated entities:",
+        "score": 0.19319874048233032
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The FCA has confirmed that once UK SDS are mandated for listed companies, its current **TCFD-aligned listing rules** (LR 9.8.6R and LR 14.3.27R) will be **updated or replaced** by UK SDS requirements. TCFD-compliant companies will have a strong foundation for UK SDS compliance \u2014 IFRS S2 is explicitly built on TCFD recommendations \u2014 but UK SDS will require:\n\n- More granular GHG emissions disclosure (including Scope 3)\n- Formal climate scenario analysis using a 1.5\u00b0C scenario\n- Cross-industry metric disclosures (transition plans, physical risk metrics)\n- Integration with financial statements rather than separate reporting\n\n---",
+        "score": 0.17445361614227295
+      },
+      {
+        "source": "tcfd_2017_recommendations.pdf",
+        "text": "EU Directive 2014/95\n\nfirms that meet and other the financial materials, and energy use report (published whether the non-financial\n        regarding disclosure of                                                                              \n                     size criteria stakeholders year starting             with financial report statement has been\n        non-financial and                                                                                    \n                     (i.e., have more on Jan. 1, 2017                     or on website six provided         \n        diversity information                                                                                \n                     than 500         or during the                       months after the                   \n        (2014)                                                                        Member States may require\n                     employees)       2017 calendar                       balance sheet date                 \n                                                                                      independent assurance for\n                                      year                                and referenced in                  \n                                                                                      information in non-financial\n                                                                          financial report)                  \n                                                                                      statement              \n        France:      Listed financial Investors, Mandatory None specified Risks related to climate Annual report and Mandatory review on the\n                     and non- general public                change, consequences of website consistency of the disclosure",
+        "score": 0.10901963710784912
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_016",
+    "category": "cross_framework",
+    "question": "We are a large UK listed company with 400 employees and \u00a380m turnover. What sustainability reporting frameworks apply to us?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.25,
+    "facts_present": [
+      "SECR applies \u2014 400 employees and \u00a380m turnover meet two of three criteria",
+      "ESOS likely applies \u2014 400 employees exceeds 250-employee threshold",
+      "CSRD applicability depends on EU operations not specified in question"
+    ],
+    "facts_missing": [
+      "FCA TCFD mandatory disclosures apply \u2014 listed company",
+      "UK SDS incoming for listed companies \u2014 indicative 2026 start"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "CSRD depends on EU operations not specified in this question",
+      "UK SDS timeline is indicative not confirmed"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "retrieval_failure",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Sustainable Development: the GHG Protocol Corporate Accounting and\n\nReporting Standard \u201cthe Corporate Standard\u201d and so corresponds with many\n            widely used national and international voluntary schemes such as the  \n            International Organisation for Standardisation (ISO) 14064-1 , CDP, and the",
+        "score": 0.08988749980926514
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "In-scope companies must report on sustainability matters under the **double materiality** principle: both the impact of sustainability matters on the company (financial materiality) and the company's impact on society and the environment (impact materiality).\n\nReporting covers:\n\n- **Environmental:** Climate change (mitigation, adaptation, Scope 1/2/3 GHG emissions), pollution, water and marine resources, biodiversity and ecosystems, resource use and circular economy\n- **Social:** Own workforce, workers in the value chain, affected communities, consumers and end-users\n- **Governance:** Business conduct, anti-corruption and anti-bribery, lobbying, payment practices\n\nReporting must comply with the **European Sustainability Reporting Standards (ESRS)**. The cross-cutting standards (ESRS 1 and ESRS 2) are mandatory; topical standards are subject to materiality assessment.\n\n---",
+        "score": 0.08621424436569214
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Livestock waste     Wet and dry manure, poultry litter\n\nIndustry   Industrial residues Industrial waste wood, sawdust from sawmills",
+        "score": 0.07715076208114624
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Principles with which members must comply.93\n\n\u2022 The Global Reporting Initiative (GRI) produces sector supplements that are relevant\n           to this chapter for mining and metals sector94 and the oil and gas sector.95 If you\n                                                                                  \n           have used the GRI reporting framework and obtained a GRI grade level this should\n           be detailed, including where you have sought independent third party assurance.\n           These GRI reports can be used in lieu of this guidance (except for the process of\n           fracking -                                                             \n           see below - which is not contained within the GRI documents and should be reported\n                                                                                  \n           on).                                                                   \n                                                                                  \n                                                                                  \n                                                                                  \n        92 http://marinemanagement.org.uk/licensing/documents/guidance/08.pdf     \n        93 The world\u2019s largest mining companies are members of the ICMM. Further detail can be found at\n        http://www.icmm.com/our-work/sustainable-development-framework/10-principles\n                                                                                  \n        94 https://www.globalreporting.org/resourcelibrary/MMSS-Complete.pdf      \n        95 https://www.globalreporting.org/resourcelibrary/OGSS-G3.1-Complete.pdf \n                                                                                  \n                                        134                                       \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n         \u2022 Minerals UK also offer an introduction to minerals and sustainability.96",
+        "score": 0.07443594932556152
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "SSSI\u2019s, SACs/SPAs, nature reserves\n\n\u2022 Explore opportunities for including biodiversity features in your buildings and landholdings (green roofs, ponds, trees, wildlife gardens) that can offer a range of benefits including habitat creation, green corridors, recreation/amenity, solar shading, positive public perception, rain water/ flood attenuation); and \u2022 Assess the scale of air, water, noise, and light emissions that may impact on the environment. There are a number of areas that your organisation can review in order to understand its indirect biodiversity interactions. You can: \u2022 Audit supply chain policies on biodiversity. \u2022 Establish the origin of materials, and determine whether they are supplied from highly biodiverse or water stressed regions. \u2022 Understand the biodiversity impacts associated with the use of your products and services (e.g. provision of finance for activities that encourage deforestation, emission of pollutants, production of hazardous waste/ by-products). Step 2 \u2013 Select a set of priority biodiversity and ecosystem interactions that your organisation can influence, and develop these into clear targets for your organisation. It will be easier if you start simply with just one or two indicators, or a specific site, and set out your intention. Step 3 - Develop indicators that will allow your organisation to monitor trends against the key interactions identified in step 2. Developing indicators is best viewed as an iterative process. Start by doing what is possible with your current levels of information. Use available knowledge and indicators as a starting point, adopting a small set of specific, business-relevant indicators. Focus your resources to address your key elements i.e. those most relevant to your organisation and any information gaps. No single indicator can tell the 88 full story. A combination of indicators ought to provide a comprehensive overview of your organisation\u2019s performance. A narrative that explains the indicator and identifies the relationship linking performance and impacts will aid comprehension. Where direct measures are not yet developed or where there is no data, good proxy indicators can be used. There is potential for employing biodiversity indicators (which are generally more well developed) as proxies to indicate something about the flow of an ecosystem service (which is often difficult to measure or lacking in data), as long as the linkages between the two are well understood. However, although in some categorisations biodiversity is classified as an ecosystem service they are not inter-changeable. It is important not to lose sight of the importance of biodiversity by focusing only on ecosystem service benefits. The World Resources Institute ecosystem service indicators database63 can also be used as a source of reference on ecosystem services. Step 4 \u2013 Establish data and reporting requirements. If using a tool, report which one and set out the data sources and input parameters. There are many tools available64 and recently there has been a focus on integrating BES data sets and indicators within pre-existing organisation decision-making frameworks, notably ISO standards (14000),65 the Global Compact Performance Model and the Global Reporting Initiative\u2019s reporting framework. If you are using one of these this can be used as part of your reporting. The EU Business",
+        "score": 0.06844490766525269
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_017",
+    "category": "cross_framework",
+    "question": "We have 300 employees and \u00a345m turnover. What green reporting applies to us?",
+    "expected_state": "partial_answer_needs_clarification",
+    "actual_state": "clear",
+    "state_match": false,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.5,
+    "facts_present": [
+      "300 employees exceeds the SECR employee criterion of 250",
+      "300 employees exceeds the ESOS 250-employee threshold \u2014 ESOS likely applies",
+      "FCA TCFD applicability depends on listing or regulated status not provided",
+      "CSRD applicability depends on EU operations not provided",
+      "PPN 06/21 applicability depends on public procurement context not provided"
+    ],
+    "facts_missing": [
+      "\u00a345m turnover exceeds the SECR turnover criterion of \u00a336m",
+      "SECR likely applies because two of three size criteria are already met"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "listing status needed for FCA TCFD assessment",
+      "EU operations needed for CSRD assessment",
+      "procurement context needed for PPN 06/21 assessment"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "WARNING: partial_answer_needs_clarification is not natively supported by the Phase 3 classifier. Scored approximately \u2014 actual_state='clear', fact_hit=False, citation_hit=True.",
+    "failure_type": "classification_failure",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Group  Reporting\n\nIf you are reporting at group level, for a financial year for which you are required to prepare a group Directors\u2019 Report,25 when making your energy and carbon disclosures, you must take into account not only your own information, but also the information of any subsidiaries included in the consolidation which are quoted companies, unquoted companies or LLPs. However, you have the option to exclude from your report any energy and carbon information relating to a subsidiary which the subsidiary would not itself be obliged to include if reporting on its own account. The same applies to LLPs required to prepare a group Energy and Carbon Report.26 If you are reporting at subsidiary level, for a financial year for which your parent company (or parent LLP) is preparing a group relevant Report (i.e. a group Directors\u2019 Report or a group Energy and Carbon Report), you might not be obliged to include your energy and carbon information in your own accounts and reports. A subsidiary is not obliged to report their energy and carbon information if: 23 Unregistered companies are incorporated companies not formed or registered under the Companies Acts or under any other public general Act of Parliament (for example, companies formed under private Acts of Parliament, Royal Charters and letters patent). 24 In the case of charitable companies, the reference to turnover shall be taken as a reference to the charitable company\u2019s gross income, as defined for its jurisdiction of registration, or operation. 25 Under section 415(2) of the Companies Act 2006. 26 Under section 415(2) of the Companies Act 2006 as applied to LLPs by regulation 12A of the Limited Liability Partnerships (Account and Audit) (Application of Companies Act 2006) Regulations 2008 as amended by the 2018 Regulations. 29 \u2022 They are a \u201csubsidiary undertaking\u201d at the end of the relevant financial year; \u2022 They are included in the group Report (whether a group Directors\u2019 Report or a group Energy and Carbon Report) of a \u201cparent undertaking\u201d; \u2022 That group Report is prepared for a financial year of the parent that ends at the same time as, or before the end of, the subsidiary\u2019s financial year; and \u2022 The group Report complies with the relevant obligations on the parent to report energy and carbon information for themselves and their subsidiaries; but this provision does not apply where the group Report relies on the seriously prejudicial option. Note this is different to the approach taken under ESOS, where a smaller subsidiary of a parent company is not exempt, even where on its own, it would not meet ESOS eligibility criteria. Similarly, this is also different from the approach under the CRC Energy Efficiency Scheme. A corporate group is defined in the Companies Act 2006, and sections 1158 to 1162 of that Act explain how to identify if an undertaking is a parent to, or subsidiary of, another undertaking. You may wish to speak to your Finance Director in order to establish your organisation\u2019s existing obligations relating to group reporting. The legislation requires organisations to take the same",
+        "score": 0.0
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Your Key Performance Indicators\n\nThrough understanding your own organisation\u2019s operations you should have a\n            clear understanding of where your main environmental impacts occur. These\n            are likely to fall into one or more of six categories:                \n                                                                                  \n                                                                                  \n               \u2022 Greenhouse gases                                                 \n                                                                                  \n               \u2022 Water                                                            \n                                                                                  \n               \u2022 Waste                                                            \n                                                                                  \n               \u2022 Materials and resource efficiency                                \n                                                                                  \n                                        12                                        \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n               \u2022 Biodiversity/ecosystem services                                  \n                                                                                  \n               \u2022 Emissions to air, land and water                                 \n                                                                                  \n                                                                                  \n            Not all six will be relevant (material) to your organisation. You should identify\n            which are and explain why they are relevant and how they are defined. \n            There are UK and EU regulations covering these issues and, in general, for\n            any KPI of interest to your organisation you need to ensure that you are also\n            complying with any relevant legislation.",
+        "score": 0.0
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Group  Reporting\n\nScheme. A corporate group is defined in the Companies Act 2006, and sections 1158 to 1162 of that Act explain how to identify if an undertaking is a parent to, or subsidiary of, another undertaking. You may wish to speak to your Finance Director in order to establish your organisation\u2019s existing obligations relating to group reporting. The legislation requires organisations to take the same approach, with the option to apply subsidiary exemptions as outlined above.",
+        "score": 0.0
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Benefits   of reporting\n\nThere are direct benefits to your organisation in the measuring and reporting\n            of environmental performance as it will benefit from lower energy and \n            resource costs,1 gain a better understanding of exposure to the risks of\n            climate change and demonstrate leadership, which will help strengthen your\n            green credentials in the marketplace. You should find it helpful to use\n                                                                                  \n            environmental KPIs to capture the link between environmental and financial\n            performance.",
+        "score": 0.0
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "6.  SECR   reporting   requirements    for Quoted\n\nCompanies Under changes introduced by the 2013 Regulations, quoted companies of any size are required to report on their greenhouse gas emissions from activities for which they are responsible, and from the purchase of electricity, heat, steam or cooling for the company\u2019s own use, an intensity ratio, the previous year\u2019s figures and the methodology used to calculate the required information. For financial years that start on or after, 1 April 2019, quoted companies will also have to report the underlying global energy use that forms the basis of the reported GHG emissions. They must also state what proportion of their energy consumption and their emissions relate to emissions in the UK and offshore area, and report information relating to energy efficiency taken in the financial year. What GHG emissions must my quoted company report? Many quoted companies already have established reporting practices using GHG accounting methodologies and programmes, such as the GHG Protocol Corporate Standard, ISO 14064-1 and CDP. These companies should satisfy themselves that their existing GHG accounting approaches cover the required emissions from activities for which they are responsible. The next step is to consider the requirements of the Directors\u2019 Report, as this is the context in which energy use and greenhouse gas emissions information must be reported. The Directors\u2019 Report contains information relating to operations27 covered by the consolidated financial statement that includes their operations both in the UK and abroad. The strong preference is for energy and carbon reports to be aligned with the 27 Please note that the term \u201coperations\u201d is used here as a generic term to denote any kind of business activity, irrespective of its organizational, governance, or legal structures. 36 boundaries of the financial statements. If companies consider that reporting emissions from activities for which they are responsible means that they will: \u2022 Not report on energy use and GHG emissions from certain operations covered by the consolidated financial statement; or \u2022 Report on energy use and GHG emissions from operations that are not included in their statements, they must make this clear. Readers of the emissions data should have a clear understanding of the operations for which emissions data has been reported and if, and how, this differs from operations within the consolidated financial statement. This should include a reconciliation of entities which are included and/or excluded. Should quoted companies report all their emissions? Quoted companies must report on emissions from activities for which they are responsible. Quoted companies may determine the scope and boundaries of their reporting emissions as determined in the GHG protocol and state these clearly such as the use of the operational control approach. Where alternative reporting methodologies are used, these should be referenced clearly. You are required to quantify and report on emissions of the following greenhouse gases28 - carbon dioxide (CO ), methane (CH ), nitrous oxide 2 4 (N O), hydrofluorocarbons (HFCs), perfluorocarbons (PFCs) andsulphur 2 hexafluoride (SF ). Additionally, while not a legal requirement, you should 6 consider reporting on nitrogen trifluoride NF , especially if material",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_018",
+    "category": "cross_framework",
+    "question": "We sell into the EU but are UK-based with no EU office. Does CSRD affect us?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "selling into the EU without an EU subsidiary or branch does not trigger CSRD",
+      "Article 40 requires BOTH \u20ac150m EU net turnover AND a qualifying EU subsidiary, listed EU subsidiary, or EU branch",
+      "no EU entity means Article 40 is unlikely to apply"
+    ],
+    "facts_missing": [
+      "the two conditions are conjunctive \u2014 both must be met"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "based on synthetic summary not primary EU legislation",
+      "seek legal advice if EU structure changes or EU turnover approaches \u20ac150m"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The CSRD does not automatically apply to UK companies by virtue of UK law. However, it applies in two distinct ways:",
+        "score": 0.27701330184936523
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "A UK-based parent company falls into CSRD scope under Article 40 (the \"third-country undertaking\" provision) if:\n\n- It generated **net turnover exceeding \u20ac150 million** in the EU in each of the last two consecutive financial years, **AND**\n- It has at least one of the following EU-based entities:\n  - A **large EU subsidiary** (meeting the large company thresholds \u2014 see Section 3)\n  - An EU-regulated-market-**listed subsidiary** (regardless of size)\n  - An EU **branch** generating net turnover exceeding \u20ac40 million in the previous financial year\n\nWhere these conditions are met, the **EU subsidiary or branch** is required to produce a sustainability report covering the entire **group** (including the UK parent). The UK parent does not file directly, but must provide its EU subsidiary with the necessary data.",
+        "score": 0.01962864398956299
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The Corporate Sustainability Reporting Directive (EU Directive 2022/2464) entered into force on 5 January 2023. It replaces the Non-Financial Reporting Directive (NFRD) and significantly expands the scope, detail, and assurance requirements for sustainability reporting across the EU.\n\nThe CSRD requires in-scope companies to report on environmental, social, and governance (ESG) matters using the European Sustainability Reporting Standards (ESRS), developed by the European Financial Reporting Advisory Group (EFRAG). Reporting must appear in a dedicated section of companies' management reports and must be independently assured.\n\nAlthough the UK is no longer an EU member state, the CSRD is directly relevant to many UK-headquartered businesses. This document sets out when and how.\n\n---",
+        "score": 0.014219284057617188
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "CSRD reports require **limited assurance** by an accredited independent auditor or assurance service provider from Wave 1. The European Commission may move to **reasonable assurance** in subsequent phases.\n\nUK companies providing data to EU subsidiaries for group-level CSRD reports should note that the data they supply will ultimately be subject to this assurance requirement.\n\n---",
+        "score": 0.0
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "| Framework | Relationship to CSRD |\n|-----------|---------------------|\n| TCFD (FCA mandatory) | ESRS climate disclosure (ESRS E1) broadly aligns with TCFD; companies compliant with FCA TCFD rules will have a foundation but CSRD requires more detail |\n| SECR | SECR energy and carbon data satisfies some ESRS E1 inputs but does not constitute CSRD compliance |\n| UK SDS (forthcoming) | UK SDS is based on ISSB standards, not ESRS; UK and EU standards will diverge; companies with dual obligations will need to manage both |\n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_019",
+    "category": "cross_framework",
+    "question": "We're not listed, but we are bidding for a \u00a37m government contract. Do we need TCFD or a carbon plan?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.5,
+    "facts_present": [
+      "PPN 06/21 requires a Carbon Reduction Plan for contracts above \u00a35m per year",
+      "\u00a37m contract exceeds the \u00a35m threshold so CRP is required",
+      "a Carbon Reduction Plan is the relevant obligation here, not TCFD"
+    ],
+    "facts_missing": [
+      "FCA TCFD does not apply to unlisted companies"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "Carbon       Reduction        Plan    Template\n\nSupplier name: \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026.                               \n                                                                                  \n          Publication date: \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026....................................................",
+        "score": 0.020284652709960938
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "14.  The UK\u2019s 2050 Net Zero target is one of the most ambitious in the world and was\n\nrecommended by the Committee on Climate Change, the UK\u2019s independent climate advisory\n                                                                                  \n          7Carbon dioxide (CO2), Methane (CH4), Nitrous Oxide (N2O), Hydrofluorocarbons (HFCs), Perfluorocarbons (PFCs), and\n          Sulphur Hexafluoride (SF6)                                              \n          8HM Treasury\u2019s review into funding the transitionto a net zero greenhouse gas economy:\n          https://www.gov.uk/government/publications/net-zero-review-terms-of-reference/hm-treasurys-review-into-funding-the-transition-\n          to-a-net-zero-greenhouse-gas-economy-terms-of-reference                 \n          9Clean Growth Strategy 2018:                                            \n          https://www.gov.uk/government/publications/clean-growth-strategy/clean-growth-strategy-executive-summary\n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          body. Net Zero requires a reduction in emissions and (if necessary) that any emissions\n          generated are balanced by schemes to offset an equivalent amount of greenhouse gases\n          from the atmosphere, such as planting trees or using technology like carbon capture and\n          storage.",
+        "score": 0.01987433433532715
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "4.   This PPN applies to framework agreements and dynamic purchasing systems only\n\nwhere it is anticipated that the individual value of any contract to be awarded under the\n                                                                                  \n                                                                                  \n          1Climate Change Act 2008:www.legislation.gov.uk/ukpga/2008/27/contents  \n          2When the reporting of GHG emissions is measured,it is often done so in carbon dioxide equivalent units (CO2e). The use of\n          CO2e allows for more accessible reporting and straightforward tracking and reporting of emissions over time. CO2e includes\n          all of the greenhouse gases defined within the Kyoto protocol: carbon dioxide (CO2), methane (CH4), nitrous oxide (N2O),\n          hydrofluorocarbons (HFC), perfluorocarbons (PFC), sulphur hexafluoride (SF6) and nitrogen trifluoride (NF3). Each of these\n          greenhouse gasses have a conversion factoras publishedby DEFRA:         \n          https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020When the phrase 'Net Zero\n          Carbon' is used, it is referring to both CO2 and CO2e emissions and meansnet zero GHG rather thannetzero CO2.\n          3Based on advertised contract value, averaged overthe life of the contract, e.g. a contract with a 4 year term with a total\n          contract value of \u00a321m would be in scope, even if the value in the first year was under \u00a35m.\n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          framework agreement or dynamic purchasing system is greater than \u00a35 million per annum\n          (excluding VAT).",
+        "score": 0.014348030090332031
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "9.   Environmental considerations and carbon reduction will be a factor in most, if not all,\n\ncontracts and therefore it is expected that in the majority of cases, the application of this\n                                                                                  \n          PPN will be relevant. This may include, but is not limited to:          \n            \u25cf  Contracts which have a direct impact on the environment in the delivery of the\n               contract;                                                          \n                                                                                  \n            \u25cf  Contracts which require the use of buildings by staff engaged in the delivery of the\n               contract;                                                          \n                                                                                  \n            \u25cf  Contracts which require the transportation of goods or people used in the delivery of\n               the contract;                                                      \n            \u25cf  Contracts which require the use of natural resources in the delivery of the contract.",
+        "score": 0.012818217277526855
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "Procurement        Policy    Note    \u2013 Taking     Account\n\nof  Carbon     Reduction       Plans    in the                          \n                                                                                  \n          procurement        of  major    government                              \n                                                                                  \n                                                                                  \n          contracts",
+        "score": 0.007912039756774902
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_020",
+    "category": "cross_framework",
+    "question": "What is the difference between the materiality approach in UK SDS and CSRD?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "UK SDS uses single materiality \u2014 enterprise value perspective \u2014 how sustainability affects the company financially",
+      "CSRD uses double materiality \u2014 both financial impact on the company AND the company's impact on society and the environment",
+      "ESRS under CSRD requires both the inward financial perspective and the outward impact perspective"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [
+      "both frameworks are still evolving in the UK context"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_caveats",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "UK SDS (ISSB-based) and the EU's ESRS (CSRD-based) are separate frameworks with different:\n- Materiality approaches (UK SDS: enterprise value / single materiality; ESRS: double materiality)\n- Disclosure scope (ESRS covers broader ESG including biodiversity, workers in the value chain)\n- Legal obligation basis (UK SDS via Companies Act / FCA rules; CSRD via EU Directive)\n\nUK companies with EU subsidiaries in CSRD scope, and who are also in scope for UK SDS, will need to produce disclosures under both frameworks. Interoperability between IFRS S1/S2 and ESRS has been assessed by EFRAG and the ISSB \u2014 there is significant but not complete overlap.\n\n---",
+        "score": 0.30518728494644165
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "| Framework | Relationship to CSRD |\n|-----------|---------------------|\n| TCFD (FCA mandatory) | ESRS climate disclosure (ESRS E1) broadly aligns with TCFD; companies compliant with FCA TCFD rules will have a foundation but CSRD requires more detail |\n| SECR | SECR energy and carbon data satisfies some ESRS E1 inputs but does not constitute CSRD compliance |\n| UK SDS (forthcoming) | UK SDS is based on ISSB standards, not ESRS; UK and EU standards will diverge; companies with dual obligations will need to manage both |\n\n---",
+        "score": 0.13720983266830444
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The **UK Sustainability Disclosure Standards (UK SDS)** are a set of sustainability reporting standards being developed for use by UK companies. They are based on the **IFRS Sustainability Disclosure Standards** issued by the **International Sustainability Standards Board (ISSB)** in June 2023:\n\n- **IFRS S1** \u2014 General Requirements for Disclosure of Sustainability-related Financial Information\n- **IFRS S2** \u2014 Climate-related Disclosures\n\nThe UK government has committed to developing UK SDS by **endorsing** the ISSB standards, with UK-specific modifications where necessary to reflect UK legal and regulatory context.\n\nUK SDS are distinct from the **EU's European Sustainability Reporting Standards (ESRS)** under the Corporate Sustainability Reporting Directive (CSRD). UK companies with reporting obligations under both frameworks will need to manage differences between the two.\n\n---",
+        "score": 0.06288528442382812
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The CSRD does not automatically apply to UK companies by virtue of UK law. However, it applies in two distinct ways:",
+        "score": 0.0
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "**Document type:** Synthetic regulatory summary  \n**Source type:** synthetic_summary  \n**Based on:** IFRS S1 and S2 (ISSB, June 2023); DSIT/DESNZ/FRC UK endorsement consultation (2024); HM Treasury and FCA statements on UK SDS; Department for Business and Trade (DBT) guidance  \n**Accuracy note:** The UK SDS endorsement process was ongoing at mid-2024. Timelines are indicative based on government statements and consultation outputs. Mandatory application dates had not been confirmed as of this document's review date.  \n**Last reviewed:** June 2024  \n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_021",
+    "category": "cross_framework",
+    "question": "We already comply with FCA TCFD rules. Do we still need to worry about UK SDS?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "TCFD compliance provides a foundation for UK SDS but is not sufficient",
+      "UK SDS will require Scope 3 GHG emissions disclosure",
+      "UK SDS will require a 1.5\u00b0C climate scenario under IFRS S2",
+      "UK SDS will require cross-industry metric disclosures including transition plans",
+      "FCA intends to update listing rules to reflect UK SDS once endorsed"
+    ],
+    "facts_missing": [
+      "UK SDS is not yet mandatory"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "UK SDS timeline is indicative",
+      "monitor FCA and DBT announcements for confirmed dates"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "fca_tcfd_ps21_24_summary.md",
+        "text": "The UK government is developing **UK Sustainability Disclosure Standards (UK SDS)** based on the ISSB's IFRS S1 and IFRS S2 standards. Once UK SDS are mandated (expected for large UK companies from 2026 onwards, subject to consultation), they will likely supersede or significantly extend the FCA TCFD rules for listed companies.\n\nThe FCA has indicated it will consult on updating its disclosure rules to reflect UK SDS once the standards are endorsed by the UK government. Companies currently complying with FCA TCFD rules should treat their existing disclosures as a foundation for future UK SDS compliance.\n\n---",
+        "score": 0.4017811417579651
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The FCA has confirmed that once UK SDS are mandated for listed companies, its current **TCFD-aligned listing rules** (LR 9.8.6R and LR 14.3.27R) will be **updated or replaced** by UK SDS requirements. TCFD-compliant companies will have a strong foundation for UK SDS compliance \u2014 IFRS S2 is explicitly built on TCFD recommendations \u2014 but UK SDS will require:\n\n- More granular GHG emissions disclosure (including Scope 3)\n- Formal climate scenario analysis using a 1.5\u00b0C scenario\n- Cross-industry metric disclosures (transition plans, physical risk metrics)\n- Integration with financial statements rather than separate reporting\n\n---",
+        "score": 0.38217777013778687
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "1. **Build on TCFD compliance**: Companies already making FCA-mandated TCFD disclosures should use those as the foundation for future UK SDS compliance\n2. **Assess CSRD exposure**: Determine whether EU subsidiaries trigger CSRD obligations before UK SDS is mandatory\n3. **Develop Scope 3 capability**: IFRS S2 requires Scope 3 disclosure; data collection for Scope 3 is the most common gap and requires supply chain engagement\n4. **Monitor government and FCA announcements**: The endorsement and consultation timeline will determine the mandatory start date\n\n---",
+        "score": 0.3797818422317505
+      },
+      {
+        "source": "uk_sds_status_timeline.md",
+        "text": "The UK government is following a formal **endorsement process** to adopt the ISSB standards as UK SDS. The process involves:\n\n1. **UK Endorsement Board (UKEB)** \u2014 technical assessment of IFRS S1 and S2 for UK endorsement, including assessment of whether any UK-specific modifications are needed\n2. **Government consultation** \u2014 public consultation on the endorsed standards and proposed mandatory application\n3. **Legislation or regulatory rulemaking** \u2014 to mandate UK SDS for applicable UK companies\n4. **FCA rule changes** \u2014 for listed companies, the FCA will update its disclosure rules to replace or extend the current TCFD-aligned requirements\n\n---",
+        "score": 0.22489690780639648
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "| Framework | Relationship to CSRD |\n|-----------|---------------------|\n| TCFD (FCA mandatory) | ESRS climate disclosure (ESRS E1) broadly aligns with TCFD; companies compliant with FCA TCFD rules will have a foundation but CSRD requires more detail |\n| SECR | SECR energy and carbon data satisfies some ESRS E1 inputs but does not constitute CSRD compliance |\n| UK SDS (forthcoming) | UK SDS is based on ISSB standards, not ESRS; UK and EU standards will diverge; companies with dual obligations will need to manage both |\n\n---",
+        "score": 0.22334003448486328
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_022",
+    "category": "cross_framework",
+    "question": "We have an EU subsidiary with 300 employees and \u20ac55m turnover. Our UK group has 800 employees and \u00a3200m turnover. Does CSRD apply to us?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "EU subsidiary with 300 employees and \u20ac55m turnover meets two of three EU large company thresholds",
+      "EU subsidiary is a large EU company and likely in CSRD scope from Wave 2 financial year 2025",
+      "EU subsidiary must produce group-level sustainability report covering the UK parent",
+      "UK parent must supply data to EU subsidiary for the group report",
+      "Article 40 parent-level obligations require \u20ac150m EU net turnover \u2014 UK group turnover is not EU turnover"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [
+      "based on synthetic summary not primary EU legislation",
+      "Wave 2 applicability depends on EU subsidiary meeting two of three thresholds on its balance sheet date",
+      "seek legal advice for definitive group-level assessment"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_caveats",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The CSRD does not automatically apply to UK companies by virtue of UK law. However, it applies in two distinct ways:",
+        "score": 0.2374107837677002
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "A UK-based parent company falls into CSRD scope under Article 40 (the \"third-country undertaking\" provision) if:\n\n- It generated **net turnover exceeding \u20ac150 million** in the EU in each of the last two consecutive financial years, **AND**\n- It has at least one of the following EU-based entities:\n  - A **large EU subsidiary** (meeting the large company thresholds \u2014 see Section 3)\n  - An EU-regulated-market-**listed subsidiary** (regardless of size)\n  - An EU **branch** generating net turnover exceeding \u20ac40 million in the previous financial year\n\nWhere these conditions are met, the **EU subsidiary or branch** is required to produce a sustainability report covering the entire **group** (including the UK parent). The UK parent does not file directly, but must provide its EU subsidiary with the necessary data.",
+        "score": 0.04191887378692627
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "CSRD reports require **limited assurance** by an accredited independent auditor or assurance service provider from Wave 1. The European Commission may move to **reasonable assurance** in subsequent phases.\n\nUK companies providing data to EU subsidiaries for group-level CSRD reports should note that the data they supply will ultimately be subject to this assurance requirement.\n\n---",
+        "score": 0.028471052646636963
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "**Do we have an EU subsidiary?** If yes, check whether it qualifies as \"large\" under the EU thresholds. If so, your EU subsidiary may be in scope from Wave 2 (financial year 2025) and will need group-level sustainability data from you.\n\n**What is our EU turnover?** If your group's EU net turnover exceeded \u20ac150 million in each of the last two financial years, and you have a qualifying EU subsidiary or branch, you are in scope under Article 40 from 2028.\n\n**Are we listed on an EU regulated market?** If so, UK-headquartered status does not exempt you from the third-country obligations.\n\n**Does our EU subsidiary file under Wave 1 or Wave 2?** Wave 1 companies (former NFRD in-scope entities, >500 employees) are already reporting for FY2024. Wave 2 companies begin for FY2025.\n\n---",
+        "score": 0.0
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "The CSRD uses the EU Accounting Directive definition. A company is \"large\" if it exceeds **at least two of the following three thresholds** on its balance sheet date:\n\n| Threshold | Value |\n|-----------|-------|\n| Balance sheet total | More than \u20ac20 million |\n| Net turnover | More than \u20ac40 million |\n| Average number of employees | More than 250 |\n\nFor listed SMEs, different (lighter) requirements and a later timeline apply (see Section 4).\n\n---",
+        "score": 0.0
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_023",
+    "category": "clarification_triggering",
+    "question": "What green regulations apply to our company?",
+    "expected_state": "needs_clarification",
+    "actual_state": "needs_clarification",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": []
+  },
+  {
+    "eval_id": "eval_024",
+    "category": "clarification_triggering",
+    "question": "What sustainability reporting do we have to do?",
+    "expected_state": "needs_clarification",
+    "actual_state": "needs_clarification",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": []
+  },
+  {
+    "eval_id": "eval_025",
+    "category": "clarification_triggering",
+    "question": "What sustainability reporting do we have to do?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.5,
+    "facts_present": [
+      "SECR does not apply \u2014 below large-company thresholds",
+      "ESOS does not apply \u2014 below employee and financial thresholds",
+      "Carbon Reduction Plan still required if bidding for public sector contracts above \u00a35m per year"
+    ],
+    "facts_missing": [
+      "FCA TCFD does not apply \u2014 not listed or FCA-regulated"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "PPN 06/21 still relevant if bidding for public sector contracts above \u00a35m"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "7. SECR   reporting   requirements    for  large unquoted\n\ncompanies     and  large  limited liability partnerships              \n                                                                                  \n                                                                                  \n            Unquoted organisations in scope of SECR are required to report:",
+        "score": 0.5113155841827393
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "LLPs\n\nIn addition to the steps outlined in Sections 6 and 7, the following reporting\n            requirements apply to both quoted and unquoted organisations and should be\n            included in the relevant business report in addition to energy use and GHG\n            emissions.",
+        "score": 0.5031674206256866
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "8. Common     Requirements      that apply  for both\n\nquoted   and  unquoted    large  companies     and",
+        "score": 0.47447097301483154
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Environmental         Reporting      Guidelines:",
+        "score": 0.46589982509613037
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Introduction\n\nWho   is this document     for?                                       \n                                                                                  \n            This document is designed to help:                                    \n                                                                                  \n                                                                                  \n               \u2022 companies and limited liability partnerships in complying with the\n                 Companies Act 2006 (Strategic Report and Directors\u2019 Report)",
+        "score": 0.46325749158859253
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_026",
+    "category": "clarification_triggering",
+    "question": "What sustainability requirements do we need to meet?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.5,
+    "facts_present": [
+      "Carbon Reduction Plan required under PPN 06/21",
+      "signed at director level or above",
+      "must cover Scope 1 and 2 emissions at minimum"
+    ],
+    "facts_missing": [
+      "commitment to net zero by 2050 required",
+      "published on company website"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "other frameworks including SECR and ESOS may also apply depending on company size"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "3.   In-Scope Organisations should take action to apply this PPN when procuring goods\n\nand/or services and/or works with an anticipated contract value above \u00a35 million per annum3\n                                                                                  \n          (excluding VAT) which are subject to the Public Contracts Regulations 2015 save where it\n          would not be related and proportionate to the contract.",
+        "score": 0.23468077182769775
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "16.  The government is committed to continuing its efforts to reduce greenhouse gas\n\nemissions and deliver on its carbon budget commitments, while keeping costs down for\n          consumers and supporting the creation of good jobs and growing the economy. As\n                                                                                  \n          environmental and carbon considerations feature in the aspects of delivery of most public\n          contracts, this is an opportunity for us to take steps to support that commitment and reduce\n          emissions through public procurement.",
+        "score": 0.22972166538238525
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "4.   This PPN applies to framework agreements and dynamic purchasing systems only\n\nwhere it is anticipated that the individual value of any contract to be awarded under the\n                                                                                  \n                                                                                  \n          1Climate Change Act 2008:www.legislation.gov.uk/ukpga/2008/27/contents  \n          2When the reporting of GHG emissions is measured,it is often done so in carbon dioxide equivalent units (CO2e). The use of\n          CO2e allows for more accessible reporting and straightforward tracking and reporting of emissions over time. CO2e includes\n          all of the greenhouse gases defined within the Kyoto protocol: carbon dioxide (CO2), methane (CH4), nitrous oxide (N2O),\n          hydrofluorocarbons (HFC), perfluorocarbons (PFC), sulphur hexafluoride (SF6) and nitrogen trifluoride (NF3). Each of these\n          greenhouse gasses have a conversion factoras publishedby DEFRA:         \n          https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020When the phrase 'Net Zero\n          Carbon' is used, it is referring to both CO2 and CO2e emissions and meansnet zero GHG rather thannetzero CO2.\n          3Based on advertised contract value, averaged overthe life of the contract, e.g. a contract with a 4 year term with a total\n          contract value of \u00a321m would be in scope, even if the value in the first year was under \u00a35m.\n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          framework agreement or dynamic purchasing system is greater than \u00a35 million per annum\n          (excluding VAT).",
+        "score": 0.18180382251739502
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "14.  The UK\u2019s 2050 Net Zero target is one of the most ambitious in the world and was\n\nrecommended by the Committee on Climate Change, the UK\u2019s independent climate advisory\n                                                                                  \n          7Carbon dioxide (CO2), Methane (CH4), Nitrous Oxide (N2O), Hydrofluorocarbons (HFCs), Perfluorocarbons (PFCs), and\n          Sulphur Hexafluoride (SF6)                                              \n          8HM Treasury\u2019s review into funding the transitionto a net zero greenhouse gas economy:\n          https://www.gov.uk/government/publications/net-zero-review-terms-of-reference/hm-treasurys-review-into-funding-the-transition-\n          to-a-net-zero-greenhouse-gas-economy-terms-of-reference                 \n          9Clean Growth Strategy 2018:                                            \n          https://www.gov.uk/government/publications/clean-growth-strategy/clean-growth-strategy-executive-summary\n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n          body. Net Zero requires a reduction in emissions and (if necessary) that any emissions\n          generated are balanced by schemes to offset an equivalent amount of greenhouse gases\n          from the atmosphere, such as planting trees or using technology like carbon capture and\n          storage.",
+        "score": 0.17127478122711182
+      },
+      {
+        "source": "ppn_0621_carbon_reduction_plans.pdf",
+        "text": "1.   The UK Government amended the Climate Change Act 20081 in 2019 by introducing\n\na target of at least a 100% reduction in the net UK carbon account (i.e. reduction of\n          greenhouse gas emissions2, compared to 1990 levels) by 2050. This is otherwise known as\n          the \u2018Net Zero\u2019 target. This Procurement Policy Note (PPN) sets out how to take account of\n                                                                                  \n          suppliers\u2019 Net Zero Carbon Reduction Plans in the procurement of major Government\n          contracts.",
+        "score": 0.16931265592575073
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_027",
+    "category": "clarification_triggering",
+    "question": "What sustainability reporting do we have to do?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": false,
+    "retrieval_recall": 0.0,
+    "facts_present": [
+      "FCA TCFD mandatory disclosures required \u2014 listed company",
+      "comply-or-explain basis for listed companies",
+      "SECR likely applies if large-company size thresholds are met"
+    ],
+    "facts_missing": [
+      "UK SDS is incoming for listed companies with indicative start of financial years beginning 1 January 2026"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [
+      "UK SDS timeline is indicative not confirmed",
+      "SECR depends on size thresholds not confirmed in this context"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "retrieval_failure",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "SSSI\u2019s, SACs/SPAs, nature reserves\n\n\u2022 Explore opportunities for including biodiversity features in your buildings and landholdings (green roofs, ponds, trees, wildlife gardens) that can offer a range of benefits including habitat creation, green corridors, recreation/amenity, solar shading, positive public perception, rain water/ flood attenuation); and \u2022 Assess the scale of air, water, noise, and light emissions that may impact on the environment. There are a number of areas that your organisation can review in order to understand its indirect biodiversity interactions. You can: \u2022 Audit supply chain policies on biodiversity. \u2022 Establish the origin of materials, and determine whether they are supplied from highly biodiverse or water stressed regions. \u2022 Understand the biodiversity impacts associated with the use of your products and services (e.g. provision of finance for activities that encourage deforestation, emission of pollutants, production of hazardous waste/ by-products). Step 2 \u2013 Select a set of priority biodiversity and ecosystem interactions that your organisation can influence, and develop these into clear targets for your organisation. It will be easier if you start simply with just one or two indicators, or a specific site, and set out your intention. Step 3 - Develop indicators that will allow your organisation to monitor trends against the key interactions identified in step 2. Developing indicators is best viewed as an iterative process. Start by doing what is possible with your current levels of information. Use available knowledge and indicators as a starting point, adopting a small set of specific, business-relevant indicators. Focus your resources to address your key elements i.e. those most relevant to your organisation and any information gaps. No single indicator can tell the 88 full story. A combination of indicators ought to provide a comprehensive overview of your organisation\u2019s performance. A narrative that explains the indicator and identifies the relationship linking performance and impacts will aid comprehension. Where direct measures are not yet developed or where there is no data, good proxy indicators can be used. There is potential for employing biodiversity indicators (which are generally more well developed) as proxies to indicate something about the flow of an ecosystem service (which is often difficult to measure or lacking in data), as long as the linkages between the two are well understood. However, although in some categorisations biodiversity is classified as an ecosystem service they are not inter-changeable. It is important not to lose sight of the importance of biodiversity by focusing only on ecosystem service benefits. The World Resources Institute ecosystem service indicators database63 can also be used as a source of reference on ecosystem services. Step 4 \u2013 Establish data and reporting requirements. If using a tool, report which one and set out the data sources and input parameters. There are many tools available64 and recently there has been a focus on integrating BES data sets and indicators within pre-existing organisation decision-making frameworks, notably ISO standards (14000),65 the Global Compact Performance Model and the Global Reporting Initiative\u2019s reporting framework. If you are using one of these this can be used as part of your reporting. The EU Business",
+        "score": 0.14945071935653687
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "6. energy produced from your waste if you run an industrial process and\n\nhave an on-site energy-from-waste plant.",
+        "score": 0.14580672979354858
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "In-scope companies must report on sustainability matters under the **double materiality** principle: both the impact of sustainability matters on the company (financial materiality) and the company's impact on society and the environment (impact materiality).\n\nReporting covers:\n\n- **Environmental:** Climate change (mitigation, adaptation, Scope 1/2/3 GHG emissions), pollution, water and marine resources, biodiversity and ecosystems, resource use and circular economy\n- **Social:** Own workforce, workers in the value chain, affected communities, consumers and end-users\n- **Governance:** Business conduct, anti-corruption and anti-bribery, lobbying, payment practices\n\nReporting must comply with the **European Sustainability Reporting Standards (ESRS)**. The cross-cutting standards (ESRS 1 and ESRS 2) are mandatory; topical standards are subject to materiality assessment.\n\n---",
+        "score": 0.12091803550720215
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Principles with which members must comply.93\n\n\u2022 The Global Reporting Initiative (GRI) produces sector supplements that are relevant\n           to this chapter for mining and metals sector94 and the oil and gas sector.95 If you\n                                                                                  \n           have used the GRI reporting framework and obtained a GRI grade level this should\n           be detailed, including where you have sought independent third party assurance.\n           These GRI reports can be used in lieu of this guidance (except for the process of\n           fracking -                                                             \n           see below - which is not contained within the GRI documents and should be reported\n                                                                                  \n           on).                                                                   \n                                                                                  \n                                                                                  \n                                                                                  \n        92 http://marinemanagement.org.uk/licensing/documents/guidance/08.pdf     \n        93 The world\u2019s largest mining companies are members of the ICMM. Further detail can be found at\n        http://www.icmm.com/our-work/sustainable-development-framework/10-principles\n                                                                                  \n        94 https://www.globalreporting.org/resourcelibrary/MMSS-Complete.pdf      \n        95 https://www.globalreporting.org/resourcelibrary/OGSS-G3.1-Complete.pdf \n                                                                                  \n                                        134                                       \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n\n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n                                                                                  \n         \u2022 Minerals UK also offer an introduction to minerals and sustainability.96",
+        "score": 0.12059330940246582
+      },
+      {
+        "source": "csrd_uk_applicability_summary.md",
+        "text": "A UK-based parent company falls into CSRD scope under Article 40 (the \"third-country undertaking\" provision) if:\n\n- It generated **net turnover exceeding \u20ac150 million** in the EU in each of the last two consecutive financial years, **AND**\n- It has at least one of the following EU-based entities:\n  - A **large EU subsidiary** (meeting the large company thresholds \u2014 see Section 3)\n  - An EU-regulated-market-**listed subsidiary** (regardless of size)\n  - An EU **branch** generating net turnover exceeding \u20ac40 million in the previous financial year\n\nWhere these conditions are met, the **EU subsidiary or branch** is required to produce a sustainability report covering the entire **group** (including the UK parent). The UK parent does not file directly, but must provide its EU subsidiary with the necessary data.",
+        "score": 0.11122786998748779
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_028",
+    "category": "out_of_scope",
+    "question": "What are the UK rules on plastic packaging tax?",
+    "expected_state": "out_of_scope",
+    "actual_state": "out_of_scope",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": []
+  },
+  {
+    "eval_id": "eval_029",
+    "category": "out_of_scope",
+    "question": "How do I calculate my company's Scope 3 emissions?",
+    "expected_state": "out_of_scope",
+    "actual_state": "out_of_scope",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [
+      "corpus covers Scope 3 as a disclosure requirement not a calculation methodology guide"
+    ],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_caveats",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": []
+  },
+  {
+    "eval_id": "eval_030",
+    "category": "hallucination_traps",
+    "question": "What does the UK Green Finance Act 2023 require from large companies?",
+    "expected_state": "out_of_scope",
+    "actual_state": "out_of_scope",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": []
+  },
+  {
+    "eval_id": "eval_031",
+    "category": "hallucination_traps",
+    "question": "Does SECR apply to companies with more than 500 employees?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [],
+    "facts_missing": [
+      "SECR applies at 250 or more employees, not 500",
+      "250 employees is one of three criteria \u2014 two of three must be met",
+      "500 employees is not a SECR threshold"
+    ],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": false,
+    "notes": "",
+    "failure_type": "missing_facts",
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": false,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "7. SECR   reporting   requirements    for  large unquoted\n\ncompanies     and  large  limited liability partnerships              \n                                                                                  \n                                                                                  \n            Unquoted organisations in scope of SECR are required to report:",
+        "score": 0.5466258525848389
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "8. Common     Requirements      that apply  for both\n\nquoted   and  unquoted    large  companies     and",
+        "score": 0.5360323190689087
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "LLPs\n\nIn addition to the steps outlined in Sections 6 and 7, the following reporting\n            requirements apply to both quoted and unquoted organisations and should be\n            included in the relevant business report in addition to energy use and GHG\n            emissions.",
+        "score": 0.5299264192581177
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Quoted companies              Large unquoted companies\n\nand LLPs                              \n                                                                                  \n              Annual GHG emissions from     UK energy use (as a minimum           \n              activities for which the company gas, electricity and transport,    \n              is responsible including      including UK offshore area)           \n              combustion of fuel and operation                                    \n              of any facility; and the annual                                     \n              emissions from the purchase of                                      \n              electricity, heat, steam or cooling                                 \n              by the company for its own use",
+        "score": 0.5020330846309662
+      },
+      {
+        "source": "secr_environmental_reporting_guidelines_2019.pdf",
+        "text": "Introduction\n\nWho   is this document     for?                                       \n                                                                                  \n            This document is designed to help:                                    \n                                                                                  \n                                                                                  \n               \u2022 companies and limited liability partnerships in complying with the\n                 Companies Act 2006 (Strategic Report and Directors\u2019 Report)",
+        "score": 0.49616730213165283
+      }
+    ]
+  },
+  {
+    "eval_id": "eval_032",
+    "category": "hallucination_traps",
+    "question": "I heard the ESOS Phase 3 deadline was December 2024 \u2014 is that right?",
+    "expected_state": "clear",
+    "actual_state": "clear",
+    "state_match": true,
+    "citation_accuracy": true,
+    "retrieval_recall": 1.0,
+    "facts_present": [
+      "Phase 3 deadline was 5 June 2024, not December 2024",
+      "December 2024 is not an ESOS compliance deadline",
+      "Phase 4 deadline is 5 December 2027"
+    ],
+    "facts_missing": [],
+    "caveats_present": [],
+    "caveats_missing": [],
+    "forbidden_phrases_found": [],
+    "forbidden_certainty_found": [],
+    "hallucination_flag": false,
+    "passed": true,
+    "notes": "",
+    "failure_type": null,
+    "forbidden_certainty_flag": false,
+    "passed_architecture_compatible": true,
+    "required_retrieval_recall": 0.5,
+    "retrieved_chunks": [
+      {
+        "source": "esos_overview.md",
+        "text": "ESOS operates on a **4-year compliance cycle**. Each phase has a compliance deadline by which qualifying organisations must have completed their audit and notified the EA.\n\n| Phase | Qualification date | Compliance deadline | Status |\n|-------|--------------------|--------------------|-|\n| Phase 1 | 31 December 2014 | **5 December 2015** | Closed |\n| Phase 2 | 31 December 2018 | **5 December 2019** | Closed |\n| Phase 3 | 31 December 2022 | **5 June 2024** | Closed (deadline passed) |\n| Phase 4 | 31 December 2026 | **5 December 2027** | Upcoming |\n\n**Phase 3 note:** The compliance deadline for Phase 3 was **5 June 2024**. Organisations that missed this deadline are in breach of the Regulations and may be subject to enforcement action by the EA. Late compliance does not extinguish the obligation \u2014 organisations should complete and notify as soon as possible.\n\n---",
+        "score": 0.3172827959060669
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "**Document type:** Synthetic regulatory summary  \n**Source type:** synthetic_summary  \n**Based on:** The Energy Savings Opportunity Scheme Regulations 2014 (SI 2014/1643); ESOS Amendment Regulations 2023 (SI 2023/551); Environment Agency ESOS guidance; DESNZ ESOS Phase 3 guidance  \n**Accuracy note:** Obligations, thresholds, compliance dates, and phase structure reflect the 2014 Regulations as amended and EA guidance as of mid-2024.  \n**Last reviewed:** June 2024  \n\n---",
+        "score": 0.10313934087753296
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "- Energy Savings Opportunity Scheme Regulations 2014, SI 2014/1643\n- Energy Savings Opportunity Scheme (Amendment) Regulations 2023, SI 2023/551\n- Environment Agency: *ESOS guidance for participants*, 2023 update\n- DESNZ: *ESOS Phase 3 guidance*, 2023\n- Environment Agency: *ESOS notification and compliance portal guidance*",
+        "score": 0.009890854358673096
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "The Energy Savings Opportunity Scheme (ESOS) is a mandatory energy assessment scheme for large UK businesses, implemented under the **Energy Savings Opportunity Scheme Regulations 2014** (SI 2014/1643). It implements the UK's obligations under Article 8 of the EU Energy Efficiency Directive, retained and amended post-Brexit.\n\nESOS requires qualifying organisations to carry out comprehensive audits of their energy use across all buildings, industrial processes, and transport, and to identify cost-effective energy-saving opportunities. Participation does not require organisations to implement the identified measures \u2014 the obligation is to **audit and notify**, not to act.\n\n---",
+        "score": 0.0
+      },
+      {
+        "source": "esos_overview.md",
+        "text": "Organisations that have a valid **ISO 50001** certification covering their total energy consumption are exempt from conducting separate ESOS audits (but must still notify compliance to the Environment Agency).\n\nPublic sector bodies are **not** required to participate in ESOS (they are subject to the Greening Government Commitments framework instead), although public sector-owned trading companies may be in scope.\n\n---",
+        "score": 0.0
+      }
+    ]
+  }
+]
