@@ -572,6 +572,54 @@ def test_fact_presence_numeric_values_anchor_match():
     assert result.facts_missing == []
 
 
+def test_fact_presence_employees_not_stop_word():
+    """'employees' must contribute as a key term so '500 employees threshold' can match."""
+    case = _eval_case(expected_facts=["500 employees threshold"])
+    result = _runner(
+        _answer_result(
+            text="Companies with more than 500 employees meet the size criterion."
+        )
+    ).run_eval(case)
+    assert result.facts_present != []
+    assert result.facts_missing == []
+
+
+def test_fact_presence_turnover_not_stop_word():
+    """'turnover' must contribute as a key term so a paraphrase can match."""
+    case = _eval_case(expected_facts=["£36m turnover limit"])
+    result = _runner(
+        _answer_result(
+            text="Organisations whose turnover exceeds £36m are in scope."
+        )
+    ).run_eval(case)
+    assert result.facts_present != []
+    assert result.facts_missing == []
+
+
+def test_fact_presence_company_not_stop_word():
+    """'company' must contribute as a key term and not be silently dropped."""
+    case = _eval_case(expected_facts=["250 company employees"])
+    result = _runner(
+        _answer_result(
+            text="A company with 250 employees triggers the reporting duty."
+        )
+    ).run_eval(case)
+    assert result.facts_present != []
+    assert result.facts_missing == []
+
+
+def test_fact_presence_short_abbreviation_is_key_term():
+    """3-char regulatory abbreviations like 'kWh' must now be treated as key terms."""
+    case = _eval_case(expected_facts=["100 kWh Ltd limit"])
+    result = _runner(
+        _answer_result(
+            text="A Ltd entity using 100 kWh or more must register."
+        )
+    ).run_eval(case)
+    assert result.facts_present != []
+    assert result.facts_missing == []
+
+
 def test_fact_presence_completely_different_statement_is_absent():
     """A statement sharing no key terms with the fact must score as absent."""
     case = _eval_case(
