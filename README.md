@@ -159,15 +159,17 @@ The pipeline is evaluated against a golden set of 32 manually verified question/
 | Fact presence | Expected facts appear in answer text |
 | Hallucination rate | Forbidden phrases or fabricated content detected |
 
-### Results (after classifier prompt revision)
+### Results
 
-| Metric | Score |
-|--------|-------|
-| Pass rate | **78.1%** |
-| State match rate | **93.8%** |
-| Citation accuracy | **81.2%** |
-| Mean retrieval recall | **88.3%** |
-| **Hallucination rate** | **0.0%** |
+Two eval runs were completed. Run 1 exposed the classifier failure pattern. Run 2 followed a classifier prompt revision.
+
+| Metric | Run 1 (baseline) | Run 2 (after fix) |
+|--------|-----------------|-------------------|
+| Pass rate | 40.6% | **78.1%** |
+| State match rate | 53.1% | **93.8%** |
+| Citation accuracy | 50.0% | **81.2%** |
+| Mean retrieval recall | 53.9% | **88.3%** |
+| Hallucination rate | **0.0%** | **0.0%** |
 
 | Category | Result |
 |----------|--------|
@@ -179,7 +181,7 @@ The pipeline is evaluated against a golden set of 32 manually verified question/
 | Cross-framework synthesis | 4/7 (57%) |
 | Clarification triggering | 2/5 (40%) |
 
-The 0% hallucination rate across both eval runs is the most important result. The system does not fabricate regulatory obligations. The remaining failures are citation precision gaps in multi-document cross-framework queries — the answers are substantively correct but not all expected source documents are retrieved simultaneously.
+The 0% hallucination rate held across both runs — the system does not fabricate regulatory obligations. The remaining failures are concentrated in broad cross-framework applicability synthesis (retrieving multiple frameworks simultaneously) and a known partial-answer classification gap. See [Current limitations](#current-limitations) for detail.
 
 ---
 
@@ -261,6 +263,33 @@ python run_evals.py
 pytest tests/ -v
 pytest tests/ --cov=src --cov-report=term-missing
 ```
+
+---
+
+## Current limitations
+
+This is a v0 prototype. Understanding what it does and doesn't do well matters before using it.
+
+**What the system is reliable at:**
+
+- Named-regulation questions — thresholds, deadlines, what a specific framework requires
+- Single-framework applicability questions where company context is clear
+- Out-of-scope rejection — the system correctly declines questions outside the indexed corpus
+- Hallucination resistance — across all eval runs, the system has never fabricated a regulation, obligation, or deadline (0% hallucination rate)
+- Premise correction — if a question contains a wrong threshold or date, the system corrects it rather than confirming it
+
+**What the system is not yet reliable at:**
+
+- Broad cross-framework applicability synthesis — questions like "what green regulations apply to us?" that require retrieving and synthesising across multiple frameworks simultaneously. The system retrieves well for single and double-framework questions but struggles to surface all relevant documents when a question spans four or more frameworks at once.
+- Partial-context applicability questions — when a user provides some but not all company facts, the system answers what it can but doesn't always signal clearly that the answer is incomplete. A future version will natively handle this as a distinct response type.
+
+**Corpus limitations:**
+
+Four of the eight corpus documents are purpose-built synthetic summaries rather than primary legislation. They are accurate but are not primary sources. Always verify against current official guidance before making compliance decisions.
+
+**What this means in practice:**
+
+This tool is a credible assistant for bounded regulatory Q&A — understanding what a specific regulation requires, whether a threshold applies, what a deadline is, and what a Carbon Reduction Plan needs to contain. It is not yet a robust end-to-end applicability assessment engine for broad "what applies to us?" questions across all seven indexed frameworks simultaneously.
 
 ---
 
