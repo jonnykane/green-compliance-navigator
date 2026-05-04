@@ -26,7 +26,8 @@
       "Bash(python -m pytest tests/test_evals_runner.py -v)",
       "Bash(python -m pytest --tb=no -q)",
       "Bash(git commit -m ' *)",
-      "Bash(python -m pytest tests/agent/test_registry.py -v)"
+      "Bash(python -m pytest tests/agent/test_registry.py -v)",
+      "Bash(git push *)"
     ]
   }
 }
