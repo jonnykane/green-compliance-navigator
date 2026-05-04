@@ -52,9 +52,13 @@ def run_agent():
     from src.embedder.embedding_client import EmbeddingClient
     import voyageai
     voyage_client = voyageai.Client(api_key=os.environ["VOYAGE_API_KEY"])
-    embedding_client = EmbeddingClient(client=voyage_client)
+    embedding_client = EmbeddingClient(
+        voyage_client=voyage_client,
+        model=os.environ.get("VOYAGE_MODEL", "voyage-3"),
+        batch_size=int(os.environ.get("VOYAGE_BATCH_SIZE", "128")),
+    )
 
-    class EmbedderAdapter:
+    class _EmbedderAdapter:
         def embed(self, texts: list[str]) -> list[list[float]]:
             results = embedding_client.embed_texts(texts)
             return [r.vector for r in results]
@@ -69,7 +73,7 @@ def run_agent():
             claude_client=AnthropicClassifierClient(client=anthropic_client)
         ),
         rechunker=Rechunker(
-            embedder=EmbedderAdapter(),
+            embedder=_EmbedderAdapter(),
             index=index,
             config=ChunkingConfig(),
         ),
