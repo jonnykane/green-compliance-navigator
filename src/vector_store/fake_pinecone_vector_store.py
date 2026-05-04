@@ -79,6 +79,11 @@ class FakePineconeIndex:
         ]
         return _FakeQueryResponse(matches=matches)
 
+    def delete(self, delete_all: bool = False) -> None:
+        if delete_all:
+            self._records.clear()
+            self._ids.clear()
+
     def describe_index_stats(self) -> _FakeIndexStats:
         return _FakeIndexStats(total_vector_count=len(self._records))
 

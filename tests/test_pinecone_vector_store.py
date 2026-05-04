@@ -47,11 +47,12 @@ def test_add_chunks_mismatched_lengths_raises(store):
         store.add_chunks(texts=["a", "b"], vectors=[[0.1]], metadatas=[{}])
 
 
-def test_add_chunks_multiple_calls_accumulate(store):
+def test_add_chunks_multiple_calls_replace_not_accumulate(store):
+    """Each add_chunks call deletes first, so only the latest batch is present."""
     texts, vectors, metadatas = _chunks(2)
     store.add_chunks(texts=texts, vectors=vectors, metadatas=metadatas)
     store.add_chunks(texts=["extra"], vectors=[[9.9]], metadatas=[{"source": "x.md"}])
-    assert store.count() == 3
+    assert store.count() == 1  # only the second call's records remain
 
 
 # ---------------------------------------------------------------------------
@@ -202,3 +203,44 @@ def test_add_chunks_exactly_one_batch_size_uses_single_call():
     texts, vectors, metadatas = _chunks(_UPSERT_BATCH_SIZE)
     store.add_chunks(texts=texts, vectors=vectors, metadatas=metadatas)
     assert store.count() == _UPSERT_BATCH_SIZE
+
+
+# ---------------------------------------------------------------------------
+# delete-before-upsert — re-ingest produces a clean index
+# ---------------------------------------------------------------------------
+
+def test_add_chunks_second_call_replaces_not_appends(store):
+    """A second add_chunks call must clear the index first, not accumulate."""
+    texts1, vectors1, metadatas1 = _chunks(3)
+    store.add_chunks(texts=texts1, vectors=vectors1, metadatas=metadatas1)
+    texts2, vectors2, metadatas2 = _chunks(2)
+    store.add_chunks(texts=texts2, vectors=vectors2, metadatas=metadatas2)
+    assert store.count() == 2  # not 5
+
+
+def test_add_chunks_empty_call_clears_existing_vectors(store):
+    """Calling add_chunks with empty lists must still clear existing vectors."""
+    texts, vectors, metadatas = _chunks(4)
+    store.add_chunks(texts=texts, vectors=vectors, metadatas=metadatas)
+    store.add_chunks(texts=[], vectors=[], metadatas=[])
+    assert store.count() == 0
+
+
+def test_add_chunks_delete_called_before_upsert():
+    """delete(delete_all=True) must be called on the index at the start of add_chunks."""
+    from src.vector_store.fake_pinecone_vector_store import FakePineconeClient
+
+    client = FakePineconeClient()
+    store = PineconeVectorStore(pinecone_client=client, index_name="test-index")
+    fake_index = store._index  # type: ignore[attr-defined]
+
+    # Seed the index directly via a lower-level call to simulate stale data
+    fake_index.upsert(vectors=[{"id": "stale-1", "values": [0.0], "metadata": {"_text": "stale"}}])
+    assert fake_index.describe_index_stats().total_vector_count == 1
+
+    # add_chunks must wipe the stale vector before inserting new ones
+    store.add_chunks(texts=["fresh"], vectors=[[1.0]], metadatas=[{"source": "new.pdf"}])
+    results = store.query(vector=[1.0], n_results=10)
+    texts_in_store = [r.text for r in results]
+    assert "stale" not in texts_in_store
+    assert "fresh" in texts_in_store
