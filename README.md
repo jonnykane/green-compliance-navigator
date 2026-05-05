@@ -85,14 +85,14 @@ Synthetic summaries are labelled `source_type: synthetic_summary` in chunk metad
 
 ## Eval results
 
-32 golden Q&A pairs manually verified against source documents. Results after Phase 7 eval hardening:
+32 golden Q&A pairs manually verified against source documents. Results after Phase 7 eval hardening and Phase 8 canonical injection expansion:
 
 | Metric | Result |
 |---|---|
-| **Native product score** | **43.8% (14/32)** |
+| **Native product score** | **50.0% (16/32)** |
 | State match rate | 93.8% |
-| Citation accuracy | 78.1% |
-| Mean retrieval recall | 86.7% |
+| Citation accuracy | 81.2% |
+| Mean retrieval recall | 88.3% |
 | **Hallucination rate** | **0.0%** |
 
 Category breakdown:
@@ -100,14 +100,14 @@ Category breakdown:
 | Category | Result |
 |---|---|
 | Threshold / applicability | 3/6 (50.0%) |
-| What must be reported | 3/5 (60.0%) |
+| What must be reported | 4/5 (80.0%) |
 | Deadlines and timelines | 2/4 (50.0%) |
-| Cross-framework synthesis | 0/7 (0.0%) |
+| Cross-framework synthesis | 1/7 (14.3%) |
 | Clarification triggering | 2/5 (40.0%) |
 | Out of scope | 1/2 (50.0%) |
 | Hallucination traps | 3/3 (100%) |
 
-**Note on eval methodology:** The eval gate was significantly tightened in Phase 7. The previous 78.1% figure used a soft gate (state match + citation + no hallucination only). The current gate additionally requires all expected facts present, all required caveats present, retrieval recall above threshold, and no forbidden certainty. The 43.8% figure is a more honest measure of answer completeness. Evals run at `temperature=0` for deterministic, reproducible results.
+**Note on eval methodology:** The eval gate was significantly tightened in Phase 7. The previous 78.1% figure used a soft gate (state match + citation + no hallucination only). The current gate additionally requires all expected facts present, all required caveats present, retrieval recall above threshold, and no forbidden certainty. The 50.0% figure is a more honest measure of answer completeness. Evals run at `temperature=0` for deterministic, reproducible results.
 
 ---
 
@@ -215,6 +215,7 @@ python ask.py "We have 300 employees — what sustainability reporting applies t
 | 5 Post | SECR retrieval fix (_enrich_retrieval_query, 308 tests) | ✅ Complete |
 | 6 | Regulatory change monitoring agent (ReAct loop, 95 agent tests) | ✅ Complete |
 | 7 | Eval hardening, corpus fixes, canonical injection (43.8%, 512 tests) | ✅ Complete |
+| 8 | PPN + TCFD canonical injection expansion (50.0%, 16/32) | ✅ Complete |
 
 ---
 
@@ -275,7 +276,9 @@ A comprehensive eval improvement pass that tightened the pass gate, added retrie
 | + Scorer stop word fix | 37.5% → 40.6% | eval_007 passes |
 | + Canonical source injection | 40.6% → 40.6% | eval_031 passes, scorer gap on eval_001 |
 | + Golden set calibration (eval_001, eval_012) | 40.6% → 43.8% | eval_001 passes |
-| + temperature=0 | **43.8% (14/32)** | Stable, deterministic |
+| + temperature=0 | 43.8% (14/32) | Stable, deterministic |
+| + PPN canonical injection | 43.8% → 43.8% | Retrieval improved; eval_006, eval_011 shift from retrieval_failure → missing_facts |
+| + TCFD canonical injection | **43.8% → 50.0% (16/32)** | eval_011, eval_019 pass |
 
 ---
 
