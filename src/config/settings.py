@@ -44,4 +44,6 @@ CANONICAL_SOURCE_MAP: dict[str, str] = {
     "government contract": "ppn_0621_carbon_reduction_plans.pdf",
     "public procurement": "ppn_0621_carbon_reduction_plans.pdf",
     "procurement policy note": "ppn_0621_carbon_reduction_plans.pdf",
+    "tcfd": "fca_tcfd_ps21_24_summary.md",
+    "fca tcfd": "fca_tcfd_ps21_24_summary.md",
 }
